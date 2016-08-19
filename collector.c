@@ -133,39 +133,33 @@ void co_process_list_init_fd_set(struct CoProcessList *l, fd_set* set) {
     }
 }
 
+struct CoProcessList* co_process_list_forward(struct CoProcessList *l, fd_set* set) {
+    if (!l) { return NULL; }
+    if (FD_ISSET(l->p.fd, set) ) {
+        if (co_forward(&(l->p)) < 0) {
+            l = co_process_list_free_element(l);
+        }
+    }
+    if (l) { l->n = co_process_list_forward(l->n, set); }
+    return l;
+}
+
 int main() {
     char *cmd1[] = {"tail", "-f", "1.txt", "2.txt", NULL};
     char *cmd2[] = {"ls", NULL};
     struct CoProcessList *l = co_process_list_new("tail", cmd1);
     l->n = co_process_list_new("ls", cmd2);
 
-    fd_set rd;
+    fd_set set;
     const int max = co_process_list_max_fd(l, -1);
     while (l) {
-        FD_ZERO(&rd);
-        co_process_list_init_fd_set(l, &rd);
-        if (-1 == select(max + 1, &rd, NULL, NULL, NULL) && EINTR != errno) {
+        FD_ZERO(&set);
+        co_process_list_init_fd_set(l, &set);
+        if (-1 == select(max + 1, &set, NULL, NULL, NULL) && EINTR != errno) {
             perror("select");
             return EXIT_FAILURE;
         }
-
-        struct CoProcessList* p_runner = NULL;
-        struct CoProcessList* runner = l;
-        while (runner) {
-            if (FD_ISSET(runner->p.fd, &rd) ) {
-                if (co_forward(&(runner->p)) < 0) {
-                    runner = co_process_list_free_element(runner);
-                    if (p_runner) {
-                        p_runner->n = runner;
-                    } else {
-                        l = runner;
-                    }
-                    continue;
-                }
-            }
-            p_runner = runner;
-            runner = runner->n;
-        }
+        l = co_process_list_forward(l, &set);
     }
 
     co_process_list_free(l);
