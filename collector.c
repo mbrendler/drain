@@ -13,17 +13,13 @@ void co_close_all_fds_from(int fd) {
     }
 }
 
-int co_popen(const char *cmd, const char *wd, int *fd) {
+int co_popen(const char *cmd, int *fd) {
     int pipeline[2];
     if (-1 == pipe(pipeline)) { return -1; }
     const pid_t pid = fork();
     if (-1 == pid) {
         return -1;
     } else if (0 == pid) {
-        if (wd && (chdir(wd) == -1)) {
-            perror("chdir");
-            exit(EXIT_FAILURE);
-        }
         if (dup2(pipeline[1], STDOUT_FILENO) == -1) {
             perror("dup2 stdout");
             exit(EXIT_FAILURE);
@@ -69,7 +65,7 @@ ssize_t co_process_forward(const CoProcess *p) {
     return 0;
 }
 
-void co_process_init(CoProcess *p, const char *name, const char *cmd, const char *wd, int color) {
+void co_process_init(CoProcess *p, const char *name, const char *cmd, int color) {
     p->color = color;
     int name_len = strlen(name) + 1;
     p->name = malloc(name_len);
@@ -78,7 +74,7 @@ void co_process_init(CoProcess *p, const char *name, const char *cmd, const char
         exit(1);
     }
     memcpy(p->name, name, name_len);
-    p->pid = co_popen(cmd, wd, &(p->fd));
+    p->pid = co_popen(cmd, &(p->fd));
     p->f = fdopen(p->fd, "r");
     if (p->pid < 0) {
         perror("co_popen");
@@ -102,13 +98,13 @@ struct CoProcessList {
     struct CoProcessList *n;
 };
 
-struct CoProcessList* co_process_list_new(const char *name, const char *cmd, const char *wd, int color) {
+struct CoProcessList* co_process_list_new(const char *name, const char *cmd, int color) {
     struct CoProcessList *e = malloc(sizeof(struct CoProcessList));
     if (!e) {
         perror("malloc e");
         exit(1);
     }
-    co_process_init(&(e->p), name, cmd, wd, color);
+    co_process_init(&(e->p), name, cmd, color);
     e->n = NULL;
     return e;
 }
@@ -160,25 +156,25 @@ struct CoProcessList *co_process_list_append(struct CoProcessList *l, struct CoP
 }
 
 struct CoProcessList* co_read_config(const char* filename) {
-    // tail:3:.:tail -f 1.txt 2.txt
+    // tail:3:tail -f 1.txt 2.txt
     FILE* f = fopen(filename, "r");
-    char *poss[3];
+    const char *poss[2];
     struct CoProcessList *l = NULL;
     while (fgets(BUFFER, sizeof(BUFFER), f)) {
         char *r = BUFFER;
         int i = 0;
         while (*r) {
-            if (':' == *r && i < 3) {
+            if (':' == *r && i < 2) {
                 *r = '\0';
                 poss[i++] = r + 1;
+                if (i == 2) { break; }
             }
             ++r;
         }
-        if (*(r - 1) == '\n') { *(r - 1) = '\0'; }
         l = co_process_list_append(
-            l, co_process_list_new(BUFFER, poss[2], poss[1], atoi(poss[0]))
+            l, co_process_list_new(BUFFER, poss[1], atoi(poss[0]))
         );
-        printf("%s : %s : %s : %s\n", BUFFER, *poss, poss[1], poss[2]);
+        printf("%s : %s : %s", BUFFER, *poss, poss[1]);
     }
     if (ferror(f)) {
         fprintf(stderr, "could not load config file: %s", filename);
