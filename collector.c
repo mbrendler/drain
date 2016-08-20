@@ -161,6 +161,7 @@ struct CoProcessList* co_read_config(const char* filename) {
     const char *poss[2];
     struct CoProcessList *l = NULL;
     while (fgets(BUFFER, sizeof(BUFFER), f)) {
+        if ('#' == *BUFFER) { continue; } // line is comment
         char *r = BUFFER;
         int i = 0;
         while (*r) {
