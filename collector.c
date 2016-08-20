@@ -6,13 +6,17 @@
 #include <fcntl.h>
 #include <errno.h>
 
-int co_popen(const char *cmd, int *fd) {
+int co_popen(const char *cmd, const char *wd, int *fd) {
     int pipeline[2];
     if (-1 == pipe(pipeline)) { return -1; }
     const pid_t pid = fork();
     if (-1 == pid) {
         return -1;
     } else if (0 == pid) {
+        if (wd && (chdir(wd) == -1)) {
+            perror("chdir");
+            exit(EXIT_FAILURE);
+        }
         close(pipeline[0]);
         if (dup2(pipeline[1], STDOUT_FILENO) == -1) {
             perror("dup2 stdout");
@@ -59,7 +63,7 @@ ssize_t co_process_forward(const CoProcess *p) {
     return 0;
 }
 
-void co_process_init(CoProcess *p, const char *name, const char *cmd, int color) {
+void co_process_init(CoProcess *p, const char *name, const char *cmd, const char *wd, int color) {
     p->color = color;
     int name_len = strlen(name) + 1;
     p->name = malloc(name_len);
@@ -68,7 +72,7 @@ void co_process_init(CoProcess *p, const char *name, const char *cmd, int color)
         exit(1);
     }
     memcpy(p->name, name, name_len);
-    p->pid = co_popen(cmd, &(p->fd));
+    p->pid = co_popen(cmd, wd, &(p->fd));
     p->f = fdopen(p->fd, "r");
     if (p->pid < 0) {
         perror("co_popen");
@@ -92,13 +96,13 @@ struct CoProcessList {
     struct CoProcessList *n;
 };
 
-struct CoProcessList* co_process_list_new(char *name, char *cmd, int color) {
+struct CoProcessList* co_process_list_new(const char *name, const char *cmd, const char *wd, int color) {
     struct CoProcessList *e = malloc(sizeof(struct CoProcessList));
     if (!e) {
         perror("malloc e");
         exit(1);
     }
-    co_process_init(&(e->p), name, cmd, color);
+    co_process_init(&(e->p), name, cmd, wd, color);
     e->n = NULL;
     return e;
 }
@@ -165,7 +169,7 @@ struct CoProcessList* co_read_config(const char* filename) {
             ++r;
         }
         if (*(r - 1) == '\n') { *(r - 1) = '\0'; }
-        struct CoProcessList* n = co_process_list_new(BUFFER, poss[2], atoi(poss[0]));
+        struct CoProcessList* n = co_process_list_new(BUFFER, poss[2], poss[1], atoi(poss[0]));
         l = co_process_list_append(
             l, n
         );
