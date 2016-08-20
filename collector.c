@@ -6,6 +6,13 @@
 #include <fcntl.h>
 #include <errno.h>
 
+void co_close_all_fds_from(int fd) {
+    const int maxfd = sysconf(_SC_OPEN_MAX);
+    while(fd <= maxfd) {
+        close(fd++);
+    }
+}
+
 int co_popen(const char *cmd, const char *wd, int *fd) {
     int pipeline[2];
     if (-1 == pipe(pipeline)) { return -1; }
@@ -17,7 +24,6 @@ int co_popen(const char *cmd, const char *wd, int *fd) {
             perror("chdir");
             exit(EXIT_FAILURE);
         }
-        close(pipeline[0]);
         if (dup2(pipeline[1], STDOUT_FILENO) == -1) {
             perror("dup2 stdout");
             exit(EXIT_FAILURE);
@@ -26,7 +32,7 @@ int co_popen(const char *cmd, const char *wd, int *fd) {
             perror("dup2 stderr");
             exit(EXIT_FAILURE);
         }
-        close(pipeline[1]);
+        co_close_all_fds_from(3);
         if (-1 == execlp("sh", "sh", "-c", cmd, NULL)) {
             perror("execlp");
             exit(EXIT_FAILURE);
