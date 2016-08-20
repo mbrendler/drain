@@ -185,6 +185,7 @@ struct CoProcessList* co_read_config(const char* filename) {
         fprintf(stderr, "could not load config file: %s", filename);
         exit(1);
     }
+    fclose(f);
     return l;
 }
 
