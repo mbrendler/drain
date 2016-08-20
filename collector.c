@@ -175,9 +175,8 @@ struct CoProcessList* co_read_config(const char* filename) {
             ++r;
         }
         if (*(r - 1) == '\n') { *(r - 1) = '\0'; }
-        struct CoProcessList* n = co_process_list_new(BUFFER, poss[2], poss[1], atoi(poss[0]));
         l = co_process_list_append(
-            l, n
+            l, co_process_list_new(BUFFER, poss[2], poss[1], atoi(poss[0]))
         );
         printf("%s : %s : %s : %s\n", BUFFER, *poss, poss[1], poss[2]);
     }
