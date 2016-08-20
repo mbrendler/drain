@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-int co_popen(char *cmd[], int *fd) {
+int co_popen(const char *cmd, int *fd) {
     int pipeline[2];
     if (-1 == pipe(pipeline)) { return -1; }
     const pid_t pid = fork();
@@ -23,75 +23,68 @@ int co_popen(char *cmd[], int *fd) {
             exit(EXIT_FAILURE);
         }
         close(pipeline[1]);
-        if (-1 == execvp(cmd[0], cmd)) {
-            perror("execvp");
+        if (-1 == execlp("sh", "sh", "-c", cmd, NULL)) {
+            perror("execlp");
             exit(EXIT_FAILURE);
         }
     }
     close(pipeline[1]);
     *fd = pipeline[0];
 
-    fcntl(*fd, F_SETFL, fcntl(*fd, F_GETFL, 0)| O_NONBLOCK);
+    fcntl(*fd, F_SETFL, fcntl(*fd, F_GETFL, 0) | O_NONBLOCK);
 
     return pid;
 }
 
 typedef struct {
+    int color;
     pid_t pid;
     int fd;
-    size_t name_len;
-    const char *name;
+    FILE* f;
+    char *name;
 } CoProcess;
 
 char BUFFER[4096];
 
-ssize_t co_forward(CoProcess *p) {
-    bool write_prefix = true;
-    char *runner = "\n";
-    for (;;) {
-        const ssize_t size = read(p->fd, BUFFER, sizeof(BUFFER));
-        if (size == 0) { return -1; }
-        else if (size < 0) {
-            if (EAGAIN != errno) {
-                perror("read");
-                return -1;
-            }
-            if (*(runner - 1) != '\n') {
-                write(STDOUT_FILENO, "\n", 1);
-            }
-            return 0;
-        }
-        runner = BUFFER;
-        char const * const end = BUFFER + size;
-        for (; runner != end; ++runner) {
-            if (write_prefix) {
-                write(STDOUT_FILENO, p->name, p->name_len);
-                write(STDOUT_FILENO, ": ", 2);
-                write_prefix = false;
-            }
-            write(STDOUT_FILENO, runner, 1);
-            if ('\n' == *runner) {
-                write_prefix = true;
-            }
-        }
+ssize_t co_process_forward(const CoProcess *p) {
+    while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
+        fprintf(stdout, "\033[3%dm%s: \033[39;49m%s", p->color, p->name, BUFFER);
+    }
+    if (feof(p->f)) {
+        return -1;
+    } else if (ferror(p->f) && EAGAIN != errno) {
+        perror("read");
+        return -1;
     }
     return 0;
 }
 
-void co_process_init(CoProcess *p, char *name, char *cmd[]) {
-    p->name = name;
-    p->name_len = strlen(name);
+void co_process_init(CoProcess *p, const char *name, const char *cmd, int color) {
+    p->color = color;
+    int name_len = strlen(name) + 1;
+    p->name = malloc(name_len);
+    if (!p->name) {
+        perror("malloc p->name");
+        exit(1);
+    }
+    memcpy(p->name, name, name_len);
     p->pid = co_popen(cmd, &(p->fd));
+    p->f = fdopen(p->fd, "r");
     if (p->pid < 0) {
         perror("co_popen");
     }
 }
 
 void co_process_destroy(CoProcess *p) {
-    close(p->fd);
+    fclose(p->f);
     // TODO: interpret status:
     waitpid(p->pid, NULL, 0);
     printf("process stopped: %s\n", p->name);
+    free(p->name);
+    p->f = NULL;
+    p->fd = -1;
+    p->pid = -1;
+    p->name = NULL;
 }
 
 struct CoProcessList {
@@ -99,9 +92,13 @@ struct CoProcessList {
     struct CoProcessList *n;
 };
 
-struct CoProcessList* co_process_list_new(char *name, char *cmd[]) {
-    struct CoProcessList *e = malloc(sizeof(CoProcess));
-    co_process_init(&(e->p), name, cmd);
+struct CoProcessList* co_process_list_new(char *name, char *cmd, int color) {
+    struct CoProcessList *e = malloc(sizeof(struct CoProcessList));
+    if (!e) {
+        perror("malloc e");
+        exit(1);
+    }
+    co_process_init(&(e->p), name, cmd, color);
     e->n = NULL;
     return e;
 }
@@ -136,7 +133,7 @@ void co_process_list_init_fd_set(struct CoProcessList *l, fd_set* set) {
 struct CoProcessList* co_process_list_forward(struct CoProcessList *l, fd_set* set) {
     if (!l) { return NULL; }
     if (FD_ISSET(l->p.fd, set) ) {
-        if (co_forward(&(l->p)) < 0) {
+        if (co_process_forward(&(l->p)) < 0) {
             l = co_process_list_free_element(l);
         }
     }
@@ -144,16 +141,49 @@ struct CoProcessList* co_process_list_forward(struct CoProcessList *l, fd_set* s
     return l;
 }
 
+struct CoProcessList *co_process_list_append(struct CoProcessList *l, struct CoProcessList *n) {
+    if (l) {
+        l->n = co_process_list_append(l->n, n);
+        return l;
+    }
+    return n;
+}
+
+struct CoProcessList* co_read_config(const char* filename) {
+    // tail:3:.:tail -f 1.txt 2.txt
+    FILE* f = fopen(filename, "r");
+    char *poss[3];
+    struct CoProcessList *l = NULL;
+    while (fgets(BUFFER, sizeof(BUFFER), f)) {
+        char *r = BUFFER;
+        int i = 0;
+        while (*r) {
+            if (':' == *r && i < 3) {
+                *r = '\0';
+                poss[i++] = r + 1;
+            }
+            ++r;
+        }
+        if (*(r - 1) == '\n') { *(r - 1) = '\0'; }
+        struct CoProcessList* n = co_process_list_new(BUFFER, poss[2], atoi(poss[0]));
+        l = co_process_list_append(
+            l, n
+        );
+        printf("%s : %s : %s : %s\n", BUFFER, *poss, poss[1], poss[2]);
+    }
+    if (ferror(f)) {
+        fprintf(stderr, "could not load config file: %s", filename);
+        exit(1);
+    }
+    return l;
+}
+
 int main() {
-    char *cmd1[] = {"tail", "-f", "1.txt", "2.txt", NULL};
-    char *cmd2[] = {"ls", NULL};
-    struct CoProcessList *l = co_process_list_new("tail", cmd1);
-    l->n = co_process_list_new("ls", cmd2);
+    struct CoProcessList *l = co_read_config("colfile");
 
     fd_set set;
     const int max = co_process_list_max_fd(l, -1);
     while (l) {
-        FD_ZERO(&set);
         co_process_list_init_fd_set(l, &set);
         if (-1 == select(max + 1, &set, NULL, NULL, NULL) && EINTR != errno) {
             perror("select");
