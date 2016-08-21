@@ -8,5 +8,8 @@ add_executable(drain
   src/config.c
   src/process_list.c
   src/process.c
+  src/server.c
+  src/client.c
+  src/actions.c
 )
 target_link_libraries(drain termcap)
