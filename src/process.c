@@ -13,17 +13,35 @@ char BUFFER[4096];
 
 void process_init(Process *p, const char *name, const char *cmd, int color) {
     p->color = color;
-    int name_len = strlen(name) + 1;
+    const int name_len = strlen(name) + 1;
     p->name = malloc(name_len);
     if (!p->name) {
         perror("malloc p->name");
         exit(1);
     }
     memcpy(p->name, name, name_len);
-    p->pid = process_open(cmd, &(p->fd));
-    p->f = fdopen(p->fd, "r");
+    const int cmd_len = strlen(cmd) + 1;
+    p->cmd = malloc(cmd_len);
+    if (!p->cmd) {
+        perror("malloc p->cmd");
+        exit(1);
+    }
+    memcpy(p->cmd, cmd, cmd_len);
+    p->pid = -1;
+    p->fd = -1;
+    p->f = NULL;
+}
+
+void process_start(Process *p) {
+    if (p->pid >= 0) {
+        fprintf(stderr, "process already started: %s\n", p->name);
+        return;
+    }
+    p->pid = process_open(p->cmd, &(p->fd));
     if (p->pid < 0) {
         perror("process_open");
+    } else {
+        p->f = fdopen(p->fd, "r");
     }
 }
 
@@ -40,7 +58,8 @@ int process_forward(const Process *p) {
     return 0;
 }
 
-void process_destroy(Process *p) {
+void process_stop(Process *p) {
+    if (!p->f) { return; }
     fclose(p->f);
     // TODO: interpret status:
     waitpid(p->pid, NULL, 0);

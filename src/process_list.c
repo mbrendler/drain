@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 struct ProcessList {
     ProcessList *n;
@@ -20,9 +21,26 @@ ProcessList* process_list_new(const char *name, const char *cmd, int color) {
     return e;
 }
 
+int string_list_contains(const char* str, int strsc, char **strs) {
+    for (--strsc; strsc >= 0; --strsc) {
+        if (!strcmp(strs[strsc], str)) {
+            return strsc;
+        }
+    }
+    return -1;
+}
+
+void process_list_process_start(ProcessList* l, int namesc, char **names) {
+    if (!l) { return; }
+    if (!namesc || 0 <= string_list_contains(l->p.name, namesc, names)) {
+        process_start(&(l->p));
+    }
+    process_list_process_start(l->n, namesc, names);
+}
+
 ProcessList* process_list_free_element(ProcessList* l) {
     ProcessList *result = l->n;
-    process_destroy(&(l->p));
+    process_stop(&(l->p));
     free(l);
     return result;
 }
@@ -38,18 +56,22 @@ int process_list_max_fd(ProcessList *l, int fd) {
     return l->n ? process_list_max_fd(l->n, fd) : fd;
 }
 
-void process_list_init_fd_set(ProcessList *l, fd_set* set) {
+int process_list_init_fd_set(ProcessList *l, fd_set* set) {
     FD_ZERO(set);
-    ProcessList *r = l;
-    while (r) {
-        FD_SET(r->p.fd, set);
-        r = r->n;
+    int result = 0;
+    while (l) {
+        if (l->p.fd >= 0) {
+            result++;
+            FD_SET(l->p.fd, set);
+        }
+        l = l->n;
     }
+    return result;
 }
 
 ProcessList* process_list_forward(ProcessList *l, fd_set* set) {
     if (!l) { return NULL; }
-    if (FD_ISSET(l->p.fd, set) ) {
+    if (l->p.fd >= 0 && FD_ISSET(l->p.fd, set)) {
         if (process_forward(&(l->p)) < 0) {
             l = process_list_free_element(l);
         }

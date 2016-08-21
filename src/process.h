@@ -9,12 +9,15 @@ struct Process {
     int fd;
     FILE* f;
     char *name;
+    char *cmd;
 };
 
 typedef struct Process Process;
 
 void process_init(Process *p, const char *name, const char *cmd, int color);
 
+void process_start(Process *p);
+
 int process_forward(const Process *p);
 
-void process_destroy(Process *p);
+void process_stop(Process *p);
