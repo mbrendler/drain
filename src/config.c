@@ -57,9 +57,16 @@ ProcessList* config_read(const char* filename) {
 static Config CFG = { 80, true, NULL, "drainfile" };
 const Config *CONFIG = &CFG;
 
-void init_config() {
+void config_init() {
     CFG.termtype = getenv("TERM");
-    if (tgetent(BUFFER, CFG.termtype) >= 0) {
+    if (tgetent(BUFFER, CFG.termtype) <= 0) {
+        CFG.termtype = NULL;
+    }
+    config_init_term_width();
+}
+
+void config_init_term_width() {
+    if (CFG.termtype) {
         CFG.term_width = tgetnum("co");
         if (CFG.term_width <= 0) {
             CFG.line_wrap = false;

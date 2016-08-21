@@ -14,4 +14,5 @@ typedef struct {
 
 extern const Config *CONFIG;
 
-void init_config();
+void config_init();
+void config_init_term_width();

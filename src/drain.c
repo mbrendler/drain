@@ -3,9 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <signal.h>
 
 int main(int argc, char **argv) {
-    init_config();
+    signal(SIGWINCH, config_init_term_width);
+    config_init();
     ProcessList *l = config_read(CONFIG->drainfile);
     if (!l) {
         fputs("No processes to start\n", stderr);
