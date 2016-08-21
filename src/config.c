@@ -1,14 +1,31 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <errno.h>
 
 char BUFFER[4096];
 
+enum ConfigLine {clName, clColor, clCmd};
+
+static bool config_parse_line(char* str, const char** cfg) {
+    int i = clColor;
+    cfg[clName] = str;
+    while (*str) {
+        if (':' == *str) {
+            *str = '\0';
+            cfg[i] = str + 1;
+            if (clCmd == i) { return true; }
+            ++i;
+        }
+        ++str;
+    }
+    return false;
+}
+
 ProcessList* config_read(const char* filename) {
     FILE* f = fopen(filename, "r");
-    const char *poss[2];
     if (!f) {
         perror("fopen");
         return NULL;
@@ -16,20 +33,15 @@ ProcessList* config_read(const char* filename) {
     ProcessList *l = NULL;
     while (fgets(BUFFER, sizeof(BUFFER), f)) {
         if ('#' == *BUFFER) { continue; } // line is comment
-        char *r = BUFFER;
-        int i = 0;
-        while (*r) {
-            if (':' == *r && i < 2) {
-                *r = '\0';
-                poss[i++] = r + 1;
-                if (i == 2) { break; }
-            }
-            ++r;
+        const char *cfg[3] = {NULL, NULL, NULL};
+        if (config_parse_line(BUFFER, cfg)) {
+            l = process_list_append(
+                l, process_list_new(cfg[clName], cfg[clCmd], atoi(cfg[clColor]))
+            );
+            printf("%s : %s : %s", cfg[clName], cfg[clColor], cfg[clCmd]);
+        } else {
+            fprintf(stderr, "parser error in: %s\n", BUFFER);
         }
-        l = process_list_append(
-            l, process_list_new(BUFFER, poss[1], atoi(poss[0]))
-        );
-        printf("%s : %s : %s", BUFFER, *poss, poss[1]);
     }
     if (ferror(f)) {
         fprintf(
