@@ -6,6 +6,10 @@
 
 int main() {
     ProcessList *l = config_read("drainfile");
+    if (!l) {
+        fputs("No processes to start\n", stderr);
+        return EXIT_FAILURE;
+    }
 
     fd_set set;
     const int max = process_list_max_fd(l, -1);
