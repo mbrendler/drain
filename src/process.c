@@ -45,19 +45,6 @@ void process_start(Process *p) {
     }
 }
 
-int process_forward(const Process *p) {
-    while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
-        fprintf(stdout, "\033[3%dm%s: \033[39;49m%s", p->color, p->name, BUFFER);
-    }
-    if (feof(p->f)) {
-        return -1;
-    } else if (ferror(p->f) && EAGAIN != errno) {
-        perror("read");
-        return -1;
-    }
-    return 0;
-}
-
 void process_stop(Process *p) {
     if (!p->f) { return; }
     fclose(p->f);
@@ -69,6 +56,19 @@ void process_stop(Process *p) {
     p->fd = -1;
     p->pid = -1;
     p->name = NULL;
+}
+
+int process_forward(const Process *p) {
+    while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
+        fprintf(stdout, "\033[3%dm%s: \033[39;49m%s", p->color, p->name, BUFFER);
+    }
+    if (feof(p->f)) {
+        return -1;
+    } else if (ferror(p->f) && EAGAIN != errno) {
+        perror("read");
+        return -1;
+    }
+    return 0;
 }
 
 // private --
