@@ -9,3 +9,4 @@ add_executable(drain
   src/process_list.c
   src/process.c
 )
+target_link_libraries(drain termcap)

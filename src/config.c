@@ -1,9 +1,9 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <errno.h>
+#include <termcap.h>
 
 char BUFFER[4096];
 
@@ -54,3 +54,15 @@ ProcessList* config_read(const char* filename) {
     return l;
 }
 
+static Config CFG = { 80, true, NULL, "drainfile" };
+const Config *CONFIG = &CFG;
+
+void init_config() {
+    CFG.termtype = getenv("TERM");
+    if (tgetent(BUFFER, CFG.termtype) >= 0) {
+        CFG.term_width = tgetnum("co");
+        if (CFG.term_width <= 0) {
+            CFG.line_wrap = false;
+        }
+    }
+}

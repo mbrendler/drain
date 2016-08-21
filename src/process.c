@@ -1,4 +1,5 @@
 #include "process.h"
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,8 +60,21 @@ void process_stop(Process *p) {
 }
 
 int process_forward(const Process *p) {
+    const bool line_wrap = CONFIG->line_wrap;
+    const int width = CONFIG->term_width - strlen(p->name) - 2;
     while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
-        fprintf(stdout, "\033[3%dm%s: \033[39;49m%s", p->color, p->name, BUFFER);
+        char const * const last_line = BUFFER - width + strlen(BUFFER);
+        char *a = BUFFER;
+        if (line_wrap) {
+          while (a < last_line) {
+              char tmp = *(a + width);
+              *(a + width) = '\0';
+              fprintf(stdout, "\033[3%dm%s| \033[39;49m%s\n", p->color, p->name, a);
+              a += width;
+              *a = tmp;
+          }
+        }
+        fprintf(stdout, "\033[3%dm%s: \033[39;49m%s", p->color, p->name, a);
     }
     if (feof(p->f)) {
         return -1;

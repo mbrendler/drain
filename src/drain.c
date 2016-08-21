@@ -5,7 +5,8 @@
 #include <errno.h>
 
 int main(int argc, char **argv) {
-    ProcessList *l = config_read("drainfile");
+    init_config();
+    ProcessList *l = config_read(CONFIG->drainfile);
     if (!l) {
         fputs("No processes to start\n", stderr);
         return EXIT_FAILURE;
