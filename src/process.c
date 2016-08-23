@@ -52,11 +52,17 @@ void process_stop(Process *p) {
     // TODO: interpret status:
     waitpid(p->pid, NULL, 0);
     printf("process stopped: %s\n", p->name);
-    free(p->name);
     p->f = NULL;
     p->fd = -1;
     p->pid = -1;
+}
+
+void process_free(Process *p) {
+    process_stop(p);
+    free(p->name);
     p->name = NULL;
+    free(p->cmd);
+    p->cmd = NULL;
 }
 
 int process_forward(const Process *p) {

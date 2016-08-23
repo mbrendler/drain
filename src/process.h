@@ -16,6 +16,8 @@ typedef struct Process Process;
 
 void process_init(Process *p, const char *name, const char *cmd, int color);
 
+void process_free(Process *p);
+
 void process_start(Process *p);
 
 int process_forward(const Process *p);

@@ -40,7 +40,7 @@ void process_list_process_start(ProcessList* l, int namesc, char **names) {
 
 ProcessList* process_list_free_element(ProcessList* l) {
     ProcessList *result = l->n;
-    process_stop(&(l->p));
+    process_free(&(l->p));
     free(l);
     return result;
 }
@@ -73,7 +73,7 @@ ProcessList* process_list_forward(ProcessList *l, fd_set* set) {
     if (!l) { return NULL; }
     if (l->p.fd >= 0 && FD_ISSET(l->p.fd, set)) {
         if (process_forward(&(l->p)) < 0) {
-            l = process_list_free_element(l);
+            process_stop(&l->p);
         }
     }
     if (l) { l->n = process_list_forward(l->n, set); }
