@@ -23,3 +23,5 @@ void process_start(Process *p);
 int process_forward(const Process *p);
 
 void process_stop(Process *p);
+
+void process_kill(Process *p);

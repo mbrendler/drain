@@ -48,10 +48,15 @@ void process_start(Process *p) {
     }
 }
 
+void process_kill(Process *p) {
+    if (p->pid > 0) {
+        kill(p->pid, SIGINT);
+    }
+}
+
 void process_stop(Process *p) {
     if (!p->f) { return; }
-    kill(p->pid, SIGINT); // TODO: or better use SIGKILL
-    process_forward(p); // is this a good idea?
+    process_kill(p);
     fclose(p->f);
     // TODO: interpret status:
     waitpid(p->pid, NULL, 0);

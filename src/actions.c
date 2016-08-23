@@ -57,7 +57,7 @@ int action_up(Message* in, Message* out, ProcessList* l) {
 int action_down(Message* in, Message* out, ProcessList* l) {
     char **names = NULL;
     const int count = build_string_array(in->content, in->size, &names);
-    process_list_process_stop(l, count, names);
+    process_list_process_kill(l, count, names);
     free(names);
     out->nr = in->nr;
     out->size = 0;
