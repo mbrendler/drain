@@ -121,17 +121,22 @@ int cmd_status(const char* name, int argc, char** argv) {
     return 0;
 }
 
+int serialize_string_array(char** array, int size, char* buffer) {
+    int buffer_size = 0;
+    for (int i = 0; i < size; ++i) {
+        int len = strlen(array[i]) + 1;
+        memcpy(buffer, array[i], len);
+        buffer += len;
+        buffer_size += len;
+    }
+    return buffer_size;
+}
+
 int cmd_up(const char* name, int argc, char** argv) {
     (void)name;
     Message out, in;
     out.nr = mnUp;
-    char *content = out.content;
-    for (int i = 0; i < argc; ++i) {
-        int len = strlen(argv[i]) + 1;
-        memcpy(content, argv[i], len);
-        content += len;
-        out.size += len;
-    }
+    out.size = serialize_string_array(argv, argc, out.content);
     if (-1 == client_do(&out, &in)) { return -1; }
     return 0;
 }
@@ -140,13 +145,7 @@ int cmd_down(const char* name, int argc, char** argv) {
     (void)name;
     Message out, in;
     out.nr = mnDown;
-    char *content = out.content;
-    for (int i = 0; i < argc; ++i) {
-        int len = strlen(argv[i]) + 1;
-        memcpy(content, argv[i], len);
-        content += len;
-        out.size += len;
-    }
+    out.size = serialize_string_array(argv, argc, out.content);
     if (-1 == client_do(&out, &in)) { return -1; }
     return 0;
 }
@@ -155,13 +154,7 @@ int cmd_restart(const char* name, int argc, char** argv) {
     (void)name;
     Message out, in;
     out.nr = mnRestart;
-    char *content = out.content;
-    for (int i = 0; i < argc; ++i) {
-        int len = strlen(argv[i]) + 1;
-        memcpy(content, argv[i], len);
-        content += len;
-        out.size += len;
-    }
+    out.size = serialize_string_array(argv, argc, out.content);
     if (-1 == client_do(&out, &in)) { return -1; }
     return 0;
 }
