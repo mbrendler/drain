@@ -38,6 +38,14 @@ void process_list_process_start(ProcessList* l, int namesc, char **names) {
     process_list_process_start(l->n, namesc, names);
 }
 
+void process_list_process_stop(ProcessList* l, int namesc, char **names) {
+    if (!l) { return; }
+    if (!namesc || 0 <= string_list_contains(l->p.name, namesc, names)) {
+        process_stop(&(l->p));
+    }
+    process_list_process_stop(l->n, namesc, names);
+}
+
 ProcessList* process_list_free_element(ProcessList* l) {
     ProcessList *result = l->n;
     process_free(&(l->p));

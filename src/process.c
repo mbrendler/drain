@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <signal.h>
 
 static void close_all_fds_from(int fd);
 static int process_open(const char *cmd, int *fd);
@@ -48,6 +49,8 @@ void process_start(Process *p) {
 
 void process_stop(Process *p) {
     if (!p->f) { return; }
+    kill(p->pid, SIGINT); // TODO: or better use SIGKILL
+    process_forward(p); // is this a good idea?
     fclose(p->f);
     // TODO: interpret status:
     waitpid(p->pid, NULL, 0);
@@ -66,6 +69,7 @@ void process_free(Process *p) {
 }
 
 int process_forward(const Process *p) {
+    if (!p->f) { return -1; }
     const bool line_wrap = CONFIG->line_wrap;
     const int width = CONFIG->term_width - strlen(p->name) - 2;
     while (fgets(BUFFER, sizeof(BUFFER), p->f)) {

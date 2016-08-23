@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 enum MessageNumber {
-    mnPing, mnStatus, mnUp
+    mnPing, mnStatus, mnUp, mnDown,
 };
 
 int action_ping(Message* in, Message* out, ProcessList* l) {
@@ -21,7 +21,7 @@ int action_status(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
-int action_up (Message* in, Message* out, ProcessList* l) {
+int action_up(Message* in, Message* out, ProcessList* l) {
     char *name = in->content;
     int count = 0;
     while (name < in->content + in->size) {
@@ -41,6 +41,26 @@ int action_up (Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
+int action_down(Message* in, Message* out, ProcessList* l) {
+    char *name = in->content;
+    int count = 0;
+    while (name < in->content + in->size) {
+        name += strlen(name) + 1;
+        count++;
+    }
+    char **names = calloc(count, sizeof(char*));
+    name = in->content;
+    for (int i = 0; i < count; ++i) {
+        names[i] = name;
+        name += strlen(name) + 1;
+    }
+    process_list_process_stop(l, count, names);
+    free(names);
+    out->nr = in->nr;
+    out->size = 0;
+    return 0;
+}
+
 typedef int(*ActionFunctionServer)(Message* in, Message* out, ProcessList* l);
 
 typedef struct {
@@ -52,6 +72,7 @@ const Action ACTIONS[] = {
     [mnPing]   = { "ping",   action_ping },
     [mnStatus] = { "status", action_status },
     [mnUp]     = { "up",     action_up },
+    [mnDown]   = { "down",   action_down },
 };
 
 // restart, start, stop, log
@@ -106,6 +127,21 @@ int cmd_up(const char* name, int argc, char** argv) {
     return 0;
 }
 
+int cmd_down(const char* name, int argc, char** argv) {
+    (void)name;
+    Message out, in;
+    out.nr = mnDown;
+    char *content = out.content;
+    for (int i = 0; i < argc; ++i) {
+        int len = strlen(argv[i]) + 1;
+        memcpy(content, argv[i], len);
+        content += len;
+        out.size += len;
+    }
+    if (-1 == client_do(&out, &in)) { return -1; }
+    return 0;
+}
+
 typedef int(*CommandFunction)(const char*, int, char**);
 
 typedef struct {
@@ -117,6 +153,7 @@ const Command COMMANDS[] = {
     { "ping",   cmd_ping },
     { "status", cmd_status },
     { "up",     cmd_up },
+    { "down",   cmd_down },
 };
 
 int perform_command(const char* name, int argc, char** argv) {
