@@ -99,8 +99,9 @@ ProcessList *process_list_append(ProcessList *l, ProcessList *n) {
 int process_list_status(ProcessList* l, char* out, int out_size) {
     int rest_size = out_size;
     while (l) {
-        int size_written = snprintf(out, rest_size, "(%s) %s: %s\n",
-            l->p.f ? "running" : "stopped", l->p.name, l->p.cmd
+        int size_written = snprintf(
+            out, rest_size, "%8s | %s | %5d | %s\n",
+            l->p.name, l->p.f ? "running" : "stopped", l->p.pid, l->p.cmd
         );
         out += size_written;
         rest_size -= size_written;

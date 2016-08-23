@@ -14,9 +14,15 @@ int action_ping(Message* in, Message* out, ProcessList* l) {
 #include "process_list.h"
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int action_status(Message* in, Message* out, ProcessList* l) {
-    out->size = process_list_status(l, out->content, sizeof(out->content)) + 1;
+    out->size = 1 + snprintf(
+        out->content, sizeof(out->content), "pid: %d\n", getpid()
+    );
+    out->size += process_list_status(
+        l, out->content + out->size - 1, sizeof(out->content) - out->size + 1
+    );
     out->nr = in->nr;
     return 0;
 }
