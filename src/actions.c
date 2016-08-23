@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 enum MessageNumber {
-    mnPing, mnStatus, mnUp, mnDown,
+    mnPing, mnStatus, mnUp, mnDown, mnRestart,
 };
 
 int action_ping(Message* in, Message* out, ProcessList* l) {
@@ -58,6 +58,17 @@ int action_down(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
+int action_restart(Message* in, Message* out, ProcessList* l) {
+    char **names = NULL;
+    const int count = build_string_array(in->content, in->size, &names);
+    process_list_process_stop(l, count, names);
+    process_list_process_start(l, count, names);
+    free(names);
+    out->nr = in->nr;
+    out->size = 0;
+    return 0;
+}
+
 typedef int(*ActionFunctionServer)(Message* in, Message* out, ProcessList* l);
 
 typedef struct {
@@ -66,10 +77,11 @@ typedef struct {
 } Action;
 
 const Action ACTIONS[] = {
-    [mnPing]   = { "ping",   action_ping },
-    [mnStatus] = { "status", action_status },
-    [mnUp]     = { "up",     action_up },
-    [mnDown]   = { "down",   action_down },
+    [mnPing]    = { "ping",    action_ping },
+    [mnStatus]  = { "status",  action_status },
+    [mnUp]      = { "up",      action_up },
+    [mnDown]    = { "down",    action_down },
+    [mnRestart] = { "restart", action_restart },
 };
 
 // restart, start, stop, log
@@ -139,6 +151,21 @@ int cmd_down(const char* name, int argc, char** argv) {
     return 0;
 }
 
+int cmd_restart(const char* name, int argc, char** argv) {
+    (void)name;
+    Message out, in;
+    out.nr = mnRestart;
+    char *content = out.content;
+    for (int i = 0; i < argc; ++i) {
+        int len = strlen(argv[i]) + 1;
+        memcpy(content, argv[i], len);
+        content += len;
+        out.size += len;
+    }
+    if (-1 == client_do(&out, &in)) { return -1; }
+    return 0;
+}
+
 typedef int(*CommandFunction)(const char*, int, char**);
 
 typedef struct {
@@ -147,10 +174,11 @@ typedef struct {
 } Command;
 
 const Command COMMANDS[] = {
-    { "ping",   cmd_ping },
-    { "status", cmd_status },
-    { "up",     cmd_up },
-    { "down",   cmd_down },
+    { "ping",    cmd_ping },
+    { "status",  cmd_status },
+    { "up",      cmd_up },
+    { "down",    cmd_down },
+    { "restart", cmd_restart },
 };
 
 int perform_command(const char* name, int argc, char** argv) {
