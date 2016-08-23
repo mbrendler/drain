@@ -87,3 +87,14 @@ ProcessList *process_list_append(ProcessList *l, ProcessList *n) {
     }
     return n;
 }
+
+void process_list_status(ProcessList* l, char* out, int out_size) {
+    while (l) {
+        int size_written = snprintf(out, out_size, "(%s) %s: %s\n",
+            l->p.f ? "running" : "stopped", l->p.name, l->p.cmd
+        );
+        out += size_written;
+        out_size -= size_written;
+        l = l->n;
+    }
+}
