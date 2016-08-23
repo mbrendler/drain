@@ -44,6 +44,7 @@ void process_start(Process *p) {
         perror("process_open");
     } else {
         p->f = fdopen(p->fd, "r");
+        printf("process started: %s\n", p->name);
     }
 }
 
