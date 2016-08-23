@@ -20,4 +20,4 @@ ProcessList* process_list_forward(ProcessList *l, fd_set* set);
 
 ProcessList *process_list_append(ProcessList *l, ProcessList *n);
 
-void process_list_status(ProcessList* l, char* out, int out_size);
+int process_list_status(ProcessList* l, char* out, int out_size);
