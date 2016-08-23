@@ -1,3 +1,7 @@
 #pragma once
 
-int perform_action(unsigned action_nr, int size, char* in, int *out_size, char* out);
+#include "types.h"
+
+int perform_action(Message* in, Message* out, ProcessList* l);
+
+int perform_command(const char* name, int argc, char** argv);

@@ -1,19 +1,19 @@
 #include "config.h"
 #include "process_list.h"
 #include "server.h"
-#include "client.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
 
+#include "actions.h"
+
 int main(int argc, char **argv) {
+    // TODO: remove client argument
     if (argc > 1 && !strcmp(argv[1], "client")) {
-        Client c;
-        client_init(&c);
-        client_start(&c);
-        return EXIT_SUCCESS;
+        const char *cmd = argc > 2 ? argv[2] : "status";
+        return perform_command(cmd, argc > 2 ? argc - 3 : 0, argv + 3);
     }
 
     Server s;
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
             perror("select");
             return EXIT_FAILURE;
         }
-        server_incomming(&s, &set);
+        server_incomming(&s, &set, l);
         l = process_list_forward(l, &set);
     }
 

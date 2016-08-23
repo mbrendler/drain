@@ -1,13 +1,9 @@
 #include "server.h"
-#include <string.h>
+#include "actions.h"
 #include <stdio.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <fcntl.h>
+#include <string.h>
 #include <unistd.h>
-
-char BUFFER[4096];
-char OUTBUFFER[4096];
+#include <fcntl.h>
 
 void server_init(Server *s) {
     s->fd = -1;
@@ -48,9 +44,7 @@ void server_stop(Server *s) {
     s->fd = 0;
 }
 
-#include "actions.h"
-
-int server_incomming(Server *s, fd_set *set) {
+int server_incomming(Server *s, fd_set *set, ProcessList *l) {
     if (s->fd < 0 || !FD_ISSET(s->fd, set)) { return 0; }
     struct sockaddr_in addr;
     socklen_t sin_size;
@@ -67,19 +61,41 @@ int server_incomming(Server *s, fd_set *set) {
         return -1;
     }
 
-    ssize_t size = recv(fd, BUFFER, sizeof(BUFFER), 0);
-    printf("size: %d - %d\n", (int)size, fcntl(fd, F_GETFL, 0) & O_NONBLOCK);
-    write(STDOUT_FILENO, BUFFER + 1, size - 1);
-    unsigned action_nr = *BUFFER;
-    int out_size;
-    if (-1 == perform_action(action_nr, size - 1, BUFFER + 1, &out_size, OUTBUFFER)) {
+    Message in;
+    if (-1 == recv(fd, &in.nr, sizeof(in.nr), 0)) {
+        close(fd);
+        perror("recv nr");
+        return -1;
+    }
+    if (-1 == recv(fd, &in.size, sizeof(in.size), 0)) {
+        close(fd);
+        perror("recv size");
+        return -1;
+    }
+    if (-1 == recv(fd, &in.content, in.size, 0)) {
+        close(fd);
+        perror("recv content");
+        return -1;
+    }
+    Message out;
+    if (-1 == perform_action(&in, &out, l)) {
         close(fd);
         fprintf(stderr, "perform_action\n");
         return -1;
     }
-    if (-1 == send(fd, OUTBUFFER, out_size, 0)) {
+    if (-1 == send(fd, &out.nr, sizeof(out.nr), 0)) {
         close(fd);
-        perror("send");
+        perror("send nr");
+        return -1;
+    }
+    if (-1 == send(fd, &out.size, sizeof(out.size), 0)) {
+        close(fd);
+        perror("send size");
+        return -1;
+    }
+    if (-1 == send(fd, &out.content, out.size, 0)) {
+        close(fd);
+        perror("send content");
         return -1;
     }
 

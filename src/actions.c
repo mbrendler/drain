@@ -1,28 +1,95 @@
 #include "actions.h"
 #include <stdio.h>
 
-#include <string.h>
-int action_ping(int in_len, char* in, int* out_len, char* out) {
-    memcpy(out, in, in_len);
-    *out_len = in_len;
+enum MessageNumber {
+    mnPing, mnStatus,
+};
+
+int action_ping(Message* in, Message* out, ProcessList* l) {
+    (void)l;
+    *out = *in;
     return 0;
 }
 
-typedef int(*ActionFunction)(int, char*, int*, char*);
+#include "process_list.h"
+#include <string.h>
+#include <stdlib.h>
+
+int action_status(Message* in, Message* out, ProcessList* l) {
+    out->size = process_list_status(l, out->content, sizeof(out->content)) + 1;
+    out->nr = in->nr;
+    return 0;
+}
+
+typedef int(*ActionFunctionServer)(Message* in, Message* out, ProcessList* l);
 
 typedef struct {
     const char* name;
-    ActionFunction fn;
+    ActionFunctionServer fn;
 } Action;
 
 const Action ACTIONS[] = {
-    { "ping", action_ping }
+    [mnPing]={ "ping", action_ping },
+    [mnStatus]={ "status", action_status },
 };
 
-int perform_action(unsigned nr, int size, char* in, int *out_size, char* out) {
-    if (nr < sizeof(ACTIONS) / sizeof(*ACTIONS)) {
-        printf("call action: %s\n", ACTIONS[nr].name);
-        return ACTIONS[nr].fn(size, in, out_size, out);
+// restart, start, stop, log
+
+int perform_action(Message* in, Message* out, ProcessList* l) {
+    if (in->nr < (int16_t)(sizeof(ACTIONS) / sizeof(*ACTIONS))) {
+        printf("call action: %s (%d)\n", ACTIONS[in->nr].name, in->nr);
+        return ACTIONS[in->nr].fn(in, out, l);
     }
+    return -1;
+}
+
+// TODO: split ----------------------------------------------------------------
+
+#include "client.h"
+
+int cmd_ping(const char* name, int argc, char** argv) {
+    (void)name;
+    Message out, in;
+    char *content = argc > 0 ? *argv : "hallo";
+    memcpy(out.content, content, strlen(content) + 1);
+    out.size = strlen(content) + 1;
+    out.nr = mnPing;
+    if (-1 == client_do(&out, &in)) { return -1; }
+    puts(in.content);
+    return 0;
+}
+
+int cmd_status(const char* name, int argc, char** argv) {
+    (void)name;
+    (void)argc;
+    (void)argv;
+    Message out = { mnStatus, 0, "" };
+    Message in;
+    if (-1 == client_do(&out, &in)) { return -1; }
+    puts(in.content);
+    return 0;
+}
+
+typedef int(*CommandFunction)(const char*, int, char**);
+
+typedef struct {
+    char const * const name;
+    const CommandFunction fn;
+} Command;
+
+const Command COMMANDS[] = {
+    { "ping",   cmd_ping },
+    { "status", cmd_status },
+};
+
+int perform_command(const char* name, int argc, char** argv) {
+    const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
+    while (COMMANDS != cmd) {
+        --cmd;
+        if (!strcmp(name, cmd->name)) {
+            return cmd->fn(name, argc, argv);
+        }
+    }
+    printf("unknown command '%s'\n", name);
     return -1;
 }

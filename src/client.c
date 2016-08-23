@@ -1,12 +1,22 @@
 #include "client.h"
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
 #include <stdio.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 #include <string.h>
 #include <unistd.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
+struct Client {
+    int fd;
+};
+
+int client_do(const Message* out, Message* in) {
+    Client c;
+    client_init(&c);
+    if (-1 == client_start(&c)) { return -1; }
+    if (-1 == client_send(&c, out, in)) { return -1; }
+    client_stop(&c);
+    return 0;
+}
 
 void client_init(Client *c) {
     c->fd = -1;
@@ -23,7 +33,7 @@ int client_start(Client *c) {
     inet_pton(AF_INET, "127.0.0.1", &ipv4addr);
     struct hostent *server = gethostbyaddr(&ipv4addr, sizeof(ipv4addr), AF_INET);
     if (server == NULL) {
-        close(c->fd);
+        client_stop(c);
         perror("hostent");
         return -1;
     }
@@ -39,27 +49,52 @@ int client_start(Client *c) {
     serveraddr.sin_port = htons(9999);
 
     if (-1 == connect(c->fd, (struct sockaddr*)&serveraddr, sizeof(serveraddr))) {
-        close(c->fd);
+        client_stop(c);
         perror("ERROR connecting");
         return -1;
     }
 
-    const char *msg = "\0hallo\n";
-    int n = write(c->fd, msg, strlen(msg + 1) + 2);
-    if (n < 0) {
-        close(c->fd);
-        perror("write");
+    return 0;
+}
+
+int client_send(Client *c, const Message* out, Message* in) {
+    if (-1 == write(c->fd, &out->nr, sizeof(out->nr))) {
+        client_stop(c);
+        perror("write nr");
+        return -1;
+    }
+    if (-1 == write(c->fd, &out->size, sizeof(out->size))) {
+        client_stop(c);
+        perror("write size");
+        return -1;
+    }
+    if (-1 == write(c->fd, &out->content, out->size)) {
+        client_stop(c);
+        perror("write content");
         return -1;
     }
 
-    char BUFFER[4096];
-    n = read(c->fd, BUFFER, sizeof(BUFFER));
-    if (n < 0) {
-        close(c->fd);
-        perror("read");
+    if (-1 == read(c->fd, &in->nr, sizeof(in->nr))) {
+        client_stop(c);
+        perror("read nr");
         return -1;
     }
-    printf("%s", BUFFER);
-    close(c->fd);
+    if (-1 == read(c->fd, &in->size, sizeof(in->size))) {
+        client_stop(c);
+        perror("read size");
+        return -1;
+    }
+    if (-1 == read(c->fd, &in->content, in->size)) {
+        client_stop(c);
+        perror("read content");
+        return -1;
+    }
     return 0;
+}
+
+void client_stop(Client *c) {
+    if (-1 == close(c->fd)) {
+        perror("client close");
+    }
+    c->fd = -1;
 }
