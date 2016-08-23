@@ -22,6 +22,11 @@ int server_start(Server *s) {
     s->addr.sin_addr.s_addr = INADDR_ANY;
     bzero(&(s->addr.sin_zero), 8);
 
+    if (-1 == setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int))) {
+        perror("setsockopt");
+        return -1;
+    }
+
     if (-1 == bind(s->fd, (struct sockaddr *)&s->addr, sizeof(struct sockaddr))) {
         perror("bind");
         return -1;
