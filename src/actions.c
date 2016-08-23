@@ -21,19 +21,26 @@ int action_status(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
-int action_up(Message* in, Message* out, ProcessList* l) {
-    char *name = in->content;
+int build_string_array(char* strs, int strs_size, char*** array) {
+    // !!! FREE MEMORY 'array' !!!
+    char *str = strs;
     int count = 0;
-    while (name < in->content + in->size) {
-        name += strlen(name) + 1;
+    while (str < strs + strs_size) {
+        str += strlen(str) + 1;
         count++;
     }
-    char **names = calloc(count, sizeof(char*));
-    name = in->content;
+    *array = calloc(count, sizeof(char*));
+    str = strs;
     for (int i = 0; i < count; ++i) {
-        names[i] = name;
-        name += strlen(name) + 1;
+        (*array)[i] = str;
+        str += strlen(str) + 1;
     }
+    return count;
+}
+
+int action_up(Message* in, Message* out, ProcessList* l) {
+    char **names = NULL;
+    const int count = build_string_array(in->content, in->size, &names);
     process_list_process_start(l, count, names);
     free(names);
     out->nr = in->nr;
@@ -42,18 +49,8 @@ int action_up(Message* in, Message* out, ProcessList* l) {
 }
 
 int action_down(Message* in, Message* out, ProcessList* l) {
-    char *name = in->content;
-    int count = 0;
-    while (name < in->content + in->size) {
-        name += strlen(name) + 1;
-        count++;
-    }
-    char **names = calloc(count, sizeof(char*));
-    name = in->content;
-    for (int i = 0; i < count; ++i) {
-        names[i] = name;
-        name += strlen(name) + 1;
-    }
+    char **names = NULL;
+    const int count = build_string_array(in->content, in->size, &names);
     process_list_process_stop(l, count, names);
     free(names);
     out->nr = in->nr;
