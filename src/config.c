@@ -16,7 +16,11 @@ static bool config_parse_line(char* str, const char** cfg) {
         if (':' == *str) {
             *str = '\0';
             cfg[i] = str + 1;
-            if (clCmd == i) { return true; }
+            if (clCmd == i) {
+                const int cmd_len = strlen(str + 1);
+                if (str[cmd_len] == '\n') { str[cmd_len] = 0; }
+                return true;
+            }
             ++i;
         }
         ++str;
@@ -38,7 +42,7 @@ ProcessList* config_read(const char* filename) {
             l = process_list_append(
                 l, process_list_new(cfg[clName], cfg[clCmd], atoi(cfg[clColor]))
             );
-            printf("%s : %s : %s", cfg[clName], cfg[clColor], cfg[clCmd]);
+            printf("%s : %s : %s\n", cfg[clName], cfg[clColor], cfg[clCmd]);
         } else {
             fprintf(stderr, "parser error in: %s\n", BUFFER);
         }
