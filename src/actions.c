@@ -80,10 +80,18 @@ int action_add(Message* in, Message* out, ProcessList* l) {
     const int count = build_string_array(in->content, in->size, &args);
     if (count != 3) { return -1; }
     printf("%s : %s : %s\n", args[0], args[1], args[2]);
-    process_list_append(l, process_list_new(args[0], args[2], atoi(args[1])));
+    ProcessList* new = process_list_new(args[0], args[2], atoi(args[1]));
+    process_list_append(l, &new);
+    if (!new) {
+        out->nr = -1;
+        out->size = snprintf(out->content, sizeof(out->content),
+            "Could not create process '%s'.", args[0]
+        ) + 1;
+    } else {
+        out->nr = in->nr;
+        out->size = 0;
+    }
     free(args);
-    out->nr = in->nr;
-    out->size = 0;
     return 0;
 }
 
@@ -178,18 +186,57 @@ int cmd_restart(const char* name, int argc, char** argv) {
     return 0;
 }
 
+#include <stdbool.h>
+
+bool is_error(const Message* msg) {
+    return msg->nr < 0;
+}
+
+void handle_error(const Message* msg) {
+    if (-1 == msg->nr) {
+        fprintf(stderr, "%s\n", msg->content);
+    } else {
+        fprintf(stderr, "Unknown error number: %d\n", msg->nr);
+    }
+}
+
+void replace_char(char *str, char *end, char from, char to) {
+    while (str < end) {
+        if (*str == from) {
+            *str = to;
+        }
+        str++;
+    }
+}
+
 int cmd_add(const char* name, int argc, char** argv) {
     (void)name;
+    bool start = strcmp("-s", argv[0]) == 0;
+    if (start) {
+        argc--;
+        argv++;
+    }
     if (argc < 3) { return -1; }
     Message out, in;
     out.nr = mnAdd;
     out.size = serialize_string_array(argv, argc, out.content);
-    char *x = out.content + strlen(argv[0]) + 1 + strlen(argv[1]) + 1;
-    while (x < out.content + out.size - 1) {
-        if (*x == 0) { *x = ' '; }
-        x++;
-    }
+    replace_char(
+        out.content + strlen(argv[0]) + 1 + strlen(argv[1]) + 1,
+        out.content + out.size - 1,
+        0, ' '
+    );
     if (-1 == client_do(&out, &in)) { return -1; }
+    if (is_error(&in)) {
+        handle_error(&in);
+        return -1;
+    }
+    if (start) {
+        const int len = strlen(argv[0]) + 1;
+        memcpy(out.content, argv[0], len);
+        out.size = len;
+        out.nr = mnUp;
+        if (-1 == client_do(&out, &in)) { return -1; }
+    }
     return 0;
 }
 

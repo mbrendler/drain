@@ -39,9 +39,11 @@ ProcessList* config_read(const char* filename) {
         if ('#' == *BUFFER) { continue; } // line is comment
         const char *cfg[3] = {NULL, NULL, NULL};
         if (config_parse_line(BUFFER, cfg)) {
-            l = process_list_append(
-                l, process_list_new(cfg[clName], cfg[clCmd], atoi(cfg[clColor]))
+            ProcessList *new = process_list_new(
+                cfg[clName], cfg[clCmd], atoi(cfg[clColor])
             );
+            if (!new) { fprintf(stderr, "Ignore %s\n", cfg[clName]); }
+            l = process_list_append(l, &new);
             printf("%s : %s : %s\n", cfg[clName], cfg[clColor], cfg[clCmd]);
         } else {
             fprintf(stderr, "parser error in: %s\n", BUFFER);

@@ -96,12 +96,18 @@ ProcessList* process_list_forward(ProcessList *l, fd_set* set) {
     return l;
 }
 
-ProcessList *process_list_append(ProcessList *l, ProcessList *n) {
+ProcessList *process_list_append(ProcessList *l, ProcessList **n) {
     if (l) {
+        if (0 == strcmp(l->p.name, (*n)->p.name)) {
+            free(*n);
+            *n = NULL;
+            fprintf(stderr, "Process '%s' does already exist.\n", l->p.name);
+            return l;
+        }
         l->n = process_list_append(l->n, n);
         return l;
     }
-    return n;
+    return *n;
 }
 
 int process_list_status(ProcessList* l, char* out, int out_size) {

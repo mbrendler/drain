@@ -22,6 +22,6 @@ int process_list_init_fd_set(ProcessList *l, fd_set* set);
 
 ProcessList* process_list_forward(ProcessList *l, fd_set* set);
 
-ProcessList *process_list_append(ProcessList *l, ProcessList *n);
+ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 
 int process_list_status(ProcessList* l, char* out, int out_size);
