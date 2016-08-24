@@ -92,11 +92,11 @@ int process_forward(const Process *p) {
         } else {
             print_line(p->name, BUFFER, ':', p->color, width);
             len -= width;
-            char *a = BUFFER;
+            char *a = BUFFER + width;
             while (len > width) {
-                a += width;
                 print_line(p->name, a, '^', p->color, width);
                 len -= width;
+                a += width;
             }
             if (len > 0) {
                 print_line(p->name, a, '^', p->color, len);
