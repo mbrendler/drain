@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 enum MessageNumber {
-    mnPing, mnStatus, mnUp, mnDown, mnRestart,
+    mnPing, mnStatus, mnUp, mnDown, mnRestart, mnAdd,
 };
 
 int action_ping(Message* in, Message* out, ProcessList* l) {
@@ -75,6 +75,18 @@ int action_restart(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
+int action_add(Message* in, Message* out, ProcessList* l) {
+    char **args;
+    const int count = build_string_array(in->content, in->size, &args);
+    if (count != 3) { return -1; }
+    printf("%s : %s : %s\n", args[0], args[1], args[2]);
+    process_list_append(l, process_list_new(args[0], args[2], atoi(args[1])));
+    free(args);
+    out->nr = in->nr;
+    out->size = 0;
+    return 0;
+}
+
 typedef int(*ActionFunctionServer)(Message* in, Message* out, ProcessList* l);
 
 typedef struct {
@@ -88,6 +100,7 @@ const Action ACTIONS[] = {
     [mnUp]      = { "up",      action_up },
     [mnDown]    = { "down",    action_down },
     [mnRestart] = { "restart", action_restart },
+    [mnAdd]     = { "add",     action_add },
 };
 
 // restart, start, stop, log
@@ -165,6 +178,21 @@ int cmd_restart(const char* name, int argc, char** argv) {
     return 0;
 }
 
+int cmd_add(const char* name, int argc, char** argv) {
+    (void)name;
+    if (argc < 3) { return -1; }
+    Message out, in;
+    out.nr = mnAdd;
+    out.size = serialize_string_array(argv, argc, out.content);
+    char *x = out.content + strlen(argv[0]) + 1 + strlen(argv[1]) + 1;
+    while (x < out.content + out.size - 1) {
+        if (*x == 0) { *x = ' '; }
+        x++;
+    }
+    if (-1 == client_do(&out, &in)) { return -1; }
+    return 0;
+}
+
 typedef int(*CommandFunction)(const char*, int, char**);
 
 typedef struct {
@@ -178,6 +206,7 @@ const Command COMMANDS[] = {
     { "up",      cmd_up },
     { "down",    cmd_down },
     { "restart", cmd_restart },
+    { "add",     cmd_add },
 };
 
 int perform_command(const char* name, int argc, char** argv) {
