@@ -86,13 +86,13 @@ int process_forward(const Process *p) {
     const int width = CONFIG->term_width - strlen(p->name) - 2;
     while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
         int len = strlen(BUFFER);
-        if ('\n' == BUFFER[len - 1]) { BUFFER[len - 1] = 0; len--; }
+        if ('\n' == BUFFER[len - 1]) { len--; }
         if (!line_wrap || len <= width) {
             print_line(p->name, BUFFER, ':', p->color, len);
         } else {
             print_line(p->name, BUFFER, ':', p->color, width);
             len -= width;
-            char *a = BUFFER + width;
+            const char *a = BUFFER + width;
             while (len > width) {
                 print_line(p->name, a, '^', p->color, width);
                 len -= width;
