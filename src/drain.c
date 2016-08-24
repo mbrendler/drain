@@ -35,7 +35,8 @@ int main(int argc, char **argv) {
         FD_SET(s.fd, &set);
         int max = process_list_max_fd(l, -1);
         max = max > s.fd ? max : s.fd;
-        if (-1 == select(max + 1, &set, NULL, NULL, NULL) && EINTR != errno) {
+        if (-1 == select(max + 1, &set, NULL, NULL, NULL)) {
+            if (EINTR == errno) { continue; }
             perror("select");
             return EXIT_FAILURE;
         }
