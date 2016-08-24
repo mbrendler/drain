@@ -63,14 +63,12 @@ const Config *CONFIG = &CFG;
 
 void config_init() {
     CFG.termtype = getenv("TERM");
-    if (tgetent(BUFFER, CFG.termtype) <= 0) {
-        CFG.termtype = NULL;
-    }
     config_init_term_width();
 }
 
 void config_init_term_width() {
     if (CFG.termtype) {
+        tgetent(BUFFER, CFG.termtype);
         CFG.term_width = tgetnum("co");
         if (CFG.term_width <= 0) {
             CFG.line_wrap = false;
