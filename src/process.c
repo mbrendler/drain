@@ -74,23 +74,34 @@ void process_free(Process *p) {
     p->cmd = NULL;
 }
 
+void print_line(const char *name, const char *content, char sep, int color, int width) {
+    fprintf(stdout, "\033[3%dm%s%c \033[39;49m", color, name, sep);
+    fwrite(content, sizeof(*content), width, stdout);
+    fwrite("\n", sizeof(char), 1, stdout);
+}
+
 int process_forward(const Process *p) {
     if (!p->f) { return -1; }
     const bool line_wrap = CONFIG->line_wrap;
     const int width = CONFIG->term_width - strlen(p->name) - 2;
     while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
-        char const * const last_line = BUFFER - width + strlen(BUFFER);
-        char *a = BUFFER;
-        if (line_wrap) {
-          while (a < last_line) {
-              char tmp = *(a + width);
-              *(a + width) = '\0';
-              fprintf(stdout, "\033[3%dm%s| \033[39;49m%s\n", p->color, p->name, a);
-              a += width;
-              *a = tmp;
-          }
+        int len = strlen(BUFFER);
+        if ('\n' == BUFFER[len - 1]) { BUFFER[len - 1] = 0; len--; }
+        if (!line_wrap || len <= width) {
+            print_line(p->name, BUFFER, ':', p->color, len);
+        } else {
+            print_line(p->name, BUFFER, ':', p->color, width);
+            len -= width;
+            char *a = BUFFER;
+            while (len > width) {
+                a += width;
+                print_line(p->name, a, '^', p->color, width);
+                len -= width;
+            }
+            if (len > 0) {
+                print_line(p->name, a, '^', p->color, len);
+            }
         }
-        fprintf(stdout, "\033[3%dm%s: \033[39;49m%s", p->color, p->name, a);
     }
     if (feof(p->f)) {
         return -1;
