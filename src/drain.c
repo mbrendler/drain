@@ -9,6 +9,12 @@
 
 #include "actions.h"
 
+int shutdown_drain = 0;
+
+void stop() {
+    shutdown_drain = 1;
+}
+
 int main(int argc, char **argv) {
     // TODO: remove client argument
     if (argc > 1 && !strcmp(argv[1], "client")) {
@@ -20,6 +26,7 @@ int main(int argc, char **argv) {
     server_init(&s);
     server_start(&s);
 
+    signal(SIGINT, stop);
     signal(SIGWINCH, config_init_term_width);
     config_init();
     ProcessList *l = config_read(CONFIG->drainfile);
@@ -31,7 +38,7 @@ int main(int argc, char **argv) {
     process_list_process_start(l, argc - 1, argv + 1);
 
     fd_set set;
-    while (process_list_init_fd_set(l, &set)) {
+    while (!shutdown_drain && process_list_init_fd_set(l, &set)) {
         FD_SET(s.fd, &set);
         int max = process_list_max_fd(l, -1);
         max = max > s.fd ? max : s.fd;
