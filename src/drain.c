@@ -14,7 +14,8 @@ void stop() {
 }
 
 int main(int argc, char **argv) {
-    // TODO: remove client argument
+    config_init();
+
     if (argc > 1 && !strcmp(argv[1], "client")) {
         const char *cmd = argc > 2 ? argv[2] : "status";
         return perform_command(cmd, argc > 2 ? argc - 3 : 0, argv + 3);
@@ -27,7 +28,6 @@ int main(int argc, char **argv) {
 
     signal(SIGINT, stop);
     signal(SIGWINCH, config_init_term_width);
-    config_init();
     ProcessList *l = config_read(CONFIG->drainfile);
     if (!l) {
         fputs("No processes to start\n", stderr);
