@@ -3,7 +3,6 @@
 #include "server.h"
 #include "commands.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
@@ -21,6 +20,7 @@ int main(int argc, char **argv) {
         return perform_command(cmd, argc > 2 ? argc - 3 : 0, argv + 3);
     }
 
+    int result = 0;
     Server s;
     server_init(&s);
     server_start(&s);
@@ -31,7 +31,8 @@ int main(int argc, char **argv) {
     ProcessList *l = config_read(CONFIG->drainfile);
     if (!l) {
         fputs("No processes to start\n", stderr);
-        return EXIT_FAILURE;
+        result = -1;
+        goto bailout;
     }
 
     process_list_process_start(l, argc - 1, argv + 1);
@@ -44,14 +45,16 @@ int main(int argc, char **argv) {
         if (-1 == select(max + 1, &set, NULL, NULL, NULL)) {
             if (EINTR == errno) { continue; }
             perror("select");
-            return EXIT_FAILURE;
+            result = -1;
+            goto bailout;
         }
         server_incomming(&s, &set, l);
         l = process_list_forward(l, &set);
     }
 
+bailout:
     server_stop(&s);
     process_list_free(l);
 
-    return EXIT_SUCCESS;
+    return result;
 }
