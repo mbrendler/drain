@@ -108,16 +108,25 @@ int perform_action(Message* in, Message* out, ProcessList* l) {
 // TODO: split ----------------------------------------------------------------
 
 #include "client.h"
+#include <sys/time.h>
 
 int cmd_ping(const char* name, int argc, char** argv) {
     (void)name;
-    Message out, in;
+    Message pkg;
     char *content = argc > 0 ? *argv : "hallo";
-    memcpy(out.content, content, strlen(content) + 1);
-    out.size = strlen(content) + 1;
-    out.nr = mnPing;
-    if (-1 == client_do(&out, &in)) { return -1; }
-    puts(in.content);
+    memcpy(pkg.content, content, strlen(content) + 1);
+    pkg.size = strlen(content) + 1;
+    pkg.nr = mnPing;
+
+    struct timeval tv1, tv2;
+    gettimeofday(&tv1, NULL);
+    if (-1 == client_do(&pkg, &pkg)) { return -1; }
+    gettimeofday(&tv2, NULL);
+    double time = (
+        (double)(tv2.tv_usec - tv1.tv_usec) / 1000 +
+        (double) (tv2.tv_sec - tv1.tv_sec) * 1000
+    );
+    printf("%d bytes time=%.3f ms (%s)\n", pkg.size, time, pkg.content);
     return 0;
 }
 
