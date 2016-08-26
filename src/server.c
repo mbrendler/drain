@@ -7,20 +7,26 @@
 
 void server_init(Server *s) {
     s->fd = -1;
-    s->port = 9999;
+    memset(&s->addr, 0, sizeof(s->addr));
+    /* s->port = 9999; */
 }
 
+#include <netinet/in.h>
 int server_start(Server *s) {
-    s->fd = socket(AF_INET, SOCK_STREAM, 0);
+    /* s->fd = socket(AF_INET, SOCK_STREAM, 0); */
+    s->fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (-1 == s->fd) {
         perror("socket");
         return -1;
     }
 
-    s->addr.sin_family = AF_INET;
-    s->addr.sin_port = htons(s->port);
-    s->addr.sin_addr.s_addr = INADDR_ANY;
-    bzero(&(s->addr.sin_zero), 8);
+    s->addr.sun_family = AF_UNIX;
+    strcpy(s->addr.sun_path, "/tmp/drain");
+    /* unlink(s->addr.sun_path); */
+    /* s->addr.sin_family = AF_INET; */
+    /* s->addr.sin_port = htons(s->port); */
+    /* s->addr.sin_addr.s_addr = INADDR_ANY; */
+    /* bzero(&(s->addr.sin_zero), 8); */
 
     if (-1 == setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int))) {
         perror("setsockopt");
@@ -28,6 +34,7 @@ int server_start(Server *s) {
     }
 
     if (-1 == bind(s->fd, (struct sockaddr *)&s->addr, sizeof(struct sockaddr))) {
+        *s->addr.sun_path = '\0';
         perror("bind");
         return -1;
     }
@@ -47,6 +54,7 @@ int server_start(Server *s) {
 void server_stop(Server *s) {
     close(s->fd);
     s->fd = 0;
+    unlink(s->addr.sun_path);
 }
 
 int server_incomming(Server *s, fd_set *set, ProcessList *l) {

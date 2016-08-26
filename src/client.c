@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/un.h>
 
 struct Client {
     int fd;
@@ -23,34 +24,38 @@ void client_init(Client *c) {
 }
 
 int client_start(Client *c) {
-    c->fd = socket(AF_INET, SOCK_STREAM, 0);
+    /* c->fd = socket(AF_INET, SOCK_STREAM, 0); */
+    c->fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (-1 == c->fd) {
         perror("socket");
         return -1;
     }
 
-    struct in_addr ipv4addr;
-    inet_pton(AF_INET, "127.0.0.1", &ipv4addr);
-    struct hostent *server = gethostbyaddr(&ipv4addr, sizeof(ipv4addr), AF_INET);
-    if (server == NULL) {
-        client_stop(c);
-        perror("hostent");
-        return -1;
-    }
+    /* struct in_addr ipv4addr; */
+    /* inet_pton(AF_INET, "127.0.0.1", &ipv4addr); */
+    /* struct hostent *server = gethostbyaddr(&ipv4addr, sizeof(ipv4addr), AF_INET); */
+    /* if (server == NULL) { */
+    /*     client_stop(c); */
+    /*     perror("hostent"); */
+    /*     return -1; */
+    /* } */
 
-    struct sockaddr_in serveraddr;
-    bzero((char *) &serveraddr, sizeof(serveraddr));
-    serveraddr.sin_family = AF_INET;
-    bcopy(
-        (char *)server->h_addr,
-        (char *)&serveraddr.sin_addr.s_addr,
-        server->h_length
-    );
-    serveraddr.sin_port = htons(9999);
+    struct sockaddr_un addr;
+    addr.sun_family = AF_UNIX;
+    strcpy(addr.sun_path, "/tmp/drain");
+    /* struct sockaddr_in addr; */
+    /* bzero((char *) &addr, sizeof(addr)); */
+    /* addr.sin_family = AF_INET; */
+    /* bcopy( */
+    /*     (char *)server->h_addr, */
+    /*     (char *)&addr.sin_addr.s_addr, */
+    /*     server->h_length */
+    /* ); */
+    /* addr.sin_port = htons(9999); */
 
-    if (-1 == connect(c->fd, (struct sockaddr*)&serveraddr, sizeof(serveraddr))) {
+    if (-1 == connect(c->fd, (struct sockaddr*)&addr, sizeof(addr))) {
         client_stop(c);
-        perror("ERROR connecting");
+        perror("connect");
         return -1;
     }
 

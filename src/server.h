@@ -1,13 +1,15 @@
 #pragma once
 
 #include "types.h"
-#include <netinet/in.h>
+/* #include <netinet/in.h> */
+#include <sys/un.h>
 #include <sys/select.h>
 
 typedef struct {
     int fd;
-    struct sockaddr_in addr;
-    int port;
+    struct sockaddr_un addr;
+    /* struct sockaddr_in addr; */
+    /* int port; */
 } Server;
 
 void server_init(Server *s);
