@@ -108,21 +108,38 @@ int cmd_add(const char* name, int argc, char** argv) {
     return 0;
 }
 
+int cmd_help(const char* name, int argc, char** argv);
+
 typedef int(*CommandFunction)(const char*, int, char**);
 
 typedef struct {
     char const * const name;
     const CommandFunction fn;
+    char const * const short_help;
 } Command;
 
 const Command COMMANDS[] = {
-    { "ping",    cmd_ping },
-    { "status",  cmd_status },
-    { "up",      cmd_up },
-    { "down",    cmd_down },
-    { "restart", cmd_restart },
-    { "add",     cmd_add },
+    { "add",     cmd_add,     "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },
+    { "down",    cmd_down,    "down [NAME ...]               -- stop one, more or all processes" },
+    { "help",    cmd_help,    "help                          -- show this help" },
+    { "ping",    cmd_ping,    "ping                          -- ping drain server" },
+    { "restart", cmd_restart, "restart [NAME ...]            -- restart one, more or all processes" },
+    { "status",  cmd_status,  "status                        -- status of drain server" },
+    { "up",      cmd_up,      "up [NAME ...]                 -- start one, more or all processes" },
 };
+
+int cmd_help(const char* name, int argc, char** argv) {
+    (void)name;
+    (void)argc;
+    (void)argv;
+    puts("drain [CMD]\n\n");
+    const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
+    while (COMMANDS != cmd) {
+        --cmd;
+        printf("  %s\n", cmd->short_help);
+    }
+    return 0;
+}
 
 int perform_command(const char* name, int argc, char** argv) {
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
