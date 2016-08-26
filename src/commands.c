@@ -125,7 +125,7 @@ const Command COMMANDS[] = {
 int cmd_help(int argc, char** argv) {
     (void)argc;
     (void)argv;
-    puts("drain [CMD]\n\n");
+    puts("drain [CMD]\n");
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
     while (COMMANDS != cmd) {
         --cmd;
@@ -136,12 +136,28 @@ int cmd_help(int argc, char** argv) {
 
 int perform_command(const char* name, int argc, char** argv) {
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
+    const Command *found = NULL;
+    const int name_len = strlen(name);
+    bool ambiguous = false;
     while (COMMANDS != cmd) {
         --cmd;
-        if (!strcmp(name, cmd->name)) {
-            return cmd->fn(argc, argv);
+        if (!strncmp(name, cmd->name, name_len)) {
+            if (NULL == found) {
+                found = cmd;
+            } else if (false == ambiguous) {
+                printf("command '%s' is ambiguous:\n", name);
+                printf("  %s %s", found->name, cmd->name);
+            } else {
+                printf(" %s", cmd->name);
+            }
         }
     }
-    printf("unknown command '%s'\n", name);
-    return -1;
+    if (NULL == found) {
+        printf("unknown command '%s'\n", name);
+        return -1;
+    } else if (false != ambiguous) {
+        return -1;
+    }
+    found->fn(argc, argv);
+    return 0;
 }
