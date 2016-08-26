@@ -7,8 +7,7 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
-int cmd_ping(const char* name, int argc, char** argv) {
-    (void)name;
+int cmd_ping(int argc, char** argv) {
     Message pkg;
     char *content = argc > 0 ? *argv : "hallo";
     memcpy(pkg.content, content, strlen(content) + 1);
@@ -27,8 +26,7 @@ int cmd_ping(const char* name, int argc, char** argv) {
     return 0;
 }
 
-int cmd_status(const char* name, int argc, char** argv) {
-    (void)name;
+int cmd_status(int argc, char** argv) {
     (void)argc;
     (void)argv;
     Message out = { mnStatus, 0, "" };
@@ -38,8 +36,7 @@ int cmd_status(const char* name, int argc, char** argv) {
     return 0;
 }
 
-int cmd_up(const char* name, int argc, char** argv) {
-    (void)name;
+int cmd_up(int argc, char** argv) {
     Message out, in;
     out.nr = mnUp;
     out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
@@ -47,8 +44,7 @@ int cmd_up(const char* name, int argc, char** argv) {
     return 0;
 }
 
-int cmd_down(const char* name, int argc, char** argv) {
-    (void)name;
+int cmd_down(int argc, char** argv) {
     Message out, in;
     out.nr = mnDown;
     out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
@@ -56,8 +52,7 @@ int cmd_down(const char* name, int argc, char** argv) {
     return 0;
 }
 
-int cmd_restart(const char* name, int argc, char** argv) {
-    (void)name;
+int cmd_restart(int argc, char** argv) {
     Message out, in;
     out.nr = mnRestart;
     out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
@@ -77,8 +72,7 @@ void handle_error(const Message* msg) {
     }
 }
 
-int cmd_add(const char* name, int argc, char** argv) {
-    (void)name;
+int cmd_add(int argc, char** argv) {
     bool start = strcmp("-s", argv[0]) == 0;
     if (start) {
         argc--;
@@ -108,9 +102,9 @@ int cmd_add(const char* name, int argc, char** argv) {
     return 0;
 }
 
-int cmd_help(const char* name, int argc, char** argv);
+int cmd_help(int argc, char** argv);
 
-typedef int(*CommandFunction)(const char*, int, char**);
+typedef int(*CommandFunction)(int, char**);
 
 typedef struct {
     char const * const name;
@@ -128,8 +122,7 @@ const Command COMMANDS[] = {
     { "up",      cmd_up,      "up [NAME ...]                 -- start one, more or all processes" },
 };
 
-int cmd_help(const char* name, int argc, char** argv) {
-    (void)name;
+int cmd_help(int argc, char** argv) {
     (void)argc;
     (void)argv;
     puts("drain [CMD]\n\n");
@@ -146,7 +139,7 @@ int perform_command(const char* name, int argc, char** argv) {
     while (COMMANDS != cmd) {
         --cmd;
         if (!strcmp(name, cmd->name)) {
-            return cmd->fn(name, argc, argv);
+            return cmd->fn(argc, argv);
         }
     }
     printf("unknown command '%s'\n", name);
