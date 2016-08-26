@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
         int max = process_list_max_fd(l, -1);
         max = max > s.fd ? max : s.fd;
         if (-1 == select(max + 1, &set, NULL, NULL, NULL)) {
-            if (EINTR == errno) { continue; }
+            if (EINTR == errno && !shutdown_drain) { continue; }
             perror("select");
             result = -1;
             goto bailout;
