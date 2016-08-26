@@ -11,6 +11,7 @@ add_executable(drain
   src/server.c
   src/client.c
   src/actions.c
+  src/commands.c
   src/helpers.c
 )
 target_link_libraries(drain termcap)

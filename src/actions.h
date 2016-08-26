@@ -2,6 +2,8 @@
 
 #include "types.h"
 
-int perform_action(Message* in, Message* out, ProcessList* l);
+enum MessageNumber {
+    mnPing, mnStatus, mnUp, mnDown, mnRestart, mnAdd,
+};
 
-int perform_command(const char* name, int argc, char** argv);
+int perform_action(Message* in, Message* out, ProcessList* l);

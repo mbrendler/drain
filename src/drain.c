@@ -1,13 +1,12 @@
 #include "config.h"
 #include "process_list.h"
 #include "server.h"
+#include "commands.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
-
-#include "actions.h"
 
 int shutdown_drain = 0;
 
