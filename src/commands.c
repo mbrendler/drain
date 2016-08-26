@@ -119,12 +119,14 @@ void stop() {
 
 int cmd_server(int argc, char **argv) {
     int result = 0;
+    ProcessList *l = config_read(CONFIG->drainfile);
     Server s;
     server_init(&s);
-    server_start(&s);
+    if (-1 == server_start(&s)) {
+        goto bailout;
+    }
 
     signal(SIGINT, stop);
-    ProcessList *l = config_read(CONFIG->drainfile);
     if (!l) {
         fputs("No processes to start\n", stderr);
         result = -1;
