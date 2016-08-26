@@ -113,13 +113,13 @@ typedef struct {
 } Command;
 
 const Command COMMANDS[] = {
-    { "add",     cmd_add,     "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },
-    { "down",    cmd_down,    "down [NAME ...]               -- stop one, more or all processes" },
-    { "help",    cmd_help,    "help                          -- show this help" },
-    { "ping",    cmd_ping,    "ping                          -- ping drain server" },
-    { "restart", cmd_restart, "restart [NAME ...]            -- restart one, more or all processes" },
-    { "status",  cmd_status,  "status                        -- status of drain server" },
     { "up",      cmd_up,      "up [NAME ...]                 -- start one, more or all processes" },
+    { "status",  cmd_status,  "status                        -- status of drain server" },
+    { "restart", cmd_restart, "restart [NAME ...]            -- restart one, more or all processes" },
+    { "ping",    cmd_ping,    "ping                          -- ping drain server" },
+    { "help",    cmd_help,    "help                          -- show this help" },
+    { "down",    cmd_down,    "down [NAME ...]               -- stop one, more or all processes" },
+    { "add",     cmd_add,     "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },
 };
 
 int cmd_help(int argc, char** argv) {
