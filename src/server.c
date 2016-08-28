@@ -113,6 +113,12 @@ int server_incomming(Server *s, fd_set *set, ProcessList *l) {
         return -1;
     }
 
-    close(fd);
+    if (0 == rc) {
+        close(fd);
+    } else if (-1 == fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK)) {
+        close(fd);
+        perror("fcntl 2");
+        return -1;
+    }
     return 0;
 }
