@@ -9,6 +9,7 @@ typedef struct {
     unsigned term_width;
     bool line_wrap;
     bool verbose;
+    bool keep_running;
     const char* termtype;
     const char* drainfile;
 } Config;

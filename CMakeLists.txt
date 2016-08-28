@@ -11,6 +11,7 @@ set(SRCS
   src/client.c
   src/actions.c
   src/commands.c
+  src/cmd_server.c
   src/helpers.c
 )
 

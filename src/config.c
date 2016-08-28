@@ -61,7 +61,7 @@ ProcessList* config_read(const char* filename) {
     return l;
 }
 
-static Config CFG = { 80, true, false, NULL, "drainfile" };
+static Config CFG = { 80, true, false, false, NULL, "drainfile" };
 const Config *CONFIG = &CFG;
 
 void config_init() {
@@ -81,11 +81,12 @@ void config_init_term_width() {
 
 int config_parse_args(int argc, char **argv) {
     int ch;
-    while (-1 != (ch = getopt(argc, argv, "vwW"))) {
+    while (-1 != (ch = getopt(argc, argv, "vwWk"))) {
         switch (ch) {
             case 'v': CFG.verbose = true; break;
             case 'w': CFG.line_wrap = true; break;
             case 'W': CFG.line_wrap = false; break;
+            case 'k': CFG.keep_running = true; break;
             default: return -1;
         }
     }
