@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 #include <termcap.h>
 
 char BUFFER[4096];
@@ -60,7 +61,7 @@ ProcessList* config_read(const char* filename) {
     return l;
 }
 
-static Config CFG = { 80, true, NULL, "drainfile" };
+static Config CFG = { 80, true, false, NULL, "drainfile" };
 const Config *CONFIG = &CFG;
 
 void config_init() {
@@ -76,4 +77,17 @@ void config_init_term_width() {
             CFG.line_wrap = false;
         }
     }
+}
+
+int config_parse_args(int argc, char **argv) {
+    int ch;
+    while (-1 != (ch = getopt(argc, argv, "vwW"))) {
+        switch (ch) {
+            case 'v': CFG.verbose = true; break;
+            case 'w': CFG.line_wrap = true; break;
+            case 'W': CFG.line_wrap = false; break;
+            default: return -1;
+        }
+    }
+    return argc - optind;
 }

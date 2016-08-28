@@ -182,6 +182,11 @@ int cmd_help(int argc, char** argv) {
     (void)argc;
     (void)argv;
     puts("drain [CMD]\n");
+    puts("options");
+    puts("  -w -- line wrapping in log output");
+    puts("  -W -- no line wrapping in log output");
+    puts("  -v -- verbose\n");
+    puts("commands");
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
     while (COMMANDS != cmd) {
         --cmd;

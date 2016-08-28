@@ -5,8 +5,13 @@
 
 int main(int argc, char **argv) {
     config_init();
+    const int new_argc = config_parse_args(argc, argv);
+    if (-1 == new_argc) {
+        return -1;
+    }
     signal(SIGWINCH, config_init_term_width);
 
-    const char *cmd = argc > 1 ? argv[1] : "help";
-    return perform_command(cmd, argc > 1 ? argc - 2 : 0, argv + 2);
+    argv += argc - new_argc;
+    const char *cmd = new_argc > 0 ? argv[0] : "help";
+    return perform_command(cmd, new_argc > 0 ? new_argc - 1 : 0, argv + 1);
 }
