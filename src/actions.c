@@ -59,6 +59,12 @@ int action_restart(int fd, Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
+int action_log(int fd, Message* in, Message* out, ProcessList* l) {
+    out->nr = false == process_list_add_ouput_fd(l, fd, in->content) ? -2 : 0;
+    out->size = 0;
+    return 1;
+}
+
 int action_add(int fd, Message* in, Message* out, ProcessList* l) {
     (void)fd;
     char **args;

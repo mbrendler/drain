@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <sys/select.h>
 
 typedef struct ProcessList ProcessList;
@@ -25,3 +26,5 @@ ProcessList* process_list_forward(ProcessList *l, fd_set* set);
 ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 
 int process_list_status(ProcessList* l, char* out, int out_size);
+
+bool process_list_add_ouput_fd(ProcessList *l, int fd, char *name);

@@ -61,6 +61,33 @@ int cmd_restart(int argc, char** argv) {
     return 0;
 }
 
+char BUFFER[4096];
+
+#include <errno.h>
+
+int cmd_log(int argc, char** argv) {
+    (void)argc;
+    Message out, in;
+    out.nr = mnLog;
+    // TODO: support more arguments:
+    out.size = strlen(argv[0]) + 1;
+    strcpy(out.content, argv[0]);
+    Client c;
+    client_init(&c);
+    if (-1 == client_start(&c)) { return -1; }
+    if (-1 == client_send(&c, &out, &in)) { return -1; }
+    FILE *f = fdopen(c.fd, "r");
+    while (fgets(BUFFER, sizeof(BUFFER), f)) {
+        printf("%s", BUFFER);
+    }
+    if (ferror(f) && EAGAIN != errno) {
+        perror("read");
+        return -1;
+    }
+    client_stop(&c);
+    return 0;
+}
+
 bool is_error(const Message* msg) {
     return msg->nr < 0;
 }
@@ -119,6 +146,7 @@ const Command COMMANDS[] = {
     { "server",  cmd_server,  "server [NAME ...]             -- start drain server" },
     { "restart", cmd_restart, "restart [NAME ...]            -- restart one, more or all processes" },
     { "ping",    cmd_ping,    "ping                          -- ping drain server" },
+    { "log",     cmd_log,     "log NAME ...                  -- retreive output of processes" },
     { "help",    cmd_help,    "help                          -- show this help" },
     { "down",    cmd_down,    "down [NAME ...]               -- stop one, more or all processes" },
     { "add",     cmd_add,     "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },

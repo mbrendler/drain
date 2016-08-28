@@ -11,6 +11,10 @@ void cmd_server_stop() {
     shutdown_drain = 1;
 }
 
+void cmd_server_sigpipe() {
+    // ignore sigpipe
+}
+
 int cmd_server(int argc, char **argv) {
     int result = 0;
     ProcessList *l = config_read(CONFIG->drainfile);
@@ -21,6 +25,7 @@ int cmd_server(int argc, char **argv) {
     }
 
     signal(SIGINT, cmd_server_stop);
+    signal(SIGPIPE, cmd_server_sigpipe);
     if (!l) {
         fputs("No processes to start\n", stderr);
         result = -1;

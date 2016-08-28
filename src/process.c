@@ -29,6 +29,8 @@ void process_init(Process *p, const char *name, const char *cmd, int color) {
         exit(1);
     }
     memcpy(p->cmd, cmd, cmd_len);
+    p->out_fd_count = 0;
+    p->out_fds = NULL;
     p->pid = -1;
     p->fd = -1;
     p->f = NULL;
@@ -68,10 +70,35 @@ void process_stop(Process *p) {
 
 void process_free(Process *p) {
     process_stop(p);
+    while (p->out_fd_count > 0) {
+        --p->out_fd_count;
+        close(*p->out_fds);
+    }
+    free(p->out_fds);
+    p->out_fds = NULL;
     free(p->name);
     p->name = NULL;
     free(p->cmd);
     p->cmd = NULL;
+}
+
+void process_add_output_fd(Process *p, int fd) {
+    p->out_fds = realloc(p->out_fds, (p->out_fd_count + 1) * sizeof(fd));
+    *(p->out_fds + p->out_fd_count) = fd;
+    p->out_fd_count++;
+}
+
+void process_remove_output_fd(Process *p, int index) {
+    close(p->out_fds[index]);
+    if (1 == p->out_fd_count) {
+        free(p->out_fds);
+        p->out_fds = NULL;
+        p->out_fd_count = 0;
+    } else {
+        p->out_fds[index] = p->out_fds[p->out_fd_count - 1];
+        p->out_fds = realloc(p->out_fds, (p->out_fd_count - 1) * sizeof(int));
+        p->out_fd_count--;
+    }
 }
 
 void print_line(const char *name, const char *content, char sep, int color, int width) {
@@ -80,12 +107,18 @@ void print_line(const char *name, const char *content, char sep, int color, int 
     fwrite("\n", sizeof(char), 1, stdout);
 }
 
-int process_forward(const Process *p) {
+int process_forward(Process *p) {
     if (!p->f) { return -1; }
     const bool line_wrap = CONFIG->line_wrap;
     const int width = CONFIG->term_width - strlen(p->name) - 2;
     while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
         int len = strlen(BUFFER);
+        for (int i = 0; i < p->out_fd_count; ++i) {
+            if (-1 == write(p->out_fds[i], BUFFER, len)) {
+                perror("write out_fd");
+                process_remove_output_fd(p, i);
+            }
+        }
         if ('\n' == BUFFER[len - 1]) { len--; }
         if (!line_wrap || len <= width) {
             print_line(p->name, BUFFER, ':', p->color, len);

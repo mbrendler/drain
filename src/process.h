@@ -8,6 +8,8 @@ struct Process {
     pid_t pid;
     int fd;
     FILE* f;
+    int out_fd_count;
+    int *out_fds;
     char *name;
     char *cmd;
 };
@@ -20,8 +22,10 @@ void process_free(Process *p);
 
 void process_start(Process *p);
 
-int process_forward(const Process *p);
+int process_forward(Process *p);
 
 void process_stop(Process *p);
 
 void process_kill(Process *p);
+
+void process_add_output_fd(Process *p, int fd);
