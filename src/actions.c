@@ -6,13 +6,15 @@
 #include <string.h>
 #include <unistd.h>
 
-int action_ping(Message* in, Message* out, ProcessList* l) {
+int action_ping(int fd, Message* in, Message* out, ProcessList* l) {
+    (void)fd;
     (void)l;
     *out = *in;
     return 0;
 }
 
-int action_status(Message* in, Message* out, ProcessList* l) {
+int action_status(int fd, Message* in, Message* out, ProcessList* l) {
+    (void)fd;
     out->size = 1 + snprintf(
         out->content, sizeof(out->content), "pid: %d\n", getpid()
     );
@@ -23,7 +25,8 @@ int action_status(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
-int action_up(Message* in, Message* out, ProcessList* l) {
+int action_up(int fd, Message* in, Message* out, ProcessList* l) {
+    (void)fd;
     char **names = NULL;
     const int count = deserialize_string_array(in->content, in->size, &names);
     process_list_process_start(l, count, names);
@@ -33,7 +36,8 @@ int action_up(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
-int action_down(Message* in, Message* out, ProcessList* l) {
+int action_down(int fd, Message* in, Message* out, ProcessList* l) {
+    (void)fd;
     char **names = NULL;
     const int count = deserialize_string_array(in->content, in->size, &names);
     process_list_process_kill(l, count, names);
@@ -43,7 +47,8 @@ int action_down(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
-int action_restart(Message* in, Message* out, ProcessList* l) {
+int action_restart(int fd, Message* in, Message* out, ProcessList* l) {
+    (void)fd;
     char **names = NULL;
     const int count = deserialize_string_array(in->content, in->size, &names);
     process_list_process_stop(l, count, names);
@@ -54,7 +59,8 @@ int action_restart(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
-int action_add(Message* in, Message* out, ProcessList* l) {
+int action_add(int fd, Message* in, Message* out, ProcessList* l) {
+    (void)fd;
     char **args;
     const int count = deserialize_string_array(in->content, in->size, &args);
     if (count != 3) { return -1; }
@@ -74,7 +80,7 @@ int action_add(Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
-typedef int(*ActionFunctionServer)(Message* in, Message* out, ProcessList* l);
+typedef int(*ActionFunctionServer)(int fd, Message* in, Message* out, ProcessList* l);
 
 typedef struct {
     const char* name;
@@ -88,12 +94,13 @@ const Action ACTIONS[] = {
     [mnDown]    = { "down",    action_down },
     [mnRestart] = { "restart", action_restart },
     [mnAdd]     = { "add",     action_add },
+    [mnLog]     = { "log",     action_log },
 };
 
-int perform_action(Message* in, Message* out, ProcessList* l) {
+int perform_action(int fd, Message* in, Message* out, ProcessList* l) {
     if (in->nr < (int16_t)(sizeof(ACTIONS) / sizeof(*ACTIONS))) {
         printf("call action: %s (%d)\n", ACTIONS[in->nr].name, in->nr);
-        return ACTIONS[in->nr].fn(in, out, l);
+        return ACTIONS[in->nr].fn(fd, in, out, l);
     }
     return -1;
 }

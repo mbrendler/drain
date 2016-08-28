@@ -91,7 +91,8 @@ int server_incomming(Server *s, fd_set *set, ProcessList *l) {
         return -1;
     }
     Message out;
-    if (-1 == perform_action(&in, &out, l)) {
+    const int rc = perform_action(fd, &in, &out, l);
+    if (-1 == rc) {
         close(fd);
         fprintf(stderr, "perform_action\n");
         return -1;
