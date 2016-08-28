@@ -41,7 +41,7 @@ ProcessList* config_read(const char* filename) {
         const char *cfg[3] = {NULL, NULL, NULL};
         if (config_parse_line(BUFFER, cfg)) {
             ProcessList *new = process_list_new(
-                cfg[clName], cfg[clCmd], atoi(cfg[clColor])
+                cfg[clName], cfg[clCmd], atoi(cfg[clColor]), -1
             );
             if (!new) { fprintf(stderr, "Ignore %s\n", cfg[clName]); }
             l = process_list_append(l, &new);

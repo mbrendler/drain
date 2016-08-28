@@ -63,29 +63,53 @@ int cmd_restart(int argc, char** argv) {
 
 char BUFFER[4096];
 
+#include "process_list.h"
 #include <errno.h>
+#include <fcntl.h>
 
 int cmd_log(int argc, char** argv) {
-    (void)argc;
     Message out, in;
     out.nr = mnLog;
-    // TODO: support more arguments:
-    out.size = strlen(argv[0]) + 1;
-    strcpy(out.content, argv[0]);
-    Client c;
-    client_init(&c);
-    if (-1 == client_start(&c)) { return -1; }
-    if (-1 == client_send(&c, &out, &in)) { return -1; }
-    FILE *f = fdopen(c.fd, "r");
-    while (fgets(BUFFER, sizeof(BUFFER), f)) {
-        printf("%s", BUFFER);
+    ProcessList *l = NULL;
+    for (int i = 0; i < argc; ++i) {
+        out.size = strlen(argv[i]) + 1;
+        strncpy(out.content, argv[i], sizeof(out.content));
+        Client c;
+        client_init(&c);
+        if (-1 == client_start(&c)) { return -1; }
+        if (-1 == client_send(&c, &out, &in)) { return -1; }
+        if (0 != in.nr) {
+            client_stop(&c);
+            fprintf(stderr, "process not found - %s\n", argv[i]);
+            continue;
+        }
+        if (-1 == fcntl(c.fd, F_SETFL, fcntl(c.fd, F_GETFL, 0) | O_NONBLOCK)) {
+            perror("fcntl");
+            return -1;
+        }
+        ProcessList *new = process_list_new(argv[i], "TODO", i + 1, c.fd);
+        if (new) {
+            l = process_list_append(l, &new);
+        } else {
+            fprintf(stderr, "ignore: %s\n", argv[i]);
+        }
     }
-    if (ferror(f) && EAGAIN != errno) {
-        perror("read");
-        return -1;
+
+    int result = 0;
+    fd_set set;
+    const int max = process_list_max_fd(l, -1);
+    while (process_list_init_fd_set(l, &set)) {
+        if (-1 == select(max + 1, &set, NULL, NULL, NULL)) {
+            if (EINTR == errno) { continue; }
+            perror("select");
+            result = -1;
+            break;
+        }
+        l = process_list_forward(l, &set);
     }
-    client_stop(&c);
-    return 0;
+
+    process_list_free(l);
+    return result;
 }
 
 bool is_error(const Message* msg) {

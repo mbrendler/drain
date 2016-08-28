@@ -16,7 +16,7 @@ struct Process {
 
 typedef struct Process Process;
 
-void process_init(Process *p, const char *name, const char *cmd, int color);
+void process_init(Process *p, const char *name, const char *cmd, int color, int fd);
 
 void process_free(Process *p);
 

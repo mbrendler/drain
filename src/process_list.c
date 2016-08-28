@@ -10,14 +10,14 @@ struct ProcessList {
     Process p;
 };
 
-ProcessList* process_list_new(const char *name, const char *cmd, int color) {
+ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd) {
     ProcessList *e = malloc(sizeof(ProcessList));
     if (!e) {
         perror("malloc e");
         exit(1);
     }
     e->n = NULL;
-    process_init(&(e->p), name, cmd, color);
+    process_init(&(e->p), name, cmd, color, fd);
     return e;
 }
 

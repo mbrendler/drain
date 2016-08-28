@@ -13,7 +13,7 @@ static int process_open(const char *cmd, int *fd);
 
 char BUFFER[4096];
 
-void process_init(Process *p, const char *name, const char *cmd, int color) {
+void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
     p->color = color;
     const int name_len = strlen(name) + 1;
     p->name = malloc(name_len);
@@ -32,12 +32,12 @@ void process_init(Process *p, const char *name, const char *cmd, int color) {
     p->out_fd_count = 0;
     p->out_fds = NULL;
     p->pid = -1;
-    p->fd = -1;
-    p->f = NULL;
+    p->fd = fd;
+    p->f = -1 == fd ? NULL : fdopen(p->fd, "r");
 }
 
 void process_start(Process *p) {
-    if (p->pid >= 0) {
+    if (p->pid >= 0 || p->fd > -1) {
         fprintf(stderr, "process already started: %s\n", p->name);
         return;
     }
@@ -61,7 +61,7 @@ void process_stop(Process *p) {
     process_kill(p);
     fclose(p->f);
     // TODO: interpret status:
-    waitpid(p->pid, NULL, 0);
+    if (p->pid > 0) { waitpid(p->pid, NULL, 0); }
     printf("process stopped: %s\n", p->name);
     p->f = NULL;
     p->fd = -1;
