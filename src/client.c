@@ -6,10 +6,6 @@
 #include <netdb.h>
 #include <sys/un.h>
 
-struct Client {
-    int fd;
-};
-
 int client_do(const Message* out, Message* in) {
     Client c;
     client_init(&c);

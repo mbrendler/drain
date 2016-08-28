@@ -4,6 +4,10 @@
 
 typedef struct Client Client;
 
+struct Client {
+    int fd;
+};
+
 int client_do(const Message* out, Message* in);
 
 void client_init(Client *c);
