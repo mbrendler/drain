@@ -145,6 +145,35 @@ int process_forward(Process *p) {
     return 0;
 }
 
+int serialize_process(Process *p, char* buffer, int buf_size) {
+    memcpy(buffer, &p->pid, sizeof(p->pid));
+    int size = sizeof(p->pid);
+    memcpy(buffer + size, &p->color, sizeof(p->color));
+    size += sizeof(p->color);
+    memcpy(buffer + size, &p->fd, sizeof(p->fd));
+    size += sizeof(p->fd);
+    memcpy(buffer + size, &p->out_fd_count, sizeof(p->out_fd_count));
+    size += sizeof(p->out_fd_count);
+    strncpy(buffer + size, p->name, buf_size - size);
+    size += strlen(p->name) + 1;
+    strncpy(buffer + size, p->cmd, buf_size - size);
+    size += strlen(p->cmd) + 1;
+    return size;
+}
+
+void deserialize_process(char* buffer, Process* p) {
+    memcpy(&p->pid, buffer, sizeof(p->pid));
+    buffer += sizeof(p->pid);
+    memcpy(&p->color, buffer, sizeof(p->color));
+    buffer += sizeof(p->color);
+    memcpy(&p->fd, buffer, sizeof(p->fd));
+    buffer += sizeof(p->fd);
+    memcpy(&p->out_fd_count, buffer, sizeof(p->out_fd_count));
+    buffer += sizeof(p->out_fd_count);
+    p->name = buffer;
+    p->cmd = buffer + strlen(p->name) + 1;
+}
+
 // private --
 
 static void close_all_fds_from(int fd) {

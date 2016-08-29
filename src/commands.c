@@ -64,6 +64,7 @@ int cmd_restart(int argc, char** argv) {
 char BUFFER[4096];
 
 #include "process_list.h"
+#include "process.h"
 #include <errno.h>
 #include <fcntl.h>
 
@@ -87,7 +88,9 @@ int cmd_log(int argc, char** argv) {
             perror("fcntl");
             return -1;
         }
-        ProcessList *new = process_list_new(argv[i], "TODO", i + 1, c.fd);
+        Process p;
+        deserialize_process(in.content, &p);
+        ProcessList *new = process_list_new(argv[i], p.cmd, p.color, c.fd);
         if (new) {
             l = process_list_append(l, &new);
         } else {

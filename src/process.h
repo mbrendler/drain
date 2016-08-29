@@ -29,3 +29,7 @@ void process_stop(Process *p);
 void process_kill(Process *p);
 
 void process_add_output_fd(Process *p, int fd);
+
+int serialize_process(Process *p, char* buffer, int buf_size);
+
+void deserialize_process(char* buffer, Process* p);

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stdbool.h>
 #include <sys/select.h>
 
 typedef struct ProcessList ProcessList;
+typedef struct Process Process;
 
 ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd);
 
@@ -27,4 +27,6 @@ ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 
 int process_list_status(ProcessList* l, char* out, int out_size);
 
-bool process_list_add_ouput_fd(ProcessList *l, int fd, char *name);
+Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name);
+
+int serialize_process(Process *p, char* buffer, int buf_size);

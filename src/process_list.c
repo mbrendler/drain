@@ -124,11 +124,11 @@ int process_list_status(ProcessList* l, char* out, int out_size) {
     return out_size - rest_size;
 }
 
-bool process_list_add_ouput_fd(ProcessList *l, int fd, char *name) {
-    if (!l) { return false; }
+Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name) {
+    if (!l) { return NULL; }
     if (0 == strcmp(name, l->p.name)) {
         process_add_output_fd(&l->p, fd);
-        return true;
+        return &l->p;
     }
     return process_list_add_ouput_fd(l->n, fd, name);
 }

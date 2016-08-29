@@ -60,8 +60,15 @@ int action_restart(int fd, Message* in, Message* out, ProcessList* l) {
 }
 
 int action_log(int fd, Message* in, Message* out, ProcessList* l) {
-    out->nr = false == process_list_add_ouput_fd(l, fd, in->content) ? -2 : 0;
-    out->size = 0;
+    Process* p = process_list_add_ouput_fd(l, fd, in->content);
+    if (NULL == p) {
+        out->nr = -2;
+        out->size = 0;
+        return 0;
+    } else {
+        out->nr = 0;
+        out->size = serialize_process(p, out->content, sizeof(out->content));
+    }
     return 1;
 }
 
