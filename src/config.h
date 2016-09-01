@@ -11,7 +11,7 @@ typedef struct {
     bool verbose;
     bool keep_running;
     const char* termtype;
-    const char* drainfile;
+    char* drainfile;
 } Config;
 
 extern const Config *CONFIG;
