@@ -1,4 +1,5 @@
 #include "config.h"
+#include "commands.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -93,12 +94,13 @@ void config_init_term_width() {
 
 int config_parse_args(int argc, char **argv) {
     int ch;
-    while (-1 != (ch = getopt(argc, argv, "vwWkf:"))) {
+    while (-1 != (ch = getopt(argc, argv, "vwWkf:h"))) {
         switch (ch) {
             case 'v': CFG.verbose = true; break;
             case 'w': CFG.line_wrap = true; break;
             case 'W': CFG.line_wrap = false; break;
             case 'k': CFG.keep_running = true; break;
+            case 'h': cmd_help(0, NULL); exit(0); break;
             case 'f':
                 if (NULL != CFG.drainfile) { free(CFG.drainfile); }
                 CFG.drainfile = optarg;

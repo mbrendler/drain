@@ -185,6 +185,7 @@ int cmd_help(int argc, char** argv) {
     puts("drain [CMD]\n");
     puts("options");
     puts("  -f DRAINFILE -- configure drainfile path");
+    puts("  -h           -- help");
     puts("  -k           -- keep server running");
     puts("  -v           -- verbose");
     puts("  -w           -- line wrapping in log output");
