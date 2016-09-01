@@ -45,7 +45,7 @@ int cmd_up(int argc, char** argv) {
     return 0;
 }
 
-int cmd_down(int argc, char** argv) {
+int cmd_halt(int argc, char** argv) {
     Message out, in;
     out.nr = mnDown;
     out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
@@ -175,7 +175,7 @@ const Command COMMANDS[] = {
     { "ping",    cmd_ping,    "ping                          -- ping drain server" },
     { "log",     cmd_log,     "log NAME ...                  -- retreive output of processes" },
     { "help",    cmd_help,    "help                          -- show this help" },
-    { "down",    cmd_down,    "down [NAME ...]               -- stop one, more or all processes" },
+    { "halt",    cmd_halt,    "halt [NAME ...]               -- stop one, more or all processes" },
     { "add",     cmd_add,     "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },
 };
 
