@@ -184,10 +184,11 @@ int cmd_help(int argc, char** argv) {
     (void)argv;
     puts("drain [CMD]\n");
     puts("options");
-    puts("  -k -- keep server running");
-    puts("  -v -- verbose");
-    puts("  -w -- line wrapping in log output");
-    puts("  -W -- no line wrapping in log output\n");
+    puts("  -f DRAINFILE -- configure drainfile path");
+    puts("  -k           -- keep server running");
+    puts("  -v           -- verbose");
+    puts("  -w           -- line wrapping in log output");
+    puts("  -W           -- no line wrapping in log output\n");
     puts("commands");
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
     while (COMMANDS != cmd) {

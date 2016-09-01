@@ -14,12 +14,17 @@ void test_config_init() {
 }
 
 void test_config_parse_args() {
-    char *argv[] = {"program-name", "-v", "-W", "-k", "some", "other", "args"};
-    int new_argc = config_parse_args(7, argv);
+    char *argv[] = {
+        "program-name",
+        "-v", "-W", "-k", "-f", "another-drainfile",
+        "some", "other", "args"
+    };
+    int new_argc = config_parse_args(9, argv);
     ASSERT_INT(3, new_argc);
     ASSERT_INT(true, CONFIG->verbose);
     ASSERT_INT(false, CONFIG->line_wrap);
     ASSERT_INT(true, CONFIG->keep_running);
+    ASSERT_STRING("another-drainfile", CONFIG->drainfile);
 }
 
 int main() {

@@ -93,12 +93,16 @@ void config_init_term_width() {
 
 int config_parse_args(int argc, char **argv) {
     int ch;
-    while (-1 != (ch = getopt(argc, argv, "vwWk"))) {
+    while (-1 != (ch = getopt(argc, argv, "vwWkf:"))) {
         switch (ch) {
             case 'v': CFG.verbose = true; break;
             case 'w': CFG.line_wrap = true; break;
             case 'W': CFG.line_wrap = false; break;
             case 'k': CFG.keep_running = true; break;
+            case 'f':
+                if (NULL != CFG.drainfile) { free(CFG.drainfile); }
+                CFG.drainfile = optarg;
+                break;
             default: return -1;
         }
     }
