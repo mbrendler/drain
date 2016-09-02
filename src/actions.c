@@ -1,6 +1,7 @@
 #include "actions.h"
 #include "helpers.h"
 #include "process_list.h"
+#include "process.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,14 +14,22 @@ int action_ping(int fd, Message* in, Message* out, ProcessList* l) {
     return 0;
 }
 
+typedef struct {
+    size_t pos;
+    size_t size;
+    char* b;
+} Buffer;
+
+int serialize_processes(Process *p, Buffer* b) {
+    b->pos += serialize_process(p, b->b + b->pos, b->size - b->pos);
+    return 0;
+}
+
 int action_status(int fd, Message* in, Message* out, ProcessList* l) {
     (void)fd;
-    out->size = 1 + snprintf(
-        out->content, sizeof(out->content), "pid: %d\n", getpid()
-    );
-    out->size += process_list_status(
-        l, out->content + out->size - 1, sizeof(out->content) - out->size + 1
-    );
+    Buffer b = { 0, sizeof(out->content), out->content };
+    process_list_each(l, (ProcessFn*)serialize_processes, (void*)&b);
+    out->size = b.pos;
     out->nr = in->nr;
     return 0;
 }

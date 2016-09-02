@@ -1,8 +1,9 @@
 #include "commands.h"
+#include "cmd_server.h"
 #include "client.h"
 #include "helpers.h"
 #include "actions.h"
-#include "cmd_server.h"
+#include "process.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -30,10 +31,14 @@ int cmd_ping(int argc, char** argv) {
 int cmd_status(int argc, char** argv) {
     (void)argc;
     (void)argv;
-    Message out = { mnStatus, 0, "" };
-    Message in;
-    if (-1 == client_do(&out, &in)) { return -1; }
-    puts(in.content);
+    Message msg = { mnStatus, 0, "" };
+    if (-1 == client_do(&msg, &msg)) { return -1; }
+    int pos = 0;
+    while (pos < msg.size) {
+        Process p;
+        pos += deserialize_process(msg.content + pos, &p);
+        process_print_status(&p);
+    }
     return 0;
 }
 

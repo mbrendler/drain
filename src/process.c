@@ -145,6 +145,18 @@ int process_forward(Process *p) {
     return 0;
 }
 
+int process_print_status(const Process* p) {
+    printf("\033[3%dm%8s\033[39;49m | %s | %5d | %2d | %s\n",
+        p->color,
+        p->name,
+        p->f ? "running" : "stopped",
+        p->pid,
+        p->out_fd_count,
+        p->cmd
+    );
+    return 0;
+}
+
 int serialize_process(Process *p, char* buffer, int buf_size) {
     memcpy(buffer, &p->pid, sizeof(p->pid));
     int size = sizeof(p->pid);
@@ -161,7 +173,8 @@ int serialize_process(Process *p, char* buffer, int buf_size) {
     return size;
 }
 
-void deserialize_process(char* buffer, Process* p) {
+int deserialize_process(char* buffer, Process* p) {
+    const char *b = buffer;
     memcpy(&p->pid, buffer, sizeof(p->pid));
     buffer += sizeof(p->pid);
     memcpy(&p->color, buffer, sizeof(p->color));
@@ -172,6 +185,7 @@ void deserialize_process(char* buffer, Process* p) {
     buffer += sizeof(p->out_fd_count);
     p->name = buffer;
     p->cmd = buffer + strlen(p->name) + 1;
+    return buffer - b + strlen(p->name) + 1 + strlen(p->cmd) + 1;
 }
 
 // private --

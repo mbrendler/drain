@@ -110,20 +110,6 @@ ProcessList *process_list_append(ProcessList *l, ProcessList **n) {
     return *n;
 }
 
-int process_list_status(ProcessList* l, char* out, int out_size) {
-    int rest_size = out_size;
-    while (l) {
-        int size_written = snprintf(
-            out, rest_size, "%8s | %s | %5d | %s\n",
-            l->p.name, l->p.f ? "running" : "stopped", l->p.pid, l->p.cmd
-        );
-        out += size_written;
-        rest_size -= size_written;
-        l = l->n;
-    }
-    return out_size - rest_size;
-}
-
 Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name) {
     if (!l) { return NULL; }
     if (0 == strcmp(name, l->p.name)) {
@@ -131,4 +117,11 @@ Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name) {
         return &l->p;
     }
     return process_list_add_ouput_fd(l->n, fd, name);
+}
+
+void process_list_each(ProcessList *l, ProcessFn *fn, void *obj) {
+    while (NULL != l) {
+        if (0 != fn(&l->p, obj)) { return; }
+        l = l->n;
+    }
 }
