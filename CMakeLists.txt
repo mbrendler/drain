@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8.0)
 project("drain")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wpedantic -O0 -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wpedantic")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${CMAKE_C_FLAGS} -O0 -g")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${CMAKE_C_FLAGS} -O3")
 
 set(SRCS
   src/config.c
