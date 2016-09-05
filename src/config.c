@@ -65,20 +65,13 @@ ProcessList* config_read(const char* filename) {
 static Config CFG = { 80, true, false, false, NULL, NULL };
 const Config *CONFIG = &CFG;
 
-#define DRAINFILE_FILENAME "/.drainfile"
-
 void config_init() {
     CFG.termtype = getenv("TERM");
-    const char *home = getenv("HOME");
-    const size_t home_len = strlen(home);
-    // Will never be freed:
-    CFG.drainfile = malloc(home_len + sizeof(DRAINFILE_FILENAME));
-    if (NULL == CFG.drainfile) {
+    // Will only be freed, if the command-line argument -f is given:
+    if (-1 == asprintf(&CFG.drainfile, "%s/.drainfile", getenv("HOME"))) {
         perror("config: malloc drainfile");
         exit(1);
     }
-    strcpy(CFG.drainfile, home);
-    strcpy(CFG.drainfile + home_len, DRAINFILE_FILENAME);
     config_init_term_width();
 }
 
