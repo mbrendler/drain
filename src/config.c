@@ -77,7 +77,13 @@ void config_init() {
 
 void config_init_term_width() {
     if (CFG.termtype) {
-        tgetent(BUFFER, CFG.termtype);
+        if (1 != tgetent(BUFFER, CFG.termtype)) {
+            fprintf(stderr,
+                "could not load term entry for '%s' - use line witdh of %d\n",
+                CFG.termtype, CFG.term_width
+            );
+            return;
+        }
         CFG.term_width = tgetnum("co");
         if (CFG.term_width <= 0) {
             CFG.line_wrap = false;
