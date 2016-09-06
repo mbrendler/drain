@@ -6,6 +6,7 @@
 #include <signal.h>
 
 static int shutdown_drain = 0;
+static ProcessList *l = NULL;
 
 void cmd_server_stop() {
     shutdown_drain = 1;
@@ -15,9 +16,13 @@ void cmd_server_sigpipe() {
     // ignore sigpipe
 }
 
+void cmd_server_siginfo() {
+    process_list_each(l, process_print_status);
+}
+
 int cmd_server(int argc, char **argv) {
     int result = 0;
-    ProcessList *l = config_read(CONFIG->drainfile);
+    l = config_read_drainfile(CONFIG->drainfile);
     Server s;
     server_init(&s);
     if (-1 == server_start(&s)) {
@@ -26,6 +31,7 @@ int cmd_server(int argc, char **argv) {
 
     signal(SIGINT, cmd_server_stop);
     signal(SIGPIPE, cmd_server_sigpipe);
+    signal(SIGINFO, cmd_server_siginfo);
     if (!l) {
         fputs("No processes to start\n", stderr);
         result = -1;
