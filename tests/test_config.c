@@ -5,10 +5,9 @@ void test_config_init() {
     config_init();
     ASSERT_STRING(getenv("TERM"), CONFIG->termtype);
 
-    char *expected_drainfile = malloc(strlen(getenv("HOME")) + sizeof(".drainfile"));
-    strcpy(expected_drainfile, getenv("HOME"));
-    strcpy(expected_drainfile + strlen(getenv("HOME")), ".drainfile");
-    ASSERT_STRING("/Users/mbrendler/.drainfile", CONFIG->drainfile);
+    char *expected_drainfile = NULL;
+    asprintf(&expected_drainfile, "%s/.drainfile", getenv("HOME"));
+    ASSERT_STRING(expected_drainfile, CONFIG->drainfile);
     free(expected_drainfile);
     expected_drainfile = NULL;
 }
