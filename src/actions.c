@@ -28,7 +28,7 @@ int serialize_processes(Process *p, Buffer* b) {
 int action_status(int fd, Message* in, Message* out, ProcessList* l) {
     (void)fd;
     Buffer b = { 0, sizeof(out->content), out->content };
-    process_list_each(l, (ProcessFn*)serialize_processes, (void*)&b);
+    process_list_each(l, serialize_processes, &b);
     out->size = b.pos;
     out->nr = in->nr;
     return 0;

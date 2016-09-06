@@ -1,11 +1,16 @@
 #pragma once
 
+#include "process.h"
 #include <sys/select.h>
 
 typedef struct ProcessList ProcessList;
-typedef struct Process Process;
 
-typedef int(ProcessFn(Process*, void*));
+struct ProcessList {
+    ProcessList *n;
+    Process p;
+};
+
+typedef struct Process Process;
 
 ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd);
 
@@ -29,4 +34,9 @@ ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 
 Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name);
 
-void process_list_each(ProcessList *l, ProcessFn *fn, void *obj);
+#define process_list_each(l, fn, ...) {                          \
+    ProcessList *lIsT = l;                                       \
+    while (NULL != lIsT && 0 == fn(&lIsT->p, ## __VA_ARGS__ )) { \
+        lIsT = lIsT->n;                                          \
+    }                                                            \
+}

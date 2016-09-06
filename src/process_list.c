@@ -1,14 +1,8 @@
 #include "process_list.h"
-#include "process.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-
-struct ProcessList {
-    ProcessList *n;
-    Process p;
-};
 
 ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd) {
     ProcessList *e = malloc(sizeof(ProcessList));
@@ -117,11 +111,4 @@ Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name) {
         return &l->p;
     }
     return process_list_add_ouput_fd(l->n, fd, name);
-}
-
-void process_list_each(ProcessList *l, ProcessFn *fn, void *obj) {
-    while (NULL != l) {
-        if (0 != fn(&l->p, obj)) { return; }
-        l = l->n;
-    }
 }
