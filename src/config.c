@@ -28,7 +28,7 @@ static bool config_parse_line(char* str, const char** cfg) {
     return false;
 }
 
-ProcessList* config_read(const char* filename) {
+ProcessList* config_read_drainfile(const char* filename) {
     FILE* f = fopen(filename, "r");
     if (!f) {
         perror("fopen");
@@ -52,7 +52,7 @@ ProcessList* config_read(const char* filename) {
     }
     if (ferror(f)) {
         fprintf(
-            stderr, "could not load config file: %s (%s)",
+            stderr, "could not load drainfile: %s (%s)",
             filename, strerror(errno)
         );
         exit(1);
