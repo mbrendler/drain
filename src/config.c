@@ -69,7 +69,7 @@ void config_init() {
     CFG.termtype = getenv("TERM");
     // Will only be freed, if the command-line argument -f is given:
     if (-1 == asprintf(&CFG.drainfile, "%s/.drainfile", getenv("HOME"))) {
-        perror("config: malloc drainfile");
+        perror("config: asprintf drainfile");
         exit(1);
     }
     config_init_term_width();
