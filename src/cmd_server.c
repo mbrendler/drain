@@ -52,7 +52,7 @@ int cmd_server(int argc, char **argv) {
             goto bailout;
         }
         server_incomming(&s, &set, l);
-        l = process_list_forward(l, &set);
+        process_list_forward(l, &set);
     }
 
 bailout:

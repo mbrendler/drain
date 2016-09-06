@@ -28,7 +28,7 @@ int process_list_max_fd(ProcessList *l, int fd);
 
 int process_list_init_fd_set(ProcessList *l, fd_set* set);
 
-ProcessList* process_list_forward(ProcessList *l, fd_set* set);
+void process_list_forward(ProcessList *l, fd_set* set);
 
 ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 

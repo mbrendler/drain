@@ -113,7 +113,7 @@ int cmd_log(int argc, char** argv) {
             result = -1;
             break;
         }
-        l = process_list_forward(l, &set);
+        process_list_forward(l, &set);
     }
 
     process_list_free(l);
