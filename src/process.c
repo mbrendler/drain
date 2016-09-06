@@ -137,9 +137,11 @@ int process_forward(Process *p) {
         }
     }
     if (feof(p->f)) {
+        process_stop(p);
         return -1;
     } else if (ferror(p->f) && EAGAIN != errno) {
         perror("read");
+        process_stop(p);
         return -1;
     }
     return 0;

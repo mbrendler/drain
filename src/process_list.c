@@ -82,9 +82,7 @@ int process_list_init_fd_set(ProcessList *l, fd_set* set) {
 void process_list_forward(ProcessList *l, fd_set* set) {
     if (!l) { return; }
     if (l->p.fd >= 0 && FD_ISSET(l->p.fd, set)) {
-        if (process_forward(&(l->p)) < 0) {
-            process_stop(&l->p);
-        }
+        process_forward(&(l->p));
     }
     process_list_forward(l->n, set);
 }
