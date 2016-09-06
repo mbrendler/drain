@@ -159,7 +159,7 @@ int process_print_status(const Process* p) {
     return 0;
 }
 
-int serialize_process(Process *p, char* buffer, int buf_size) {
+int process_serialize(Process *p, char* buffer, int buf_size) {
     memcpy(buffer, &p->pid, sizeof(p->pid));
     int size = sizeof(p->pid);
     memcpy(buffer + size, &p->color, sizeof(p->color));
@@ -175,7 +175,7 @@ int serialize_process(Process *p, char* buffer, int buf_size) {
     return size;
 }
 
-int deserialize_process(char* buffer, Process* p) {
+int process_deserialize(char* buffer, Process* p) {
     const char *b = buffer;
     memcpy(&p->pid, buffer, sizeof(p->pid));
     buffer += sizeof(p->pid);

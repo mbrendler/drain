@@ -36,7 +36,7 @@ int cmd_status(int argc, char** argv) {
     int pos = 0;
     while (pos < msg.size) {
         Process p;
-        pos += deserialize_process(msg.content + pos, &p);
+        pos += process_deserialize(msg.content + pos, &p);
         process_print_status(&p);
     }
     return 0;
@@ -94,7 +94,7 @@ int cmd_log(int argc, char** argv) {
             return -1;
         }
         Process p;
-        deserialize_process(in.content, &p);
+        process_deserialize(in.content, &p);
         ProcessList *new = process_list_new(argv[i], p.cmd, p.color, c.fd);
         if (new) {
             l = process_list_append(l, &new);

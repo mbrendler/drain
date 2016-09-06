@@ -21,7 +21,7 @@ typedef struct {
 } Buffer;
 
 int serialize_processes(Process *p, Buffer* b) {
-    b->pos += serialize_process(p, b->b + b->pos, b->size - b->pos);
+    b->pos += process_serialize(p, b->b + b->pos, b->size - b->pos);
     return 0;
 }
 
@@ -76,7 +76,7 @@ int action_log(int fd, Message* in, Message* out, ProcessList* l) {
         return 0;
     } else {
         out->nr = 0;
-        out->size = serialize_process(p, out->content, sizeof(out->content));
+        out->size = process_serialize(p, out->content, sizeof(out->content));
     }
     return 1;
 }
