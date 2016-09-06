@@ -29,5 +29,4 @@ void test_config_parse_args() {
 int main() {
     test_config_init();
     test_config_parse_args();
-    return 0;
 }

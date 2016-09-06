@@ -38,5 +38,4 @@ int main() {
     test_replace_char();
     test_serialize_string_array();
     test_deserialize_string_array();
-    return EXIT_SUCCESS;
 }
