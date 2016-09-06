@@ -7,8 +7,6 @@
 #include <unistd.h>
 #include <termcap.h>
 
-char BUFFER[4096];
-
 enum ConfigLine {clName, clColor, clCmd};
 
 static bool config_parse_line(char* str, const char** cfg) {
@@ -36,11 +34,12 @@ ProcessList* config_read(const char* filename) {
         perror("fopen");
         return NULL;
     }
+    char buffer[4096];
     ProcessList *l = NULL;
-    while (fgets(BUFFER, sizeof(BUFFER), f)) {
-        if ('#' == *BUFFER) { continue; } // line is comment
+    while (fgets(buffer, sizeof(buffer), f)) {
+        if ('#' == *buffer) { continue; } // line is comment
         const char *cfg[3] = {NULL, NULL, NULL};
-        if (config_parse_line(BUFFER, cfg)) {
+        if (config_parse_line(buffer, cfg)) {
             ProcessList *new = process_list_new(
                 cfg[clName], cfg[clCmd], atoi(cfg[clColor]), -1
             );
@@ -48,7 +47,7 @@ ProcessList* config_read(const char* filename) {
             l = process_list_append(l, &new);
             printf("%s : %s : %s\n", cfg[clName], cfg[clColor], cfg[clCmd]);
         } else {
-            fprintf(stderr, "parser error in: %s\n", BUFFER);
+            fprintf(stderr, "parser error in: %s\n", buffer);
         }
     }
     if (ferror(f)) {
@@ -77,7 +76,8 @@ void config_init() {
 
 void config_init_term_width() {
     if (CFG.termtype) {
-        if (1 != tgetent(BUFFER, CFG.termtype)) {
+        char buffer[4096];
+        if (1 != tgetent(buffer, CFG.termtype)) {
             fprintf(stderr,
                 "could not load term entry for '%s' - use line witdh of %d\n",
                 CFG.termtype, CFG.term_width
