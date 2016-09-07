@@ -24,8 +24,7 @@ int cmd_server_monitor_processes(ProcessList* l, Server* s) {
     fd_set set;
     while (!shutdown_drain && (process_list_init_fd_set(l, &set) || CONFIG->keep_running)) {
         FD_SET(s->fd, &set);
-        int max = process_list_max_fd(l, -1);
-        max = max > s->fd ? max : s->fd;
+        const int max = process_list_max_fd(l, s->fd);
         if (-1 == select(max + 1, &set, NULL, NULL, NULL)) {
             if (EINTR == errno && !shutdown_drain) { continue; }
             perror("select");
