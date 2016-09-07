@@ -30,6 +30,8 @@ void process_kill(Process *p);
 
 void process_add_output_fd(Process *p, int fd);
 
+void process_remove_output_fd(Process *p, int index);
+
 int process_print_status(const Process* p);
 
 int process_serialize(Process *p, char* buffer, int buf_size);
