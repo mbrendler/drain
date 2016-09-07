@@ -66,8 +66,6 @@ int cmd_restart(int argc, char** argv) {
     return 0;
 }
 
-char BUFFER[4096];
-
 #include "process_list.h"
 #include "process.h"
 #include <errno.h>
