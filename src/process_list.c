@@ -8,10 +8,14 @@ ProcessList* process_list_new(const char *name, const char *cmd, int color, int 
     ProcessList *e = malloc(sizeof(ProcessList));
     if (!e) {
         perror("malloc e");
-        exit(1);
+        return NULL;
     }
     e->n = NULL;
     process_init(&(e->p), name, cmd, color, fd);
+    if (!e->p.name || !e->p.cmd) {
+        free(e);
+        return NULL;
+    }
     return e;
 }
 

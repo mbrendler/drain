@@ -11,24 +11,22 @@
 static void close_all_fds_from(int fd);
 static int process_open(const char *cmd, int *fd);
 
-char BUFFER[4096];
+static char BUFFER[4096];
 
 void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
     p->color = color;
-    const int name_len = strlen(name) + 1;
-    p->name = malloc(name_len);
+    asprintf(&p->name, "%s", name);
     if (!p->name) {
-        perror("malloc p->name");
-        exit(1);
+        perror("asprintf p->name");
+        return;
     }
-    memcpy(p->name, name, name_len);
-    const int cmd_len = strlen(cmd) + 1;
-    p->cmd = malloc(cmd_len);
+    asprintf(&p->cmd, "%s", cmd);
     if (!p->cmd) {
-        perror("malloc p->cmd");
-        exit(1);
+        perror("asprintf p->cmd");
+        free(p->name);
+        p->name = NULL;
+        return;
     }
-    memcpy(p->cmd, cmd, cmd_len);
     p->out_fd_count = 0;
     p->out_fds = NULL;
     p->pid = -1;
