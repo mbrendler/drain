@@ -73,7 +73,7 @@ char BUFFER[4096];
 #include <errno.h>
 #include <fcntl.h>
 
-int cmd_log(int argc, char** argv) {
+int cmd_attach(int argc, char** argv) {
     Message out, in;
     out.nr = mnLog;
     ProcessList *l = NULL;
@@ -178,7 +178,7 @@ const Command COMMANDS[] = {
     { "server",  cmd_server,  "server [NAME ...]             -- start drain server" },
     { "restart", cmd_restart, "restart [NAME ...]            -- restart one, more or all processes" },
     { "ping",    cmd_ping,    "ping                          -- ping drain server" },
-    { "log",     cmd_log,     "log NAME ...                  -- retreive output of processes" },
+    { "attach",  cmd_attach,  "attach NAME ...               -- retreive output of processes" },
     { "help",    cmd_help,    "help                          -- show this help" },
     { "halt",    cmd_halt,    "halt [NAME ...]               -- stop one, more or all processes" },
     { "add",     cmd_add,     "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },
