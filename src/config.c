@@ -7,25 +7,20 @@
 #include <unistd.h>
 #include <termcap.h>
 
-enum ConfigLine {clName, clColor, clCmd};
+typedef struct {
+    char* name;
+    int color;
+    char* cmd;
+} DrainfileLine;
 
-static bool config_parse_line(char* str, const char** cfg) {
-    int i = clColor;
-    cfg[clName] = str;
-    while (*str) {
-        if (':' == *str) {
-            *str = '\0';
-            cfg[i] = str + 1;
-            if (clCmd == i) {
-                const int cmd_len = strlen(str + 1);
-                if (str[cmd_len] == '\n') { str[cmd_len] = 0; }
-                return true;
-            }
-            ++i;
-        }
-        ++str;
-    }
-    return false;
+static DrainfileLine config_parse_drainfile_line(char* str) {
+    DrainfileLine parsed;
+    parsed.name = strsep(&str, ":");
+    if (!str) { return parsed; }
+    parsed.color = atoi(strsep(&str, ":"));
+    if (!str) { return parsed; }
+    parsed.cmd = strsep(&str, "\n");
+    return parsed;
 }
 
 ProcessList* config_read_drainfile(const char* filename) {
@@ -38,14 +33,14 @@ ProcessList* config_read_drainfile(const char* filename) {
     ProcessList *l = NULL;
     while (fgets(buffer, sizeof(buffer), f)) {
         if ('#' == *buffer) { continue; } // line is comment
-        const char *cfg[3] = {NULL, NULL, NULL};
-        if (config_parse_line(buffer, cfg)) {
+        const DrainfileLine parsed = config_parse_drainfile_line(buffer);
+        if (parsed.name && parsed.cmd) {
             ProcessList *new = process_list_new(
-                cfg[clName], cfg[clCmd], atoi(cfg[clColor]), -1
+                parsed.name, parsed.cmd, parsed.color, -1
             );
-            if (!new) { fprintf(stderr, "Ignore %s\n", cfg[clName]); }
+            if (!new) { fprintf(stderr, "Ignore %s\n", parsed.name); }
             l = process_list_append(l, &new);
-            printf("%s : %s : %s\n", cfg[clName], cfg[clColor], cfg[clCmd]);
+            printf("%s : %d : %s\n", parsed.name, parsed.color, parsed.cmd);
         } else {
             fprintf(stderr, "parser error in: %s\n", buffer);
         }
@@ -55,7 +50,8 @@ ProcessList* config_read_drainfile(const char* filename) {
             stderr, "could not load drainfile: %s (%s)",
             filename, strerror(errno)
         );
-        exit(1);
+        process_list_free(l);
+        l = NULL;
     }
     fclose(f);
     return l;
