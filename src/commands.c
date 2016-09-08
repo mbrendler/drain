@@ -174,7 +174,7 @@ const Command COMMANDS[] = {
 int cmd_help(int argc, char** argv) {
     (void)argc;
     (void)argv;
-    puts("drain [CMD]\n");
+    puts("drain [options] [CMD]\n");
     puts("options");
     puts("  -f DRAINFILE    -- configure drainfile path");
     puts("  -S SOCKET-PATH  -- specify full socket path");
