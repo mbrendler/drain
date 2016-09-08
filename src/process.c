@@ -15,14 +15,12 @@ static char BUFFER[4096];
 
 void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
     p->color = color;
-    asprintf(&p->name, "%s", name);
-    if (!p->name) {
-        perror("asprintf p->name");
+    if (!(p->name = strdup(name))) {
+        perror("strdup p->name");
         return;
     }
-    asprintf(&p->cmd, "%s", cmd);
-    if (!p->cmd) {
-        perror("asprintf p->cmd");
+    if (!(p->cmd = strdup(cmd))) {
+        perror("strdup p->cmd");
         free(p->name);
         p->name = NULL;
         return;
