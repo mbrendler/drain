@@ -58,11 +58,11 @@ ProcessList* config_read_drainfile(const char* filename) {
 }
 
 static Config CFG = {
+    .termtype = NULL,
     .term_width = 80,
     .line_wrap = true,
     .verbose = false,
     .keep_running = false,
-    .termtype = NULL,
     .drainfile = NULL,
 };
 const Config *CONFIG = &CFG;
