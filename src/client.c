@@ -1,4 +1,5 @@
 #include "client.h"
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -38,7 +39,8 @@ int client_start(Client *c) {
 
     struct sockaddr_un addr;
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, "/tmp/drain");
+    strncpy(addr.sun_path, CONFIG->socket_path, sizeof(addr.sun_path));
+    addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
     /* struct sockaddr_in addr; */
     /* bzero((char *) &addr, sizeof(addr)); */
     /* addr.sin_family = AF_INET; */

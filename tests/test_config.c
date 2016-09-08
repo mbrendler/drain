@@ -11,20 +11,29 @@ void test_config_init() {
     ASSERT_STRING(expected_drainfile, CONFIG->drainfile);
     free(expected_drainfile);
     expected_drainfile = NULL;
+
+    char *expected_socket_path = NULL;
+    asprintf(&expected_socket_path, "/tmp/drain-%d", getuid());
+    ASSERT_STRING(expected_socket_path, CONFIG->socket_path);
+    free(expected_socket_path);
+    expected_socket_path = NULL;
 }
 
 void test_config_parse_args() {
     char *argv[] = {
         "program-name",
-        "-v", "-W", "-k", "-f", "another-drainfile",
+        "-v", "-W", "-k",
+        "-f", "another-drainfile",
+        "-S", "another-socket-path",
         "some", "other", "args"
     };
-    int new_argc = config_parse_args(9, argv);
+    int new_argc = config_parse_args(11, argv);
     ASSERT_INT(3, new_argc);
     ASSERT_INT(true, CONFIG->verbose);
     ASSERT_INT(false, CONFIG->line_wrap);
     ASSERT_INT(true, CONFIG->keep_running);
     ASSERT_STRING("another-drainfile", CONFIG->drainfile);
+    ASSERT_STRING("another-socket-path", CONFIG->socket_path);
 }
 
 void test_config_read_drainfile() {

@@ -64,6 +64,7 @@ static Config CFG = {
     .verbose = false,
     .keep_running = false,
     .drainfile = NULL,
+    .socket_path = NULL,
 };
 const Config *CONFIG = &CFG;
 
@@ -72,6 +73,10 @@ void config_init() {
     // Will only be freed, if the command-line argument -f is given:
     if (-1 == asprintf(&CFG.drainfile, "%s/.drainfile", getenv("HOME"))) {
         perror("config: asprintf drainfile");
+        exit(1);
+    }
+    if (-1 == asprintf(&CFG.socket_path, "/tmp/drain-%d", getuid())) {
+        perror("config: asprintf socket_path");
         exit(1);
     }
     config_init_term_width();
@@ -96,7 +101,7 @@ void config_init_term_width() {
 
 int config_parse_args(int argc, char **argv) {
     int ch;
-    while (-1 != (ch = getopt(argc, argv, "vwWkf:h"))) {
+    while (-1 != (ch = getopt(argc, argv, "vwWkf:S:h"))) {
         switch (ch) {
             case 'v': CFG.verbose = true; break;
             case 'w': CFG.line_wrap = true; break;
@@ -106,6 +111,10 @@ int config_parse_args(int argc, char **argv) {
             case 'f':
                 if (NULL != CFG.drainfile) { free(CFG.drainfile); }
                 CFG.drainfile = optarg;
+                break;
+            case 'S':
+                if (NULL != CFG.socket_path) { free(CFG.socket_path); }
+                CFG.socket_path = optarg;
                 break;
             default: return -1;
         }

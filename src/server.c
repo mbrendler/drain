@@ -1,4 +1,5 @@
 #include "server.h"
+#include "config.h"
 #include "actions.h"
 #include <stdio.h>
 #include <string.h>
@@ -21,7 +22,8 @@ int server_start(Server *s) {
     }
 
     s->addr.sun_family = AF_UNIX;
-    strcpy(s->addr.sun_path, "/tmp/drain");
+    strncpy(s->addr.sun_path, CONFIG->socket_path, sizeof(s->addr.sun_path));
+    s->addr.sun_path[sizeof(s->addr.sun_path) - 1] = '\0';
     /* unlink(s->addr.sun_path); */
     /* s->addr.sin_family = AF_INET; */
     /* s->addr.sin_port = htons(s->port); */

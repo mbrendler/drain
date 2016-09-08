@@ -176,12 +176,13 @@ int cmd_help(int argc, char** argv) {
     (void)argv;
     puts("drain [CMD]\n");
     puts("options");
-    puts("  -f DRAINFILE -- configure drainfile path");
-    puts("  -h           -- help");
-    puts("  -k           -- keep server running");
-    puts("  -v           -- verbose");
-    puts("  -w           -- line wrapping in log output");
-    puts("  -W           -- no line wrapping in log output\n");
+    puts("  -f DRAINFILE    -- configure drainfile path");
+    puts("  -S SOCKET-PATH  -- specify full socket path");
+    puts("  -h              -- help");
+    puts("  -k              -- keep server running");
+    puts("  -v              -- verbose");
+    puts("  -w              -- line wrapping in log output");
+    puts("  -W              -- no line wrapping in log output\n");
     puts("commands");
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
     while (COMMANDS != cmd) {
