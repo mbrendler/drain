@@ -1,5 +1,6 @@
 #include "commands.h"
 #include "cmd_server.h"
+#include "config.h"
 #include "client.h"
 #include "helpers.h"
 #include "actions.h"
@@ -149,6 +150,26 @@ int cmd_add(int argc, char** argv) {
     return 0;
 }
 
+int cmd_drainfile(int argc, char** argv) {
+    (void)argc;
+    (void)argv;
+    printf("%s\n\n", CONFIG->drainfile);
+    char buffer[4096];
+    FILE *f = fopen(CONFIG->drainfile, "r");
+    if (!f) {
+        perror("cmd_drainfile: fopen");
+        return -1;
+    }
+    while (fgets(buffer, sizeof(buffer), f)) {
+        printf("%s", buffer);
+    }
+    if (ferror(f)) {
+        perror("cmd_drainfile: fgets");
+    }
+    fclose(f);
+    return 0;
+}
+
 int cmd_help(int argc, char** argv);
 
 typedef int(*CommandFunction)(int, char**);
@@ -160,15 +181,16 @@ typedef struct {
 } Command;
 
 const Command COMMANDS[] = {
-    { "up",      cmd_up,      "up [NAME ...]                 -- start one, more or all processes" },
-    { "status",  cmd_status,  "status                        -- status of drain server" },
-    { "server",  cmd_server,  "server [NAME ...]             -- start drain server" },
-    { "restart", cmd_restart, "restart [NAME ...]            -- restart one, more or all processes" },
-    { "ping",    cmd_ping,    "ping                          -- ping drain server" },
-    { "attach",  cmd_attach,  "attach NAME ...               -- retreive output of processes" },
-    { "help",    cmd_help,    "help                          -- show this help" },
-    { "halt",    cmd_halt,    "halt [NAME ...]               -- stop one, more or all processes" },
-    { "add",     cmd_add,     "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },
+    { "up",        cmd_up,        "up [NAME ...]                 -- start one, more or all processes" },
+    { "status",    cmd_status,    "status                        -- status of drain server" },
+    { "server",    cmd_server,    "server [NAME ...]             -- start drain server" },
+    { "restart",   cmd_restart,   "restart [NAME ...]            -- restart one, more or all processes" },
+    { "ping",      cmd_ping,      "ping                          -- ping drain server" },
+    { "help",      cmd_help,      "help                          -- show this help" },
+    { "halt",      cmd_halt,      "halt [NAME ...]               -- stop one, more or all processes" },
+    { "drainfile", cmd_drainfile, "drainfile                     -- show drainfile" },
+    { "attach",    cmd_attach,    "attach NAME ...               -- retreive output of processes" },
+    { "add",       cmd_add,       "add NAME COLOR CMD [ARGS ...] -- add a new process (no start)" },
 };
 
 int cmd_help(int argc, char** argv) {
