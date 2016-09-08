@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 typedef struct ProcessList ProcessList;
+typedef struct Server Server;
 
 typedef struct {
     int16_t nr;

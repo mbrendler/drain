@@ -101,19 +101,8 @@ int cmd_attach(int argc, char** argv) {
         }
     }
 
-    int result = 0;
-    fd_set set;
-    const int max = process_list_max_fd(l, -1);
-    while (process_list_init_fd_set(l, &set)) {
-        if (-1 == select(max + 1, &set, NULL, NULL, NULL)) {
-            if (EINTR == errno) { continue; }
-            perror("select");
-            result = -1;
-            break;
-        }
-        process_list_forward(l, &set);
-    }
-
+    cmd_server_register_signal_handlers();
+    const int result = cmd_server_monitor_processes(l, NULL);
     process_list_free(l);
     return result;
 }

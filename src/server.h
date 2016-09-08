@@ -5,12 +5,14 @@
 #include <sys/un.h>
 #include <sys/select.h>
 
-typedef struct {
+typedef struct Server Server;
+
+struct Server {
     int fd;
     struct sockaddr_un addr;
     /* struct sockaddr_in addr; */
     /* int port; */
-} Server;
+};
 
 void server_init(Server *s);
 
