@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.h"
-/* #include <netinet/in.h> */
 #include <sys/un.h>
 #include <sys/select.h>
 

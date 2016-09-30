@@ -5,16 +5,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <netinet/in.h>
 
 void server_init(Server *s) {
     s->fd = -1;
     memset(&s->addr, 0, sizeof(s->addr));
-    /* s->port = 9999; */
 }
 
-#include <netinet/in.h>
 int server_start(Server *s) {
-    /* s->fd = socket(AF_INET, SOCK_STREAM, 0); */
     s->fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (-1 == s->fd) {
         perror("socket");
@@ -24,11 +22,6 @@ int server_start(Server *s) {
     s->addr.sun_family = AF_UNIX;
     strncpy(s->addr.sun_path, CONFIG->socket_path, sizeof(s->addr.sun_path));
     s->addr.sun_path[sizeof(s->addr.sun_path) - 1] = '\0';
-    /* unlink(s->addr.sun_path); */
-    /* s->addr.sin_family = AF_INET; */
-    /* s->addr.sin_port = htons(s->port); */
-    /* s->addr.sin_addr.s_addr = INADDR_ANY; */
-    /* bzero(&(s->addr.sin_zero), 8); */
 
     if (-1 == setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int))) {
         perror("setsockopt");
