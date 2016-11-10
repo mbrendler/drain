@@ -144,10 +144,10 @@ int process_forward(Process *p) {
 }
 
 int process_print_status(const Process* p) {
-    printf("\033[3%dm%8s\033[39;49m | %s | %5d | %2d | %s\n",
+    printf("\033[3%dm%8s\033[39;49m | %4s | %5d | %2d | %s\n",
         p->color,
         p->name,
-        p->pid > -1 ? "running" : "stopped",
+        p->pid > -1 ? "up" : "down",
         p->pid,
         p->out_fd_count,
         p->cmd
