@@ -14,7 +14,7 @@ typedef struct {
 } DrainfileLine;
 
 static DrainfileLine config_parse_drainfile_line(char* str) {
-    DrainfileLine parsed = {NULL, 0, NULL};
+    DrainfileLine parsed = {.name=NULL, .color=0, .cmd=NULL};
     parsed.name = strsep(&str, ":");
     if (!str) { return parsed; }
     parsed.color = atoi(strsep(&str, ":"));

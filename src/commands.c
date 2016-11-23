@@ -33,7 +33,7 @@ int cmd_ping(int argc, char** argv) {
 int cmd_status(int argc, char** argv) {
     (void)argc;
     (void)argv;
-    Message msg = { mnStatus, 0, "" };
+    Message msg = {.nr=mnStatus, .size=0, .content=""};
     if (-1 == client_do(&msg, &msg)) { return -1; }
     int pos = 0;
     while (pos < msg.size) {
