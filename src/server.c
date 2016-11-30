@@ -79,6 +79,11 @@ int server_incomming(Server *s, fd_set *set, ProcessList *l) {
         perror("recv size");
         return -1;
     }
+    if (sizeof(in.content) < in.size) {
+        close(fd);
+        fprintf(stderr, "received content size");
+        return -1;
+    }
     if (-1 == recv(fd, &in.content, in.size, 0)) {
         close(fd);
         perror("recv content");
