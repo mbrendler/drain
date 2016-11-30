@@ -61,7 +61,6 @@ int server_incomming(Server *s, fd_set *set, ProcessList *l) {
         perror("accept");
         return -1;
     }
-    puts("=================== connected ============================");
 
     if (-1 == fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_NONBLOCK)) {
         close(fd);
