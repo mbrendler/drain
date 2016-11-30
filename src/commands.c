@@ -12,21 +12,21 @@
 #include <sys/time.h>
 
 int cmd_ping(int argc, char** argv) {
-    Message pkg;
+    Message msg;
     char *content = argc > 0 ? *argv : "hallo";
-    memcpy(pkg.content, content, strlen(content) + 1);
-    pkg.size = strlen(content) + 1;
-    pkg.nr = mnPing;
+    memcpy(msg.content, content, strlen(content) + 1);
+    msg.size = strlen(content) + 1;
+    msg.nr = mnPing;
 
     struct timeval tv1, tv2;
     gettimeofday(&tv1, NULL);
-    if (-1 == client_do(&pkg, &pkg)) { return -1; }
+    if (-1 == client_do(&msg, &msg)) { return -1; }
     gettimeofday(&tv2, NULL);
     double time = (
         (double)(tv2.tv_usec - tv1.tv_usec) / 1000 +
         (double) (tv2.tv_sec - tv1.tv_sec) * 1000
     );
-    printf("%d bytes time=%.3f ms (%s)\n", pkg.size, time, pkg.content);
+    printf("%d bytes time=%.3f ms (%s)\n", msg.size, time, msg.content);
     return 0;
 }
 
