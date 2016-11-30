@@ -12,12 +12,16 @@ void test_serialize_string_array() {
     char *array[] = {"hallo", "welt", "wald"};
     char buffer[16];
 
-    int size = serialize_string_array(array, sizeof(array) / sizeof(*array), buffer, sizeof(buffer));
+    int size = serialize_string_array(
+        array, sizeof(array) / sizeof(*array), buffer, sizeof(buffer)
+    );
     ASSERT_INT(16, size);
     ASSERT_BYTES(sizeof(buffer), "hallo\0welt\0wald\0", buffer);
 
     // Buffer is too small:
-    size = serialize_string_array(array, sizeof(array) / sizeof(*array), buffer, sizeof(buffer) - 1);
+    size = serialize_string_array(
+        array, sizeof(array) / sizeof(*array), buffer, sizeof(buffer) - 1
+    );
     ASSERT_INT(-1, size);
 }
 
