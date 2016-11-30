@@ -45,26 +45,26 @@ int cmd_status(int argc, char** argv) {
 }
 
 int cmd_up(int argc, char** argv) {
-    Message out, in;
-    out.nr = mnUp;
-    out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
-    if (-1 == client_do(&out, &in)) { return -1; }
+    Message msg;
+    msg.nr = mnUp;
+    msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
+    if (-1 == client_do(&msg, &msg)) { return -1; }
     return 0;
 }
 
 int cmd_halt(int argc, char** argv) {
-    Message out, in;
-    out.nr = mnDown;
-    out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
-    if (-1 == client_do(&out, &in)) { return -1; }
+    Message msg;
+    msg.nr = mnDown;
+    msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
+    if (-1 == client_do(&msg, &msg)) { return -1; }
     return 0;
 }
 
 int cmd_restart(int argc, char** argv) {
-    Message out, in;
-    out.nr = mnRestart;
-    out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
-    if (-1 == client_do(&out, &in)) { return -1; }
+    Message msg;
+    msg.nr = mnRestart;
+    msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
+    if (-1 == client_do(&msg, &msg)) { return -1; }
     return 0;
 }
 
