@@ -41,7 +41,7 @@ void process_list_process_stop(ProcessList* l, int namesc, char **names) {
     if (!namesc || 0 <= string_list_contains(l->p.name, namesc, names)) {
         process_stop(&l->p);
     }
-    process_list_process_kill(l->n, namesc, names);
+    process_list_process_stop(l->n, namesc, names);
 }
 
 void process_list_process_kill(ProcessList* l, int namesc, char **names) {
