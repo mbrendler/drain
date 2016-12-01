@@ -45,28 +45,24 @@ int cmd_status(int argc, char** argv) {
     return 0;
 }
 
-int cmd_up(int argc, char** argv) {
+static int simple_command(enum MessageNumber nr, int argc, char** argv) {
     Message msg;
-    msg.nr = mnUp;
+    msg.nr = nr;
     msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
     if (-1 == client_do(&msg, &msg)) { return -1; }
     return 0;
+}
+
+int cmd_up(int argc, char** argv) {
+    return simple_command(mnUp, argc, argv);
 }
 
 int cmd_halt(int argc, char** argv) {
-    Message msg;
-    msg.nr = mnDown;
-    msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
-    if (-1 == client_do(&msg, &msg)) { return -1; }
-    return 0;
+    return simple_command(mnDown, argc, argv);
 }
 
 int cmd_restart(int argc, char** argv) {
-    Message msg;
-    msg.nr = mnRestart;
-    msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
-    if (-1 == client_do(&msg, &msg)) { return -1; }
-    return 0;
+    return simple_command(mnRestart, argc, argv);
 }
 
 bool is_error(const Message* msg) {
