@@ -166,6 +166,20 @@ int cmd_drainfile(int argc, char** argv) {
     return 0;
 }
 
+int cmd__list_names(int argc, char** argv) {
+    (void)argc;
+    (void)argv;
+    Message msg = {.nr=mnStatus, .size=0, .content=""};
+    if (-1 == client_do(&msg, &msg)) { return -1; }
+    int pos = 0;
+    while (pos < msg.size) {
+        Process p;
+        pos += process_deserialize(msg.content + pos, &p);
+        puts(p.name);
+    }
+    return 0;
+}
+
 typedef int(*CommandFunction)(int, char**);
 
 typedef struct {
@@ -175,35 +189,39 @@ typedef struct {
 } Command;
 
 const Command COMMANDS[] = {
-    { "up",        cmd_up,        "up [NAME ...]                      -- start one, more or all processes" },
-    { "status",    cmd_status,    "status                             -- status of drain server" },
-    { "server",    cmd_server,    "server [NAME ...]                  -- start drain server" },
-    { "restart",   cmd_restart,   "restart [NAME ...]                 -- restart one, more or all processes" },
-    { "ping",      cmd_ping,      "ping                               -- ping drain server" },
-    { "help",      cmd_help,      "help                               -- show this help" },
-    { "halt",      cmd_halt,      "halt [NAME ...]                    -- stop one, more or all processes" },
-    { "drainfile", cmd_drainfile, "drainfile [-d|-e]                  -- show / edit drainfile" },
-    { "attach",    cmd_attach,    "attach NAME ...                    -- retreive output of processes" },
-    { "add",       cmd_add,       "add [-s] NAME COLOR CMD [ARGS ...] -- add a new process (-s will start it)" },
+    { "_list-names", cmd__list_names, "_list-names                        -- list list all available commands"},
+    { "up",          cmd_up,          "up [NAME ...]                      -- start one, more or all processes" },
+    { "status",      cmd_status,      "status                             -- status of drain server" },
+    { "server",      cmd_server,      "server [NAME ...]                  -- start drain server" },
+    { "restart",     cmd_restart,     "restart [NAME ...]                 -- restart one, more or all processes" },
+    { "ping",        cmd_ping,        "ping                               -- ping drain server" },
+    { "help",        cmd_help,        "help                               -- show this help" },
+    { "halt",        cmd_halt,        "halt [NAME ...]                    -- stop one, more or all processes" },
+    { "drainfile",   cmd_drainfile,   "drainfile [-d|-e]                  -- show / edit drainfile" },
+    { "attach",      cmd_attach,      "attach NAME ...                    -- retreive output of processes" },
+    { "add",         cmd_add,         "add [-s] NAME COLOR CMD [ARGS ...] -- add a new process (-s will start it)" },
 };
 
 int cmd_help(int argc, char** argv) {
     (void)argc;
     (void)argv;
+    bool all = argc > 0 && 0 == strcmp("-a", argv[0]);
     puts("drain [options] [CMD]\n");
     puts("options");
-    puts("  -f DRAINFILE    -- configure drainfile path");
-    puts("  -S SOCKET-PATH  -- specify full socket path");
-    puts("  -h              -- help");
-    puts("  -k              -- keep server running");
-    puts("  -v              -- verbose");
-    puts("  -w              -- line wrapping in log output");
-    puts("  -W              -- no line wrapping in log output\n");
+    puts("  -f FILE    -- configure drainfile path");
+    puts("  -S FILE    -- specify full socket path");
+    puts("  -h         -- help");
+    puts("  -k         -- keep server running");
+    puts("  -v         -- verbose");
+    puts("  -w         -- line wrapping in log output");
+    puts("  -W         -- no line wrapping in log output\n");
     puts("commands");
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
     while (COMMANDS != cmd) {
         --cmd;
-        printf("  %s\n", cmd->short_help);
+        if (all || '_' != cmd->name[0]) {
+            printf("  %s\n", cmd->short_help);
+        }
     }
     return 0;
 }
