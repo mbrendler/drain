@@ -166,8 +166,6 @@ int cmd_drainfile(int argc, char** argv) {
     return 0;
 }
 
-int cmd_help(int argc, char** argv);
-
 typedef int(*CommandFunction)(int, char**);
 
 typedef struct {
