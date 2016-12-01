@@ -12,6 +12,18 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
+bool is_error(const Message* msg) {
+    return msg->nr < 0;
+}
+
+void handle_error(const Message* msg) {
+    if (-1 == msg->nr) {
+        fprintf(stderr, "%s\n", msg->content);
+    } else {
+        fprintf(stderr, "Unknown error number: %d\n", msg->nr);
+    }
+}
+
 int cmd_ping(int argc, char** argv) {
     Message msg;
     char *content = argc > 0 ? *argv : "hallo";
@@ -22,6 +34,10 @@ int cmd_ping(int argc, char** argv) {
     struct timeval tv1, tv2;
     gettimeofday(&tv1, NULL);
     if (-1 == client_do(&msg, &msg)) { return -1; }
+    if (is_error(&msg)) {
+        handle_error(&msg);
+        return -1;
+    }
     gettimeofday(&tv2, NULL);
     double time = (
         (double)(tv2.tv_usec - tv1.tv_usec) / 1000 +
@@ -36,6 +52,10 @@ int cmd_status(int argc, char** argv) {
     (void)argv;
     Message msg = {.nr=mnStatus, .size=0, .content=""};
     if (-1 == client_do(&msg, &msg)) { return -1; }
+    if (is_error(&msg)) {
+        handle_error(&msg);
+        return -1;
+    }
     int pos = 0;
     while (pos < msg.size) {
         Process p;
@@ -50,6 +70,10 @@ static int simple_command(enum MessageNumber nr, int argc, char** argv) {
     msg.nr = nr;
     msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
     if (-1 == client_do(&msg, &msg)) { return -1; }
+    if (is_error(&msg)) {
+        handle_error(&msg);
+        return -1;
+    }
     return 0;
 }
 
@@ -63,18 +87,6 @@ int cmd_halt(int argc, char** argv) {
 
 int cmd_restart(int argc, char** argv) {
     return simple_command(mnRestart, argc, argv);
-}
-
-bool is_error(const Message* msg) {
-    return msg->nr < 0;
-}
-
-void handle_error(const Message* msg) {
-    if (-1 == msg->nr) {
-        fprintf(stderr, "%s\n", msg->content);
-    } else {
-        fprintf(stderr, "Unknown error number: %d\n", msg->nr);
-    }
 }
 
 int cmd_add(int argc, char** argv) {
@@ -103,6 +115,10 @@ int cmd_add(int argc, char** argv) {
         out.size = len;
         out.nr = mnUp;
         if (-1 == client_do(&out, &in)) { return -1; }
+        if (is_error(&in)) {
+            handle_error(&in);
+            return -1;
+        }
     }
     return 0;
 }
@@ -127,6 +143,10 @@ int cmd__list_names(int argc, char** argv) {
     (void)argv;
     Message msg = {.nr=mnStatus, .size=0, .content=""};
     if (-1 == client_do(&msg, &msg)) { return -1; }
+    if (is_error(&msg)) {
+        handle_error(&msg);
+        return -1;
+    }
     int pos = 0;
     while (pos < msg.size) {
         Process p;
