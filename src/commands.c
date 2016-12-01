@@ -146,16 +146,16 @@ typedef struct {
 
 const Command COMMANDS[] = {
     { "_list-names", cmd__list_names, "_list-names                        -- list list all available commands"},
-    { "up",          cmd_up,          "up [NAME ...]                      -- start one, more or all processes" },
+    { "up",          cmd_up,          "up [NAME...]                      -- start one, more or all processes" },
     { "status",      cmd_status,      "status                             -- status of drain server" },
-    { "server",      cmd_server,      "server [NAME ...]                  -- start drain server" },
-    { "restart",     cmd_restart,     "restart [NAME ...]                 -- restart one, more or all processes" },
+    { "server",      cmd_server,      "server [NAME...]                  -- start drain server" },
+    { "restart",     cmd_restart,     "restart [NAME...]                 -- restart one, more or all processes" },
     { "ping",        cmd_ping,        "ping                               -- ping drain server" },
     { "help",        cmd_help,        "help                               -- show this help" },
-    { "halt",        cmd_halt,        "halt [NAME ...]                    -- stop one, more or all processes" },
+    { "halt",        cmd_halt,        "halt [NAME...]                    -- stop one, more or all processes" },
     { "drainfile",   cmd_drainfile,   "drainfile [-d|-e]                  -- show / edit drainfile" },
-    { "attach",      cmd_attach,      "attach NAME ...                    -- retreive output of processes" },
-    { "add",         cmd_add,         "add [-s] NAME COLOR CMD [ARGS ...] -- add a new process (-s will start it)" },
+    { "attach",      cmd_attach,      "attach NAME...                    -- retreive output of processes" },
+    { "add",         cmd_add,         "add [-s] NAME COLOR CMD [ARGS...] -- add a new process (-s will start it)" },
 };
 
 int cmd_help(int argc, char** argv) {
