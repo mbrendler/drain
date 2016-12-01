@@ -15,6 +15,7 @@ set(SRCS
   src/actions.c
   src/commands.c
   src/cmd_server.c
+  src/cmd_attach.c
   src/helpers.c
 )
 
