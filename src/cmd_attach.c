@@ -16,7 +16,8 @@ int cmd_attach(int argc, char** argv) {
         Client c;
         client_init(&c);
         if (-1 == client_start(&c)) { return -1; }
-        if (-1 == client_send(&c, &out, &in)) { return -1; }
+        if (-1 == client_send(&c, &out)) { return -1; }
+        if (-1 == client_receive(&c, &in)) { return -1; }
         if (0 != in.nr) {
             client_stop(&c);
             fprintf(stderr, "process not found - %s\n", argv[i]);

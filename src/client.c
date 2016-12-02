@@ -11,7 +11,8 @@ int client_do(const Message* out, Message* in) {
     Client c;
     client_init(&c);
     if (-1 == client_start(&c)) { return -1; }
-    if (-1 == client_send(&c, out, in)) { return -1; }
+    if (-1 == client_send(&c, out)) { return -1; }
+    if (-1 == client_receive(&c, in)) { return -1; }
     client_stop(&c);
     return 0;
 }
@@ -60,7 +61,7 @@ int client_start(Client *c) {
     return 0;
 }
 
-int client_send(Client *c, const Message* out, Message* in) {
+int client_send(Client *c, const Message* out) {
     if (-1 == write(c->fd, &out->nr, sizeof(out->nr))) {
         client_stop(c);
         perror("write nr");
@@ -76,7 +77,10 @@ int client_send(Client *c, const Message* out, Message* in) {
         perror("write content");
         return -1;
     }
+    return 0;
+}
 
+int client_receive(Client *c, Message* in) {
     if (-1 == read(c->fd, &in->nr, sizeof(in->nr))) {
         client_stop(c);
         perror("read nr");

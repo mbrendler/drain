@@ -16,4 +16,6 @@ int client_start(Client *c);
 
 void client_stop(Client *c);
 
-int client_send(Client *c, const Message* out, Message* in);
+int client_send(Client *c, const Message* out);
+
+int client_receive(Client *c, Message* in);

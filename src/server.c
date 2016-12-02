@@ -48,7 +48,7 @@ int server_start(Server *s) {
 
 void server_stop(Server *s) {
     close(s->fd);
-    s->fd = 0;
+    s->fd = -1;
     unlink(s->addr.sun_path);
 }
 
