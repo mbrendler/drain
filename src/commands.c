@@ -138,11 +138,25 @@ int cmd_drainfile(int argc, char** argv) {
     return 0;
 }
 
+int process_print_name(const Process* p) {
+    puts(p->name);
+    return 0;
+}
+
+static void print_names() {
+    ProcessList* l = config_read_drainfile(CONFIG->drainfile);
+    process_list_each(l, process_print_name);
+    process_list_free(l);
+}
+
 int cmd__list_names(int argc, char** argv) {
     (void)argc;
     (void)argv;
     Message msg = {.nr=mnStatus, .size=0, .content=""};
-    if (-1 == client_do(&msg, &msg)) { return -1; }
+    if (-1 == client_do(&msg, &msg)) {
+        print_names();
+        return -1;
+    }
     if (is_error(&msg)) {
         handle_error(&msg);
         return -1;
