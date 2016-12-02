@@ -1,6 +1,5 @@
 #pragma once
 
-#include "types.h"
 #include <sys/un.h>
 #include <sys/select.h>
 
@@ -19,4 +18,4 @@ int server_start(Server *s);
 
 void server_stop(Server *s);
 
-int server_incomming(Server *s, fd_set *set, ProcessList *l);
+int server_incomming(Server *s, fd_set *set);

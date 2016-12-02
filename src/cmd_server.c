@@ -9,6 +9,10 @@
 static int shutdown_drain = 0;
 static ProcessList *list = NULL;
 
+ProcessList* process_list() {
+    return list;
+}
+
 void cmd_server_stop() {
     shutdown_drain = 1;
 }
@@ -38,7 +42,7 @@ int cmd_server_monitor_processes(ProcessList* l, Server* s) {
             perror("select");
             return -1;
         }
-        if (s) { server_incomming(s, &set, l); }
+        if (s) { server_incomming(s, &set); }
         process_list_forward(l, &set);
     }
     return 0;

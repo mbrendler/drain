@@ -14,13 +14,11 @@ int cmd_help(int argc, char** argv) {
 static struct {
     Message in;
     Message out;
-    ProcessList *l;
 } perform_action_mock;
 
-int perform_action(int fd, Message* in, Message* out, ProcessList* l) {
+int perform_action(int fd, Message* in, Message* out) {
     (void)fd;
     perform_action_mock.in = *in;
-    perform_action_mock.l = l;
     *out = perform_action_mock.out;
     return 0;
 }
@@ -50,11 +48,10 @@ void test_client_server() {
     ASSERT_INT(-1, c.fd);
     ASSERT_INT(0, client_start(&c))
     ASSERT_INT(0, client_send(&c, &out));
-    ASSERT_INT(0, server_incomming(&s, &set, (ProcessList*)42));
+    ASSERT_INT(0, server_incomming(&s, &set));
     ASSERT_INT(23, perform_action_mock.in.nr);
     ASSERT_INT(12, perform_action_mock.in.size);
     ASSERT_STRING("hello world", perform_action_mock.in.content);
-    ASSERT_INT(42, (int)perform_action_mock.l);
 
     Message in;
     ASSERT_INT(0, client_receive(&c, &in));

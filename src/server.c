@@ -52,7 +52,7 @@ void server_stop(Server *s) {
     unlink(s->addr.sun_path);
 }
 
-int server_incomming(Server *s, fd_set *set, ProcessList *l) {
+int server_incomming(Server *s, fd_set *set) {
     if (s->fd < 0 || !FD_ISSET(s->fd, set)) { return 0; }
     struct sockaddr_in addr;
     socklen_t sin_size;
@@ -90,7 +90,7 @@ int server_incomming(Server *s, fd_set *set, ProcessList *l) {
         return -1;
     }
     Message out;
-    const int rc = perform_action(fd, &in, &out, l);
+    const int rc = perform_action(fd, &in, &out);
     if (-1 == rc) {
         close(fd);
         fprintf(stderr, "perform_action\n");
