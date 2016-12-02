@@ -20,14 +20,13 @@ void test_config_init() {
 }
 
 void test_config_parse_args() {
-    char *argv[] = {
+    const int new_argc = config_parse_args(11, (char*[]){
         "program-name",
         "-v", "-W", "-k",
         "-f", "another-drainfile",
         "-S", "another-socket-path",
         "some", "other", "args"
-    };
-    int new_argc = config_parse_args(11, argv);
+    });
     ASSERT_INT(3, new_argc);
     ASSERT_INT(true, CONFIG->verbose);
     ASSERT_INT(false, CONFIG->line_wrap);
