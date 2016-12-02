@@ -20,14 +20,19 @@ set(SRCS
   src/helpers.c
 )
 
-add_executable(drain ${SRCS} src/drain.c)
-target_link_libraries(drain termcap)
+add_library(_drain ${SRCS})
+
+add_executable(drain src/drain.c)
+target_link_libraries(drain _drain termcap)
 
 add_executable(test_helpers tests/test_helpers.c src/helpers.c)
-add_executable(test_config tests/test_config.c ${SRCS})
-target_link_libraries(test_config termcap)
-add_executable(test_drainfile tests/test_drainfile.c ${SRCS})
-target_link_libraries(test_drainfile termcap)
+
+add_executable(test_config tests/test_config.c)
+target_link_libraries(test_config _drain termcap)
+
+add_executable(test_drainfile tests/test_drainfile.c)
+target_link_libraries(test_drainfile _drain termcap)
+
 enable_testing()
 
 add_test(test_helpers test_helpers)
