@@ -1,4 +1,5 @@
 #include "config.h"
+#include "drainfile.h"
 #include "process_list.h"
 #include "server.h"
 #include <stdio.h>
@@ -45,7 +46,7 @@ int cmd_server_monitor_processes(ProcessList* l, Server* s) {
 
 int cmd_server(int argc, char **argv) {
     int result = -1;
-    list = config_read_drainfile(CONFIG->drainfile);
+    list = drainfile_read(CONFIG->drainfile);
     Server s;
     server_init(&s);
 

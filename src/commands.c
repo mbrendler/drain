@@ -2,6 +2,7 @@
 #include "cmd_server.h"
 #include "cmd_attach.h"
 #include "config.h"
+#include "drainfile.h"
 #include "client.h"
 #include "helpers.h"
 #include "actions.h"
@@ -144,7 +145,7 @@ int process_print_name(const Process* p) {
 }
 
 static void print_names() {
-    ProcessList* l = config_read_drainfile(CONFIG->drainfile);
+    ProcessList* l = drainfile_read(CONFIG->drainfile);
     process_list_each(l, process_print_name);
     process_list_free(l);
 }

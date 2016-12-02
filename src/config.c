@@ -2,59 +2,8 @@
 #include "commands.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 #include <unistd.h>
 #include <termcap.h>
-
-typedef struct {
-    char* name;
-    int color;
-    char* cmd;
-} DrainfileLine;
-
-static DrainfileLine config_parse_drainfile_line(char* str) {
-    DrainfileLine parsed = {.name=NULL, .color=0, .cmd=NULL};
-    parsed.name = strsep(&str, ":");
-    if (!str) { return parsed; }
-    parsed.color = atoi(strsep(&str, ":"));
-    if (!str) { return parsed; }
-    parsed.cmd = strsep(&str, "\n");
-    return parsed;
-}
-
-ProcessList* config_read_drainfile(const char* filename) {
-    FILE* f = fopen(filename, "r");
-    if (!f) {
-        perror("fopen");
-        return NULL;
-    }
-    char buffer[4096];
-    ProcessList *l = NULL;
-    while (fgets(buffer, sizeof(buffer), f)) {
-        if ('#' == *buffer) { continue; } // line is comment
-        const DrainfileLine parsed = config_parse_drainfile_line(buffer);
-        if (parsed.name && parsed.cmd) {
-            ProcessList *new = process_list_new(
-                parsed.name, parsed.cmd, parsed.color, -1
-            );
-            if (!new) { fprintf(stderr, "Ignore %s\n", parsed.name); }
-            l = process_list_append(l, &new);
-        } else {
-            fprintf(stderr, "parser error in: %s\n", buffer);
-        }
-    }
-    if (ferror(f)) {
-        fprintf(
-            stderr, "could not load drainfile: %s (%s)",
-            filename, strerror(errno)
-        );
-        process_list_free(l);
-        l = NULL;
-    }
-    fclose(f);
-    return l;
-}
 
 static Config CFG = {
     .termtype = NULL,
