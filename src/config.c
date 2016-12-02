@@ -40,7 +40,6 @@ ProcessList* config_read_drainfile(const char* filename) {
             );
             if (!new) { fprintf(stderr, "Ignore %s\n", parsed.name); }
             l = process_list_append(l, &new);
-            printf("%s : %d : %s\n", parsed.name, parsed.color, parsed.cmd);
         } else {
             fprintf(stderr, "parser error in: %s\n", buffer);
         }
