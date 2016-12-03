@@ -16,8 +16,6 @@ void process_list_process_start(ProcessList* l, int namesc, char **names);
 
 void process_list_process_stop(ProcessList* l, int namesc, char **names);
 
-ProcessList* process_list_free_element(ProcessList* l);
-
 void process_list_free(ProcessList* l);
 
 int process_list_max_fd(ProcessList *l, int fd);
