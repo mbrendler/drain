@@ -168,4 +168,6 @@ int main() {
     test_action_add();
     init_process_calls();
     test_action_unknown();
+
+    process_list_set(NULL);
 }
