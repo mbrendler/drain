@@ -24,7 +24,23 @@ enum CallFds {
     cfStopCalled,
 };
 
+struct ProcessCalls {
+    int init;
+    int free;
+    int start;
+    int forward;
+    int stop;
+    int add_output_fd;
+    int remove_output_fd;
+    int serialize;
+} process_calls;
+
+void init_process_calls() {
+    process_calls = (struct ProcessCalls){0, 0, 0, 0, 0, 0, 0, 0};
+}
+
 void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
+    process_calls.init++;
     p->name = (char*)name;
     p->cmd = (char*)cmd;
     p->color = color;
@@ -32,6 +48,7 @@ void process_init(Process *p, const char *name, const char *cmd, int color, int 
 }
 
 void process_free(Process *p) {
+    process_calls.free++;
     p->name = NULL;
     p->cmd = NULL;
     p->color = -1;
@@ -39,24 +56,29 @@ void process_free(Process *p) {
 }
 
 void process_start(Process *p) {
+    process_calls.start++;
     p->fd = cfStartCalled;
 }
 
 int process_forward(Process *p) {
+    process_calls.forward++;
     p->fd = cfForwardCalled;
     return 0;
 }
 
 void process_stop(Process *p) {
+    process_calls.stop++;
     p->fd = cfStopCalled;
 }
 
 void process_add_output_fd(Process *p, int fd) {
     p->fd = fd;
+    process_calls.add_output_fd++;
 }
 
 void process_remove_output_fd(Process *p, int index) {
     p->fd = index;
+    process_calls.remove_output_fd++;
 }
 
 int process_serialize(Process *p, char* buffer, int buf_size) {
