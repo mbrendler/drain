@@ -171,9 +171,24 @@ void test_action_restart() {
     ASSERT_INT(cfStartCalled, process_list()->n->p.fd);
 }
 
-// TODO:
-// void test_action_log() {
-// }
+
+void test_action_log() {
+    Message in = {.nr=mnLog, .size=3, .content="p2"};
+    Message out;
+
+    ASSERT_INT(1, perform_action(42, &in, &out));
+    ASSERT_INT(0, out.nr);
+    ASSERT_INT(3, out.size);
+    ASSERT_BYTES(3, "p2", out.content);
+    Process *p = &(process_list()->n->p);
+    ASSERT_INT(42, p->fd);
+
+    // process not found
+    in = (Message){.nr=mnLog, .size=8, .content="unknown"};
+    ASSERT_INT(0, perform_action(394, &in, &out));
+    ASSERT_INT(-2, out.nr);
+    ASSERT_INT(0, out.size);
+}
 
 void test_action_add() {
     Message in = {.nr=mnAdd};
@@ -220,7 +235,7 @@ int main() {
     init_process_calls();
     test_action_restart();
     init_process_calls();
-    /* test_action_log() */
+    test_action_log();
     init_process_calls();
     test_action_add();
     init_process_calls();
