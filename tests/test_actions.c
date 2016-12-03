@@ -137,7 +137,7 @@ void test_action_stop() {
     ASSERT_INT(cfStopCalled, process_list()->p.fd);
     ASSERT_INT(cfStopCalled, process_list()->n->p.fd);
 
-    // start only one
+    // stop only one
     process_list()->p.fd = cfNoneCalled;
     process_list()->n->p.fd = cfNoneCalled;
     in = (Message){.nr=mnDown, .size=3, .content="p2"};
