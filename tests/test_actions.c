@@ -202,11 +202,19 @@ void test_action_add() {
 int main() {
     ProcessList *pl2 = process_list_new("p2", "cmd2", 3, cfNoneCalled);
     list = process_list_append(process_list_new("p1", "cmd1", 1, cfNoneCalled), &pl2);
+
+    init_process_calls();
     test_action_ping();
+    init_process_calls();
     test_action_status();
+    init_process_calls();
     test_action_up();
+    init_process_calls();
     test_action_stop();
+    init_process_calls();
     test_action_restart();
+    init_process_calls();
     /* test_action_log() */
+    init_process_calls();
     test_action_add();
 }
