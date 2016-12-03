@@ -1,5 +1,6 @@
 #include "tests.h"
 #include "../src/actions.h"
+#include "process_mock.h"
 #include "../src/process_list.h"
 #include "../src/helpers.h"
 
@@ -9,81 +10,6 @@ int cmd_help(int argc, char** argv) {
     (void)argc;
     (void)argv;
     return 0;
-}
-
-ProcessList *list = NULL;
-
-ProcessList* process_list() {
-    return list;
-}
-
-enum CallFds {
-    cfNoneCalled,
-    cfStartCalled,
-    cfForwardCalled,
-    cfStopCalled,
-};
-
-struct ProcessCalls {
-    int init;
-    int free;
-    int start;
-    int forward;
-    int stop;
-    int add_output_fd;
-    int remove_output_fd;
-    int serialize;
-} process_calls;
-
-void init_process_calls() {
-    process_calls = (struct ProcessCalls){0, 0, 0, 0, 0, 0, 0, 0};
-}
-
-void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
-    process_calls.init++;
-    p->name = (char*)name;
-    p->cmd = (char*)cmd;
-    p->color = color;
-    p->fd = fd;
-}
-
-void process_free(Process *p) {
-    process_calls.free++;
-    p->name = NULL;
-    p->cmd = NULL;
-    p->color = -1;
-    p->fd = -1;
-}
-
-void process_start(Process *p) {
-    process_calls.start++;
-    p->fd = cfStartCalled;
-}
-
-int process_forward(Process *p) {
-    process_calls.forward++;
-    p->fd = cfForwardCalled;
-    return 0;
-}
-
-void process_stop(Process *p) {
-    process_calls.stop++;
-    p->fd = cfStopCalled;
-}
-
-void process_add_output_fd(Process *p, int fd) {
-    p->fd = fd;
-    process_calls.add_output_fd++;
-}
-
-void process_remove_output_fd(Process *p, int index) {
-    p->fd = index;
-    process_calls.remove_output_fd++;
-}
-
-int process_serialize(Process *p, char* buffer, int buf_size) {
-    strncpy(buffer, p->name, buf_size);
-    return strlen(buffer) + 1;
 }
 
 // End Mocks
@@ -222,7 +148,9 @@ void test_action_unknown() {
 
 int main() {
     ProcessList *pl2 = process_list_new("p2", "cmd2", 3, cfNoneCalled);
-    list = process_list_append(process_list_new("p1", "cmd1", 1, cfNoneCalled), &pl2);
+    process_list_set(
+        process_list_append(process_list_new("p1", "cmd1", 1, cfNoneCalled), &pl2)
+    );
 
     init_process_calls();
     test_action_ping();

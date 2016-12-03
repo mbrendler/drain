@@ -36,7 +36,7 @@ target_link_libraries(test_drainfile _drain termcap)
 add_executable(test_server_client tests/test_server_client.c src/server.c src/client.c src/config.c)
 target_link_libraries(test_server_client termcap)
 
-add_executable(test_actions tests/test_actions.c src/actions.c src/process_list.c src/helpers.c src/config.c)
+add_executable(test_actions tests/test_actions.c src/actions.c tests/process_mock.c src/process_list.c src/helpers.c src/config.c)
 target_link_libraries(test_actions termcap)
 
 enable_testing()
