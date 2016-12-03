@@ -26,8 +26,6 @@ int process_forward(Process *p);
 
 void process_stop(Process *p);
 
-void process_kill(Process *p);
-
 void process_add_output_fd(Process *p, int fd);
 
 void process_remove_output_fd(Process *p, int index);

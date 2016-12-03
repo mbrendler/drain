@@ -46,7 +46,7 @@ void process_start(Process *p) {
     }
 }
 
-void process_kill(Process *p) {
+static void process_kill(Process *p) {
     if (p->pid > 0) {
         kill(p->pid, SIGINT);
     }
