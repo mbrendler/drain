@@ -67,12 +67,13 @@ int action_restart(int fd, Message* in, Message* out) {
 }
 
 int action_log(int fd, Message* in, Message* out) {
-    Process* p = process_list_add_ouput_fd(process_list(), fd, in->content);
+    Process* p = process_list_find_by_name(process_list(), in->content);
     if (NULL == p) {
         out->nr = -2;
         out->size = 0;
         return 0;
     } else {
+        process_add_output_fd(p, fd);
         out->nr = 0;
         out->size = process_serialize(p, out->content, sizeof(out->content));
     }

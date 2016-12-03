@@ -30,7 +30,7 @@ void process_list_forward(ProcessList *l, fd_set* set);
 
 ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 
-Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name);
+Process* process_list_find_by_name(ProcessList *l, char *name);
 
 #define process_list_each(VAR_, LIST_, block) { \
     ProcessList *lIsT = LIST_;                  \

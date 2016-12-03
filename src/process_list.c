@@ -113,11 +113,11 @@ ProcessList *process_list_append(ProcessList *l, ProcessList **n) {
     return *n;
 }
 
-Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name) {
-    if (!l) { return NULL; }
-    if (0 == strcmp(name, l->p.name)) {
-        process_add_output_fd(&l->p, fd);
-        return &l->p;
-    }
-    return process_list_add_ouput_fd(l->n, fd, name);
+Process* process_list_find_by_name(ProcessList *l, char *name) {
+    process_list_each(p, l, {
+        if (0 == strcmp(name, p->name)) {
+            return p;
+        }
+    });
+    return NULL;
 }
