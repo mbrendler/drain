@@ -16,33 +16,38 @@ ProcessList* process_list() {
     return list;
 }
 
+enum CallFds {
+    cfNoneCalled,
+    cfStartCalled,
+    cfForwardCalled,
+    cfStopCalled,
+};
+
 void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
-    p->name = strdup(name);
-    p->cmd = strdup(cmd);
+    p->name = (char*)name;
+    p->cmd = (char*)cmd;
     p->color = color;
     p->fd = fd;
 }
 
 void process_free(Process *p) {
-    free(p->name);
     p->name = NULL;
-    free(p->cmd);
     p->cmd = NULL;
     p->color = -1;
     p->fd = -1;
 }
 
 void process_start(Process *p) {
-    p->fd = 0xff;
+    p->fd = cfStartCalled;
 }
 
 int process_forward(Process *p) {
-    p->fd = 0xfe;
+    p->fd = cfForwardCalled;
     return 0;
 }
 
 void process_stop(Process *p) {
-    p->fd = 0xfd;
+    p->fd = cfStopCalled;
 }
 
 void process_add_output_fd(Process *p, int fd) {
@@ -78,9 +83,31 @@ void test_action_status() {
     ASSERT_BYTES(6, "p1\0p2\0", out.content);
 }
 
+void test_action_up() {
+    // start all:
+    Message in = {.nr=mnUp, .size=0};
+    Message out;
+    ASSERT_INT(0, perform_action(42, &in, &out));
+    ASSERT_INT(mnUp, out.nr);
+    ASSERT_INT(0, out.size);
+    ASSERT_INT(cfStartCalled, process_list()->p.fd);
+    ASSERT_INT(cfStartCalled, process_list()->n->p.fd);
+
+    // start only one
+    process_list()->p.fd = cfNoneCalled;
+    process_list()->n->p.fd = cfNoneCalled;
+    in = (Message){.nr=mnUp, .size=3, .content="p2"};
+    ASSERT_INT(0, perform_action(42, &in, &out));
+    ASSERT_INT(mnUp, out.nr);
+    ASSERT_INT(0, out.size);
+    ASSERT_INT(cfNoneCalled, process_list()->p.fd);
+    ASSERT_INT(cfStartCalled, process_list()->n->p.fd);
+}
+
 int main() {
-    ProcessList *pl2 = process_list_new("p2", "cmd2", 3, 4);
-    list = process_list_append(process_list_new("p1", "cmd1", 1, 2), &pl2);
+    ProcessList *pl2 = process_list_new("p2", "cmd2", 3, cfNoneCalled);
+    list = process_list_append(process_list_new("p1", "cmd1", 1, cfNoneCalled), &pl2);
     test_action_ping();
     test_action_status();
+    test_action_up();
 }
