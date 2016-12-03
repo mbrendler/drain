@@ -199,6 +199,12 @@ void test_action_add() {
     ASSERT_INT((int)strlen(out.content) + 1, out.size);
 }
 
+void test_action_unknown() {
+    Message in = {.nr=394};
+    Message out;
+    ASSERT_INT(-1, perform_action(42, &in, &out));
+}
+
 int main() {
     ProcessList *pl2 = process_list_new("p2", "cmd2", 3, cfNoneCalled);
     list = process_list_append(process_list_new("p1", "cmd1", 1, cfNoneCalled), &pl2);
@@ -217,4 +223,6 @@ int main() {
     /* test_action_log() */
     init_process_calls();
     test_action_add();
+    init_process_calls();
+    test_action_unknown();
 }
