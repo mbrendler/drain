@@ -49,7 +49,7 @@ int action_down(int fd, Message* in, Message* out) {
     (void)fd;
     char **names = NULL;
     const int count = deserialize_string_array(in->content, in->size, &names);
-    process_list_process_kill(process_list(), count, names);
+    process_list_process_stop(process_list(), count, names);
     free(names);
     out->nr = in->nr;
     out->size = 0;
