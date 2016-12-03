@@ -139,14 +139,9 @@ int cmd_drainfile(int argc, char** argv) {
     return 0;
 }
 
-int process_print_name(const Process* p) {
-    puts(p->name);
-    return 0;
-}
-
 static void print_names() {
     ProcessList* l = drainfile_read(CONFIG->drainfile);
-    process_list_each(l, process_print_name);
+    process_list_each(p, l, { puts(p->name); });
     process_list_free(l);
 }
 

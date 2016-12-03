@@ -22,7 +22,7 @@ void cmd_server_sigpipe() {
 }
 
 void cmd_server_siginfo() {
-    process_list_each(list, process_print_status);
+    process_list_each(p, list, { process_print_status(p); });
 }
 
 void cmd_server_register_signal_handlers() {

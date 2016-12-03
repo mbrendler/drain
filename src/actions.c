@@ -20,15 +20,12 @@ typedef struct {
     char* b;
 } Buffer;
 
-int serialize_processes(Process *p, Buffer* b) {
-    b->pos += process_serialize(p, b->b + b->pos, b->size - b->pos);
-    return 0;
-}
-
 int action_status(int fd, Message* in, Message* out) {
     (void)fd;
     Buffer b = {.pos=0, .size=sizeof(out->content), .b=out->content};
-    process_list_each(process_list(), serialize_processes, &b);
+    process_list_each(p, process_list(), {
+        b.pos += process_serialize(p, b.b + b.pos, b.size - b.pos);
+    });
     out->size = b.pos;
     out->nr = in->nr;
     return 0;

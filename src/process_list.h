@@ -32,9 +32,11 @@ ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 
 Process* process_list_add_ouput_fd(ProcessList *l, int fd, char *name);
 
-#define process_list_each(l, fn, ...) {                          \
-    ProcessList *lIsT = l;                                       \
-    while (NULL != lIsT && 0 == fn(&lIsT->p, ## __VA_ARGS__ )) { \
-        lIsT = lIsT->n;                                          \
-    }                                                            \
+#define process_list_each(VAR_, LIST_, block) { \
+    ProcessList *lIsT = LIST_;                  \
+    while (NULL != lIsT) {                      \
+        Process *VAR_ = &(lIsT->p);             \
+        block;                                  \
+        lIsT = lIsT->n;                         \
+    }                                           \
 }
