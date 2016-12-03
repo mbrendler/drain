@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "../src/actions.h"
 #include "../src/process_list.h"
+#include "../src/helpers.h"
 
 // Mocks:
 
@@ -125,6 +126,38 @@ void test_action_stop() {
     ASSERT_INT(cfStopCalled, process_list()->n->p.fd);
 }
 
+// TODO:
+// void test_action_restart() {
+// }
+
+// TODO:
+// void test_action_log() {
+// }
+
+void test_action_add() {
+    Message in = {.nr=mnAdd};
+    in.size = serialize_string_array(
+        (char*[]){"p3", "10", "cmd3"}, 3,
+        in.content, sizeof(in.content)
+    );
+    Message out;
+
+    ASSERT_INT(0, perform_action(42, &in, &out));
+    ASSERT_INT(mnAdd, out.nr);
+    ASSERT_INT(0, out.size);
+    ProcessList *new = process_list()->n->n;
+    ASSERT(new);
+    ASSERT_STRING("p3", new->p.name);
+    ASSERT_STRING("cmd3", new->p.cmd);
+    ASSERT_INT(10, new->p.color);
+
+    // p3 does already exist
+    ASSERT_INT(0, perform_action(42, &in, &out));
+    ASSERT_INT(-1, out.nr);
+    ASSERT_STRING("Could not create process 'p3'.", out.content);
+    ASSERT_INT((int)strlen(out.content) + 1, out.size);
+}
+
 int main() {
     ProcessList *pl2 = process_list_new("p2", "cmd2", 3, cfNoneCalled);
     list = process_list_append(process_list_new("p1", "cmd1", 1, cfNoneCalled), &pl2);
@@ -132,4 +165,7 @@ int main() {
     test_action_status();
     test_action_up();
     test_action_stop();
+    /* test_action_restart(); */
+    /* test_action_log() */
+    test_action_add();
 }
