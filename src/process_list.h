@@ -10,8 +10,6 @@ struct ProcessList {
     Process p;
 };
 
-typedef struct Process Process;
-
 ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd);
 
 void process_list_process_start(ProcessList* l, int namesc, char **names);
