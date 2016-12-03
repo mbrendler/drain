@@ -148,9 +148,28 @@ void test_action_stop() {
     ASSERT_INT(cfStopCalled, process_list()->n->p.fd);
 }
 
-// TODO:
-// void test_action_restart() {
-// }
+void test_action_restart() {
+    // start all:
+    Message in = {.nr=mnRestart, .size=0};
+    Message out;
+    ASSERT_INT(0, perform_action(42, &in, &out));
+    ASSERT_INT(mnRestart, out.nr);
+    ASSERT_INT(0, out.size);
+    ASSERT_INT(cfStartCalled, process_list()->p.fd);
+    ASSERT_INT(cfStartCalled, process_list()->n->p.fd);
+    ASSERT_INT(2, process_calls.stop);
+    ASSERT_INT(2, process_calls.start);
+
+    // restart only one
+    process_list()->p.fd = cfNoneCalled;
+    process_list()->n->p.fd = cfNoneCalled;
+    in = (Message){.nr=mnRestart, .size=3, .content="p2"};
+    ASSERT_INT(0, perform_action(42, &in, &out));
+    ASSERT_INT(mnRestart, out.nr);
+    ASSERT_INT(0, out.size);
+    ASSERT_INT(cfNoneCalled, process_list()->p.fd);
+    ASSERT_INT(cfStartCalled, process_list()->n->p.fd);
+}
 
 // TODO:
 // void test_action_log() {
@@ -187,7 +206,7 @@ int main() {
     test_action_status();
     test_action_up();
     test_action_stop();
-    /* test_action_restart(); */
+    test_action_restart();
     /* test_action_log() */
     test_action_add();
 }
