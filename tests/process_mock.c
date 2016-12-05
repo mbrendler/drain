@@ -29,7 +29,7 @@ void process_init(Process *p, const char *name, const char *cmd, int color, int 
     p->fd = fd;
 }
 
-void process_free(Process *p) {
+void process_clear(Process *p) {
     process_calls.free++;
     p->name = NULL;
     p->cmd = NULL;

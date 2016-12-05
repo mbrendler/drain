@@ -46,7 +46,7 @@ void process_list_process_stop(ProcessList* l, int namesc, char **names) {
 
 static ProcessList* process_list_free_element(ProcessList* l) {
     ProcessList *result = l->n;
-    process_free(&(l->p));
+    process_clear(&(l->p));
     free(l);
     return result;
 }

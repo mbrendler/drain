@@ -64,7 +64,7 @@ void process_stop(Process *p) {
     p->pid = -1;
 }
 
-void process_free(Process *p) {
+void process_clear(Process *p) {
     process_stop(p);
     while (p->out_fd_count > 0) {
         --p->out_fd_count;
