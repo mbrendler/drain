@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-struct Process {
+typedef struct {
     int color;
     pid_t pid;
     int fd;
@@ -12,9 +12,7 @@ struct Process {
     int *out_fds;
     char *name;
     char *cmd;
-};
-
-typedef struct Process Process;
+} Process;
 
 void process_init(Process *p, const char *name, const char *cmd, int color, int fd);
 
