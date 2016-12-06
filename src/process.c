@@ -85,6 +85,7 @@ void process_add_output_fd(Process *p, int fd) {
 }
 
 void process_remove_output_fd_at(Process *p, int index) {
+    if (index < 0 || index >= p->out_fd_count) { return; }
     close(p->out_fds[index]);
     if (1 == p->out_fd_count) {
         free(p->out_fds);
