@@ -1,6 +1,11 @@
 #include "tests.h"
 #include "../src/process.h"
 
+
+// not tested:
+// int process_forward(Process *p);
+// int process_print_status(const Process* p);
+
 void test_init() {
     Process p;
     process_init(&p, "a-process-name", "a-process-command", 23, 42);
@@ -42,8 +47,6 @@ void test_process_start_stop() {
     ASSERT(-1 == p.fd);
     ASSERT(NULL == p.f)
 }
-
-// int process_forward(Process *p);
 
 void test_add_output_fd() {
     Process p;
@@ -91,8 +94,6 @@ void test_remove_output_fd() {
     ASSERT_INT(0, p.out_fd_count);
     ASSERT(NULL == p.out_fds);
 }
-
-// int process_print_status(const Process* p);
 
 void test_process_serialize_deserialize() {
     char buffer[1024];
