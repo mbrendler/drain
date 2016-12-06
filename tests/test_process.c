@@ -8,9 +8,9 @@ void test_init() {
     ASSERT_INT(23, p.color);
     ASSERT_INT(-1, p.pid);
     ASSERT_INT(42, p.fd);
-    ASSERT(!p.f);
+    ASSERT(NULL == p.f);
     ASSERT_INT(0, p.out_fd_count);
-    ASSERT(!p.out_fds);
+    ASSERT(NULL == p.out_fds);
     ASSERT_STRING("a-process-name", p.name);
     ASSERT_STRING("a-process-command", p.cmd);
 }
@@ -23,11 +23,11 @@ void test_clear() {
     ASSERT_INT(23, p.color);
     ASSERT_INT(-1, p.pid);
     ASSERT_INT(42, p.fd);
-    ASSERT(!p.f);
+    ASSERT(NULL == p.f);
     ASSERT_INT(0, p.out_fd_count);
-    ASSERT(!p.out_fds);
-    ASSERT(!p.name);
-    ASSERT(!p.cmd);
+    ASSERT(NULL == p.out_fds);
+    ASSERT(NULL == p.name);
+    ASSERT(NULL == p.cmd);
 }
 
 // void process_start(Process *p);

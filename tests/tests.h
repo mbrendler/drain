@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <assert.h>
 
-#define ASSERT(x) if (!x) {                                                  \
+#define ASSERT(x) if (!(x)) {                                                  \
     printf("failure: %s:%d  %s\n", __FILE__, __LINE__, __PRETTY_FUNCTION__); \
     exit(EXIT_FAILURE);                                                      \
   }
