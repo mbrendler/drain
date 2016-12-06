@@ -90,7 +90,7 @@ void process_list_forward(ProcessList *l, fd_set* set) {
             for (int i = 0; i < l->p.out_fd_count; ++i) {
                 if (FD_ISSET(l->p.out_fds[i], set)) {
                     if (-1 == write(l->p.out_fds[i], NULL, 0)) {
-                        process_remove_output_fd(&l->p, i);
+                        process_remove_output_fd_at(&l->p, i);
                     }
                 }
             }

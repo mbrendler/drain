@@ -58,7 +58,7 @@ void process_add_output_fd(Process *p, int fd) {
     process_calls.add_output_fd++;
 }
 
-void process_remove_output_fd(Process *p, int index) {
+void process_remove_output_fd_at(Process *p, int index) {
     p->fd = index;
     process_calls.remove_output_fd++;
 }

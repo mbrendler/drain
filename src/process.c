@@ -84,7 +84,7 @@ void process_add_output_fd(Process *p, int fd) {
     p->out_fd_count++;
 }
 
-void process_remove_output_fd(Process *p, int index) {
+void process_remove_output_fd_at(Process *p, int index) {
     close(p->out_fds[index]);
     if (1 == p->out_fd_count) {
         free(p->out_fds);
@@ -112,7 +112,7 @@ int process_forward(Process *p) {
         for (int i = 0; i < p->out_fd_count; ++i) {
             if (-1 == write(p->out_fds[i], BUFFER, len)) {
                 perror("write out_fd");
-                process_remove_output_fd(p, i);
+                process_remove_output_fd_at(p, i);
             }
         }
         if ('\n' == BUFFER[len - 1]) { len--; }

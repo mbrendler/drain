@@ -26,7 +26,7 @@ void process_stop(Process *p);
 
 void process_add_output_fd(Process *p, int fd);
 
-void process_remove_output_fd(Process *p, int index);
+void process_remove_output_fd_at(Process *p, int index);
 
 int process_print_status(const Process* p);
 
