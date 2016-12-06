@@ -30,9 +30,20 @@ void test_clear() {
     ASSERT(NULL == p.cmd);
 }
 
-// void process_start(Process *p);
+void test_process_start_stop() {
+    Process p;
+    process_init(&p, "process", "sleep 10", 2, -1);
+    process_start(&p);
+    ASSERT(-1 != p.pid);
+    ASSERT(-1 != p.fd);
+    ASSERT(p.f)
+    process_stop(&p);
+    ASSERT(-1 == p.pid);
+    ASSERT(-1 == p.fd);
+    ASSERT(NULL == p.f)
+}
+
 // int process_forward(Process *p);
-// void process_stop(Process *p);
 
 void test_add_output_fd() {
     Process p;
@@ -117,4 +128,5 @@ int main() {
     test_add_output_fd();
     test_remove_output_fd();
     test_process_serialize_deserialize();
+    test_process_start_stop();
 }
