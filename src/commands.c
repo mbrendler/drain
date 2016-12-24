@@ -27,7 +27,7 @@ void handle_error(const Message* msg) {
 
 int cmd_ping(int argc, char** argv) {
     Message msg;
-    char *content = argc > 0 ? *argv : "hallo";
+    char const * const content = argc > 0 ? *argv : "hallo";
     memcpy(msg.content, content, strlen(content) + 1);
     msg.size = strlen(content) + 1;
     msg.nr = mnPing;
