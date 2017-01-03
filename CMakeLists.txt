@@ -14,6 +14,7 @@ set(SRCS
   src/server.c
   src/client.c
   src/actions.c
+  src/error.c
   src/commands.c
   src/cmd_server.c
   src/cmd_attach.c

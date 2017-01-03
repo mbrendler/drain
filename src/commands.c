@@ -1,6 +1,7 @@
 #include "commands.h"
 #include "cmd_server.h"
 #include "cmd_attach.h"
+#include "error.h"
 #include "config.h"
 #include "drainfile.h"
 #include "client.h"
@@ -12,18 +13,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/time.h>
-
-bool is_error(const Message* msg) {
-    return msg->nr < 0;
-}
-
-void handle_error(const Message* msg) {
-    if (-1 == msg->nr) {
-        fprintf(stderr, "%s\n", msg->content);
-    } else {
-        fprintf(stderr, "Unknown error number: %d\n", msg->nr);
-    }
-}
 
 int cmd_ping(int argc, char** argv) {
     Message msg;

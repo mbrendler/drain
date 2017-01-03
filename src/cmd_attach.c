@@ -3,6 +3,7 @@
 #include "actions.h"
 #include "client.h"
 #include "cmd_server.h"
+#include "error.h"
 #include <string.h>
 #include <fcntl.h>
 
@@ -18,7 +19,7 @@ int cmd_attach(int argc, char** argv) {
         if (-1 == client_start(&c)) { return -1; }
         if (-1 == client_send(&c, &out)) { return -1; }
         if (-1 == client_receive(&c, &in)) { return -1; }
-        if (0 != in.nr) {
+        if (is_error(&in)) {
             client_stop(&c);
             fprintf(stderr, "process not found - %s\n", argv[i]);
             continue;
