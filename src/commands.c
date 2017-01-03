@@ -80,7 +80,7 @@ int cmd_restart(int argc, char** argv) {
 }
 
 int cmd_add(int argc, char** argv) {
-    bool start = strcmp("-s", argv[0]) == 0;
+    const bool start = strcmp("-s", argv[0]) == 0;
     if (start) {
         argc--;
         argv++;
