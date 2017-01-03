@@ -100,15 +100,7 @@ int cmd_add(int argc, char** argv) {
         return -1;
     }
     if (start) {
-        const int len = strlen(argv[0]) + 1;
-        memcpy(out.content, argv[0], len);
-        out.size = len;
-        out.nr = mnUp;
-        if (-1 == client_do(&out, &in)) { return -1; }
-        if (is_error(&in)) {
-            handle_error(&in);
-            return -1;
-        }
+        return cmd_up(1, argv);
     }
     return 0;
 }
