@@ -155,8 +155,6 @@ int cmd__list_names(int argc, char** argv) {
     return 0;
 }
 
-typedef int(*CommandFunction)(int, char**);
-
 typedef struct {
     char const * const name;
     const CommandFunction fn;
@@ -201,7 +199,7 @@ int cmd_help(int argc, char** argv) {
     return 0;
 }
 
-int perform_command(const char* name, int argc, char** argv) {
+CommandFunction command_get(const char* name) {
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
     const Command *found = NULL;
     const int name_len = strlen(name);
@@ -222,11 +220,10 @@ int perform_command(const char* name, int argc, char** argv) {
     }
     if (NULL == found) {
         printf("unknown command '%s'\n", name);
-        return -1;
+        return NULL;
     } else if (false != ambiguous) {
         puts("");
-        return -1;
+        return NULL;
     }
-    found->fn(argc, argv);
-    return 0;
+    return found->fn;
 }

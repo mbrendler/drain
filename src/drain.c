@@ -13,5 +13,9 @@ int main(int argc, char **argv) {
 
     argv += argc - new_argc;
     const char *cmd = new_argc > 0 ? argv[0] : "help";
-    return perform_command(cmd, new_argc > 0 ? new_argc - 1 : 0, argv + 1);
+    CommandFunction cmd_fn = command_get(cmd);
+    if (cmd_fn) {
+        return cmd_fn(new_argc > 0 ? new_argc - 1 : 0, argv + 1);
+    }
+    return -1;
 }
