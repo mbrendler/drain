@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 void server_init(Server *s) {
     s->fd = -1;
@@ -31,6 +33,11 @@ int server_start(Server *s) {
     if (-1 == bind(s->fd, (struct sockaddr *)&s->addr, sizeof(struct sockaddr))) {
         *s->addr.sun_path = '\0';
         perror("bind");
+        return -1;
+    }
+
+    if (-1 == chmod(s->addr.sun_path, S_IRWXU)) {
+        perror("chmod");
         return -1;
     }
 
