@@ -106,16 +106,14 @@ int cmd_add(int argc, char** argv) {
 }
 
 int cmd_drainfile(int argc, char** argv) {
-    if (argc > 0 && 0 == strcmp("-d", argv[0])) {
-        execlp("cat", "cat", CONFIG->drainfile, NULL);
-        perror("cmd_drainfile: execlp");
-    } else if (argc > 0 && 0 == strcmp("-e", argv[0])) {
+    if (argc > 0 && 0 == strcmp("-e", argv[0])) {
         char *editor = getenv("EDITOR");
         if (!editor || !*editor) { editor = "vi"; }
         execlp(editor, editor, CONFIG->drainfile, NULL);
         perror("cmd_drainfile: execlp");
     } else {
-        printf("%s\n", CONFIG->drainfile);
+        execlp("cat", "cat", CONFIG->drainfile, NULL);
+        perror("cmd_drainfile: execlp");
     }
     return 0;
 }
@@ -162,7 +160,7 @@ const Command COMMANDS[] = {
     { "ping",        cmd_ping,        "ping                              -- ping drain server" },
     { "help",        cmd_help,        "help                              -- show this help" },
     { "halt",        cmd_halt,        "halt [NAME...]                    -- stop one, more or all processes" },
-    { "drainfile",   cmd_drainfile,   "drainfile [-d|-e]                 -- show / edit drainfile" },
+    { "drainfile",   cmd_drainfile,   "drainfile [-e]                    -- show / edit drainfile" },
     { "attach",      cmd_attach,      "attach NAME...                    -- retreive output of processes" },
     { "add",         cmd_add,         "add [-s] NAME COLOR CMD [ARGS...] -- add a new process (-s will start it)" },
 };
