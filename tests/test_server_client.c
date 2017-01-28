@@ -69,7 +69,7 @@ int main() {
     server_init(&s);
     atexit(cleanup);
 
-    config_parse_args(3, (char*[]){"program-name", "-S", "./_test_socket"});
+    config_parse_args(3, (char*[]){"program-name", "-S", "/tmp/_test_socket"});
 
     test_client_server();
 }
