@@ -90,7 +90,7 @@ int server_incomming(Server *s, fd_set *set) {
         fprintf(stderr, "received content size");
         return -1;
     }
-    if (-1 == recv(fd, &in.content, in.size, 0)) {
+    if ((0 != in.size) && (-1 == recv(fd, &in.content, in.size, 0))) {
         close(fd);
         perror("recv content");
         return -1;

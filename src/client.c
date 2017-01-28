@@ -72,7 +72,7 @@ int client_send(Client *c, const Message* out) {
         perror("write size");
         return -1;
     }
-    if (-1 == write(c->fd, &out->content, out->size)) {
+    if ((0 != out->size) && (-1 == write(c->fd, &out->content, out->size))) {
         client_stop(c);
         perror("write content");
         return -1;
@@ -91,7 +91,7 @@ int client_receive(Client *c, Message* in) {
         perror("read size");
         return -1;
     }
-    if (-1 == read(c->fd, &in->content, in->size)) {
+    if ((0 != in->size) && (-1 == read(c->fd, &in->content, in->size))) {
         client_stop(c);
         perror("read content");
         return -1;
