@@ -2,9 +2,17 @@
 #include "../src/drainfile.h"
 #include <libgen.h>
 
+char* here() { // with gcc in linux dirname(__FILE__) does not work
+    static char *this_filename = NULL;
+    if (!this_filename) {
+        asprintf(&this_filename, "%s", __FILE__);
+    }
+    return dirname(this_filename);
+}
+
 void test_drainfile_read() {
     char *filename = NULL;
-    asprintf(&filename, "%s/drainfile", dirname(__FILE__));
+    asprintf(&filename, "%s/drainfile", here());
     ProcessList *l = drainfile_read(filename);
     free(filename);
     filename = NULL;
@@ -21,7 +29,7 @@ void test_drainfile_read() {
 
 void test_drainfile_read_file_not_exist() {
     char *filename = NULL;
-    asprintf(&filename, "%s/not-existing-drainfile", dirname(__FILE__));
+    asprintf(&filename, "%s/not-existing-drainfile", here());
     ProcessList *l = drainfile_read(filename);
     free(filename);
     filename = NULL;
