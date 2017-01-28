@@ -30,7 +30,7 @@ int server_start(Server *s) {
         return -1;
     }
 
-    if (-1 == bind(s->fd, (struct sockaddr *)&s->addr, sizeof(struct sockaddr))) {
+    if (-1 == bind(s->fd, (struct sockaddr *)&s->addr, sizeof(s->addr))) {
         *s->addr.sun_path = '\0';
         perror("bind");
         return -1;
