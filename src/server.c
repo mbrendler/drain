@@ -22,8 +22,7 @@ int server_start(Server *s) {
     }
 
     s->addr.sun_family = AF_UNIX;
-    strncpy(s->addr.sun_path, CONFIG->socket_path, sizeof(s->addr.sun_path));
-    s->addr.sun_path[sizeof(s->addr.sun_path) - 1] = '\0';
+    strncpy(s->addr.sun_path, CONFIG->socket_path, sizeof(s->addr.sun_path) -1);
 
     if (-1 == setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int))) {
         perror("setsockopt");

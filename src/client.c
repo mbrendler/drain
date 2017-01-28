@@ -39,9 +39,9 @@ int client_start(Client *c) {
     /* } */
 
     struct sockaddr_un addr;
+    memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, CONFIG->socket_path, sizeof(addr.sun_path));
-    addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
+    strncpy(addr.sun_path, CONFIG->socket_path, sizeof(addr.sun_path) - 1);
     /* struct sockaddr_in addr; */
     /* bzero((char *) &addr, sizeof(addr)); */
     /* addr.sin_family = AF_INET; */
