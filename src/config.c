@@ -49,7 +49,7 @@ void config_init_term_width() {
 
 int config_parse_args(int argc, char **argv) {
     int ch;
-    while (-1 != (ch = getopt(argc, argv, "vwWkf:S:h"))) {
+    while (-1 != (ch = getopt(argc, argv, "+vwWkf:S:h"))) {
         switch (ch) {
             case 'v': CFG.verbose = true; break;
             case 'w': CFG.line_wrap = true; break;
