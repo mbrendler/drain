@@ -28,7 +28,11 @@ void cmd_server_siginfo() {
 void cmd_server_register_signal_handlers() {
     signal(SIGINT, cmd_server_stop);
     signal(SIGPIPE, cmd_server_sigpipe);
+#   ifdef linux
+    signal(SIGUSR1, cmd_server_siginfo);
+#   else
     signal(SIGINFO, cmd_server_siginfo);
+#   endif
 }
 
 int cmd_server_monitor_processes(ProcessList* l, Server* s) {
