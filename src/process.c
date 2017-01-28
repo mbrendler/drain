@@ -7,6 +7,10 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
+#ifdef linux
+#  include <sys/types.h>
+#  include <sys/wait.h>
+#endif
 
 static void close_all_fds_from(int fd);
 static int process_open(const char *cmd, int *fd);
