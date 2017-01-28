@@ -61,7 +61,7 @@ void server_stop(Server *s) {
 int server_incomming(Server *s, fd_set *set) {
     if (s->fd < 0 || !FD_ISSET(s->fd, set)) { return 0; }
     struct sockaddr_in addr;
-    socklen_t sin_size;
+    socklen_t sin_size = 0;
     int fd = accept(s->fd, (struct sockaddr *)&addr, &sin_size);
     if (-1 == fd) {
         perror("accept");
