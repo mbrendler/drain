@@ -58,3 +58,5 @@ add_test(test_server_client test_server_client)
 add_test(test_actions test_actions)
 add_test(test_process_list test_process_list)
 add_test(test_process test_process)
+
+add_test(test_system "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_system.sh" "${CMAKE_BINARY_DIR}")
