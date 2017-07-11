@@ -59,7 +59,7 @@ void process_list_free(ProcessList* l) {
 
 int process_list_max_fd(ProcessList *l, int fd) {
     fd = fd > l->p.fd ? fd : l->p.fd;
-    for (int i = 0; i < l->p.out_fd_count; ++i) {
+    for (uint8_t i = 0; i < l->p.out_fd_count; ++i) {
         fd = fd > l->p.out_fds[i] ? fd : l->p.out_fds[i];
     }
     return l->n ? process_list_max_fd(l->n, fd) : fd;
@@ -73,7 +73,7 @@ int process_list_init_fd_set(ProcessList *l, fd_set* set) {
             result++;
             FD_SET(l->p.fd, set);
         }
-        for (int i = 0; i < l->p.out_fd_count; ++i) {
+        for (uint8_t i = 0; i < l->p.out_fd_count; ++i) {
             FD_SET(l->p.out_fds[i], set);
         }
         l = l->n;
@@ -87,7 +87,7 @@ void process_list_forward(ProcessList *l, fd_set* set) {
         if (FD_ISSET(l->p.fd, set)) {
             process_forward(&(l->p));
         } else {
-            for (int i = 0; i < l->p.out_fd_count; ++i) {
+            for (uint8_t i = 0; i < l->p.out_fd_count; ++i) {
                 if (FD_ISSET(l->p.out_fds[i], set)) {
                     if (-1 == write(l->p.out_fds[i], NULL, 0)) {
                         process_remove_output_fd_at(&l->p, i);

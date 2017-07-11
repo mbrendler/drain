@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.0)
 project("drain")
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wpedantic")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wpedantic -Weverything -Wno-padded -Wno-missing-prototypes")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
 endif ()

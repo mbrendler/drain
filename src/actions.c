@@ -26,7 +26,11 @@ int action_status(int fd, Message* in, Message* out) {
     process_list_each(p, process_list(), {
         b.pos += process_serialize(p, b.b + b.pos, b.size - b.pos);
     });
-    out->size = b.pos;
+    if (b.pos > MAX_MESSAGE_CONTENT_SIZE) {
+        fprintf(stderr, "resulting message size too long: %lu\n", b.pos);
+        return -1;
+    }
+    out->size = (uint16_t)b.pos;
     out->nr = in->nr;
     return 0;
 }
@@ -75,7 +79,12 @@ int action_log(int fd, Message* in, Message* out) {
     } else {
         process_add_output_fd(p, fd);
         out->nr = 0;
-        out->size = process_serialize(p, out->content, sizeof(out->content));
+        const size_t size = process_serialize(p, out->content, sizeof(out->content));
+        if (size > MAX_MESSAGE_CONTENT_SIZE) {
+            fprintf(stderr, "resulting message size too long: %lu\n", size);
+            return -1;
+        }
+        out->size = (uint16_t)size;
     }
     return 1;
 }
@@ -90,9 +99,15 @@ int action_add(int fd, Message* in, Message* out) {
     process_list_append(process_list(), &new);
     if (!new) {
         out->nr = -1;
-        out->size = snprintf(out->content, sizeof(out->content),
+        const int rc = snprintf(out->content, sizeof(out->content),
             "Could not create process '%s'.", args[0]
-        ) + 1;
+        );
+        if (0 > rc || rc >= MAX_MESSAGE_CONTENT_SIZE) {
+            fprintf(stderr, "resulting message size too long: %d\n", rc);
+            free(args);
+            return -1;
+        }
+        out->size = (uint16_t)rc + 1;
     } else {
         out->nr = in->nr;
         out->size = 0;
@@ -108,7 +123,7 @@ typedef struct {
     ActionFunctionServer fn;
 } Action;
 
-const Action ACTIONS[] = {
+static const Action ACTIONS[] = {
     [mnPing]    = { "ping",    action_ping },
     [mnStatus]  = { "status",  action_status },
     [mnUp]      = { "up",      action_up },

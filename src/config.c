@@ -55,7 +55,7 @@ int config_parse_args(int argc, char **argv) {
             case 'w': CFG.line_wrap = true; break;
             case 'W': CFG.line_wrap = false; break;
             case 'k': CFG.keep_running = true; break;
-            case 'h': cmd_help(0, NULL); exit(0); break;
+            case 'h': cmd_help(0, NULL); exit(0);
             case 'f':
                 if (NULL != CFG.drainfile) { free(CFG.drainfile); }
                 CFG.drainfile = optarg;

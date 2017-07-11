@@ -18,7 +18,12 @@ int cmd_ping(int argc, char** argv) {
     Message msg;
     char const * const content = argc > 0 ? *argv : "hallo";
     memcpy(msg.content, content, strlen(content) + 1);
-    msg.size = strlen(content) + 1;
+    const size_t size = strlen(content) + 1;
+    if (size > MAX_MESSAGE_CONTENT_SIZE) {
+        fprintf(stderr, "resulting message size too long: %lu\n", size);
+        return -1;
+    }
+    msg.size = (uint16_t)size;
     msg.nr = mnPing;
 
     struct timeval tv1, tv2;
@@ -58,7 +63,12 @@ int cmd_status(int argc, char** argv) {
 static int simple_command(enum MessageNumber nr, int argc, char** argv) {
     Message msg;
     msg.nr = nr;
-    msg.size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
+    const int size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
+    if (0 > size || size > MAX_MESSAGE_CONTENT_SIZE) {
+        fprintf(stderr, "resulting message size too long: %d\n", size);
+        return -1;
+    }
+    msg.size = (uint16_t)size;
     if (-1 == client_do(&msg, &msg)) { return -1; }
     if (is_error(&msg)) {
         handle_error(&msg);
@@ -88,7 +98,12 @@ int cmd_add(int argc, char** argv) {
     if (argc < 3) { return -1; }
     Message out, in;
     out.nr = mnAdd;
-    out.size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
+    const int size = serialize_string_array(argv, argc, out.content, sizeof(out.content));
+    if (0 > size || size > MAX_MESSAGE_CONTENT_SIZE) {
+        fprintf(stderr, "resulting message size too long: %d\n", size);
+        return -1;
+    }
+    out.size = (uint16_t)size;
     replace_char(
         out.content + strlen(argv[0]) + 1 + strlen(argv[1]) + 1,
         out.content + out.size - 1,
@@ -151,7 +166,7 @@ typedef struct {
     char const * const short_help;
 } Command;
 
-const Command COMMANDS[] = {
+static const Command COMMANDS[] = {
     { "_list-names", cmd__list_names, "_list-names                       -- list list all available commands"},
     { "up",          cmd_up,          "up [NAME...]                      -- start one, more or all processes" },
     { "status",      cmd_status,      "status                            -- status of drain server" },
@@ -192,7 +207,7 @@ int cmd_help(int argc, char** argv) {
 CommandFunction command_get(const char* name) {
     const Command *cmd = COMMANDS + sizeof(COMMANDS) / sizeof(*COMMANDS);
     const Command *found = NULL;
-    const int name_len = strlen(name);
+    const size_t name_len = strlen(name);
     bool ambiguous = false;
     while (COMMANDS != cmd) {
         --cmd;

@@ -12,7 +12,12 @@ int cmd_attach(int argc, char** argv) {
     out.nr = mnLog;
     ProcessList *l = NULL;
     for (int i = 0; i < argc; ++i) {
-        out.size = strlen(argv[i]) + 1;
+        const size_t size = strlen(argv[i]) + 1;
+        if (size > MAX_MESSAGE_CONTENT_SIZE) {
+            fprintf(stderr, "resulting message size too long: %lu\n", size);
+            return -1;
+        }
+        out.size = (uint16_t)size;
         strncpy(out.content, argv[i], sizeof(out.content));
         Client c;
         client_init(&c);

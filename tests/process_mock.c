@@ -1,6 +1,7 @@
 #include "process_mock.h"
 #include "../src/process_list.h"
 #include <string.h>
+#include <stdlib.h>
 
 static ProcessList *list = NULL;
 
@@ -23,15 +24,19 @@ void init_process_calls() {
 
 void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
     process_calls.init++;
-    p->name = (char*)name;
-    p->cmd = (char*)cmd;
+    p->name = strdup(name);
+    p->cmd = strdup(cmd);
     p->color = color;
     p->fd = fd;
+    p->out_fd_count = 0;
+    p->out_fds = NULL;
 }
 
 void process_clear(Process *p) {
     process_calls.free++;
+    if (p->name) { free(p->name); }
     p->name = NULL;
+    if (p->cmd) { free(p->cmd); }
     p->cmd = NULL;
     p->color = -1;
     p->fd = -1;
@@ -58,12 +63,12 @@ void process_add_output_fd(Process *p, int fd) {
     process_calls.add_output_fd++;
 }
 
-void process_remove_output_fd_at(Process *p, int index) {
-    p->fd = index;
+void process_remove_output_fd_at(Process *p, size_t index) {
+    p->fd = (int)index;
     process_calls.remove_output_fd++;
 }
 
-int process_serialize(Process *p, char* buffer, int buf_size) {
+size_t process_serialize(Process *p, char* buffer, size_t buf_size) {
     strncpy(buffer, p->name, buf_size);
     return strlen(buffer) + 1;
 }

@@ -25,7 +25,7 @@ int perform_action(int fd, Message* in, Message* out) {
 
 // End Mocks
 
-Server s;
+static Server s;
 
 void cleanup() {
     server_stop(&s);

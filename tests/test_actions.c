@@ -118,7 +118,7 @@ void test_action_log() {
 
 void test_action_add() {
     Message in = {.nr=mnAdd};
-    in.size = serialize_string_array(
+    in.size = (uint16_t)serialize_string_array(
         (char*[]){"p3", "10", "cmd3"}, 3,
         in.content, sizeof(in.content)
     );

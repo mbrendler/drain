@@ -83,13 +83,14 @@ void process_clear(Process *p) {
 }
 
 void process_add_output_fd(Process *p, int fd) {
+    // TODO: check max out_fd_count
     p->out_fds = realloc(p->out_fds, (p->out_fd_count + 1) * sizeof(fd));
     *(p->out_fds + p->out_fd_count) = fd;
     p->out_fd_count++;
 }
 
-void process_remove_output_fd_at(Process *p, int index) {
-    if (index < 0 || index >= p->out_fd_count) { return; }
+void process_remove_output_fd_at(Process *p, size_t index) {
+    if (index >= p->out_fd_count) { return; }
     close(p->out_fds[index]);
     if (1 == p->out_fd_count) {
         free(p->out_fds);
@@ -97,12 +98,12 @@ void process_remove_output_fd_at(Process *p, int index) {
         p->out_fd_count = 0;
     } else {
         p->out_fds[index] = p->out_fds[p->out_fd_count - 1];
-        p->out_fds = realloc(p->out_fds, (p->out_fd_count - 1) * sizeof(int));
+        p->out_fds = realloc(p->out_fds, (size_t)(p->out_fd_count - 1) * sizeof(int));
         p->out_fd_count--;
     }
 }
 
-void print_line(const char *name, const char *content, char sep, int color, int width) {
+void print_line(const char *name, const char *content, char sep, int color, size_t width) {
     fprintf(stdout, "\033[3%dm%s%c \033[39;49m", color, name, sep);
     fwrite(content, sizeof(*content), width, stdout);
     fwrite("\n", sizeof(char), 1, stdout);
@@ -111,10 +112,10 @@ void print_line(const char *name, const char *content, char sep, int color, int 
 int process_forward(Process *p) {
     if (!p->f) { return -1; }
     const bool line_wrap = CONFIG->line_wrap;
-    const int width = CONFIG->term_width - strlen(p->name) - 2;
+    const size_t width = (size_t)CONFIG->term_width - strlen(p->name) - 2;
     while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
-        int len = strlen(BUFFER);
-        for (int i = 0; i < p->out_fd_count; ++i) {
+        size_t len = strlen(BUFFER);
+        for (uint8_t i = 0; i < p->out_fd_count; ++i) {
             if (-1 == write(p->out_fds[i], BUFFER, len)) {
                 perror("write out_fd");
                 process_remove_output_fd_at(p, i);
@@ -160,9 +161,10 @@ int process_print_status(const Process* p) {
     return 0;
 }
 
-int process_serialize(Process *p, char* buffer, int buf_size) {
+size_t process_serialize(Process *p, char* buffer, size_t buf_size) {
+    // TODO: check size
     memcpy(buffer, &p->pid, sizeof(p->pid));
-    int size = sizeof(p->pid);
+    size_t size = sizeof(p->pid);
     memcpy(buffer + size, &p->color, sizeof(p->color));
     size += sizeof(p->color);
     memcpy(buffer + size, &p->fd, sizeof(p->fd));
@@ -176,7 +178,8 @@ int process_serialize(Process *p, char* buffer, int buf_size) {
     return size;
 }
 
-int process_deserialize(char* buffer, Process* p) {
+size_t process_deserialize(char* buffer, Process* p) {
+    // TODO: check size
     const char *b = buffer;
     memcpy(&p->pid, buffer, sizeof(p->pid));
     buffer += sizeof(p->pid);
@@ -188,13 +191,13 @@ int process_deserialize(char* buffer, Process* p) {
     buffer += sizeof(p->out_fd_count);
     p->name = buffer;
     p->cmd = buffer + strlen(p->name) + 1;
-    return buffer - b + strlen(p->name) + 1 + strlen(p->cmd) + 1;
+    return (size_t)(buffer - b) + strlen(p->name) + 1 + strlen(p->cmd) + 1;
 }
 
 // private --
 
 static void close_all_fds_from(int fd) {
-    const int maxfd = sysconf(_SC_OPEN_MAX);
+    const ssize_t maxfd = sysconf(_SC_OPEN_MAX);
     while(fd <= maxfd) {
         close(fd++);
     }

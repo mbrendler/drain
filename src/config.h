@@ -4,7 +4,7 @@
 
 typedef struct {
     const char* termtype;
-    unsigned term_width;
+    int term_width;
     bool line_wrap;
     bool verbose;
     bool keep_running;
