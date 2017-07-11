@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
     int color;
@@ -25,7 +26,7 @@ int process_forward(Process *p);
 
 void process_stop(Process *p);
 
-void process_add_output_fd(Process *p, int fd);
+bool process_add_output_fd(Process *p, int fd);
 
 void process_remove_output_fd_at(Process *p, size_t index);
 

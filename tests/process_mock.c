@@ -58,9 +58,10 @@ void process_stop(Process *p) {
     p->fd = cfStopCalled;
 }
 
-void process_add_output_fd(Process *p, int fd) {
+bool process_add_output_fd(Process *p, int fd) {
     p->fd = fd;
     process_calls.add_output_fd++;
+    return true;
 }
 
 void process_remove_output_fd_at(Process *p, size_t index) {

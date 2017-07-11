@@ -52,14 +52,23 @@ void test_add_output_fd() {
     Process p;
     process_init(&p, "a-process-name", "a-process-command", 23, 42);
 
-    process_add_output_fd(&p, 394);
+    ASSERT_INT(true, process_add_output_fd(&p, 394));
     ASSERT_INT(1, (int)p.out_fd_count);
     ASSERT_INT(394, *p.out_fds);
 
-    process_add_output_fd(&p, 123);
+    ASSERT_INT(true, process_add_output_fd(&p, 123));
     ASSERT_INT(2, (int)p.out_fd_count);
     ASSERT_INT(394, *p.out_fds);
     ASSERT_INT(123, *(p.out_fds + 1));
+
+    p.out_fd_count = 0xfe;
+    ASSERT_INT(true, process_add_output_fd(&p, 124));
+    int after_out_fds = *(p.out_fds + 255);
+    ASSERT_INT(false, process_add_output_fd(&p, 125));
+    ASSERT_INT(124, *(p.out_fds + 254));
+    ASSERT_INT(after_out_fds, *(p.out_fds + 255));
+
+    process_clear(&p);
 }
 
 void test_remove_output_fd() {

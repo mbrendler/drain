@@ -82,11 +82,16 @@ void process_clear(Process *p) {
     p->cmd = NULL;
 }
 
-void process_add_output_fd(Process *p, int fd) {
-    // TODO: check max out_fd_count
+#define MAX_OUT_FDS_SIZE 0xff
+
+bool process_add_output_fd(Process *p, int fd) {
+    if (p->out_fd_count >= MAX_OUT_FDS_SIZE) {
+      return false;
+    }
     p->out_fds = realloc(p->out_fds, (p->out_fd_count + 1) * sizeof(fd));
     *(p->out_fds + p->out_fd_count) = fd;
     p->out_fd_count++;
+    return true;
 }
 
 void process_remove_output_fd_at(Process *p, size_t index) {

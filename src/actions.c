@@ -76,8 +76,12 @@ int action_log(int fd, Message* in, Message* out) {
         out->nr = -2;
         out->size = 0;
         return 0;
-    } else {
-        process_add_output_fd(p, fd);
+    } else if (!process_add_output_fd(p, fd)) {
+        out->nr = -1;
+        strcpy(out->content, "Could not attach to process!");
+        out->size = (uint16_t)strlen(out->content);
+        return 0;
+      } else {
         out->nr = 0;
         const size_t size = process_serialize(p, out->content, sizeof(out->content));
         if (size > MAX_MESSAGE_CONTENT_SIZE) {
