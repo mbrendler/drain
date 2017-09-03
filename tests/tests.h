@@ -21,11 +21,11 @@
     printf("failure: %s:%d  %s\n    expected: ",                             \
       __FILE__, __LINE__, __PRETTY_FUNCTION__);                              \
     for (size_t i = 0; i < size ; ++i) {                                     \
-      printf(isprint((uint16_t)expect[i]) ? " %c," : "0x%2.2x,", expect[i]); \
+      printf(isprint((uint8_t)expect[i]) ? " %c," : "0x%2.2x,", expect[i]);  \
     }                                                                        \
     printf("\n         got: ");                                              \
     for (size_t i = 0; i < size ; ++i) {                                     \
-      printf(isprint((uint16_t)value[i]) ? " %c," : "0x%2.2x,", value[i]);   \
+      printf(isprint((uint8_t)value[i]) ? " %c," : "0x%2.2x,", value[i]);    \
     }                                                                        \
     puts("");                                                                \
   }
