@@ -18,6 +18,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
   -Wno-gnu-zero-variadic-macro-arguments \
 ")
 
+find_library(TERMCAP_LIB termcap)
+
 add_library(_drain EXCLUDE_FROM_ALL OBJECT
   src/config.c
   src/drainfile.c
@@ -35,7 +37,7 @@ add_library(_drain EXCLUDE_FROM_ALL OBJECT
 cotire(_drain)
 
 add_executable(drain EXCLUDE_FROM_ALL src/drain.c $<TARGET_OBJECTS:_drain>)
-target_link_libraries(drain termcap)
+target_link_libraries(drain "${TERMCAP_LIB}")
 cotire(drain)
 
 add_executable(test_helpers EXCLUDE_FROM_ALL tests/test_helpers.c src/helpers.c)
@@ -45,14 +47,14 @@ add_executable(test_config EXCLUDE_FROM_ALL
   tests/test_config.c
   $<TARGET_OBJECTS:_drain>
 )
-target_link_libraries(test_config termcap)
+target_link_libraries(test_config "${TERMCAP_LIB}")
 cotire(test_config)
 
 add_executable(test_drainfile EXCLUDE_FROM_ALL
   tests/test_drainfile.c
   $<TARGET_OBJECTS:_drain>
 )
-target_link_libraries(test_drainfile termcap)
+target_link_libraries(test_drainfile "${TERMCAP_LIB}")
 cotire(test_drainfile)
 
 add_executable(test_server_client EXCLUDE_FROM_ALL
@@ -61,7 +63,7 @@ add_executable(test_server_client EXCLUDE_FROM_ALL
   src/client.c
   src/config.c
 )
-target_link_libraries(test_server_client termcap)
+target_link_libraries(test_server_client "${TERMCAP_LIB}")
 cotire(test_server_client)
 
 add_executable(test_actions EXCLUDE_FROM_ALL
@@ -72,7 +74,7 @@ add_executable(test_actions EXCLUDE_FROM_ALL
   src/helpers.c
   src/config.c
 )
-target_link_libraries(test_actions termcap)
+target_link_libraries(test_actions "${TERMCAP_LIB}")
 cotire(test_actions)
 
 add_executable(test_process_list EXCLUDE_FROM_ALL
@@ -86,7 +88,7 @@ add_executable(test_process EXCLUDE_FROM_ALL
   tests/test_process.c
   $<TARGET_OBJECTS:_drain>
 )
-target_link_libraries(test_process termcap)
+target_link_libraries(test_process "${TERMCAP_LIB}")
 cotire(test_process)
 
 add_custom_target(build_all ALL DEPENDS all_unity)
