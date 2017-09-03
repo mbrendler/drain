@@ -8,10 +8,10 @@ rm -rf BD_release BD_debug
 mkdir BD_release BD_debug
 
 cd BD_release
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release ..
 make -j"$CPU_COUNT" all test
 cd ..
 
 cd BD_debug
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug ..
 make -j"$CPU_COUNT" all test
