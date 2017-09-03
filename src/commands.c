@@ -173,7 +173,7 @@ static const Command COMMANDS[] = {
     { "server",      cmd_server,      "server [NAME...]                  -- start drain server" },
     { "restart",     cmd_restart,     "restart [NAME...]                 -- restart one, more or all processes" },
     { "ping",        cmd_ping,        "ping                              -- ping drain server" },
-    { "help",        cmd_help,        "help                              -- show this help" },
+    { "help",        cmd_help,        "help [-a]                         -- show this help" },
     { "halt",        cmd_halt,        "halt [NAME...]                    -- stop one, more or all processes" },
     { "drainfile",   cmd_drainfile,   "drainfile [-e]                    -- show / edit drainfile" },
     { "attach",      cmd_attach,      "attach NAME...                    -- retreive output of processes" },
