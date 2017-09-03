@@ -18,7 +18,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
   -Wno-gnu-zero-variadic-macro-arguments \
 ")
 
-set(SRCS
+add_library(_drain EXCLUDE_FROM_ALL OBJECT
   src/config.c
   src/drainfile.c
   src/process_list.c
@@ -32,8 +32,6 @@ set(SRCS
   src/cmd_attach.c
   src/helpers.c
 )
-
-add_library(_drain EXCLUDE_FROM_ALL OBJECT ${SRCS})
 cotire(_drain)
 
 add_executable(drain EXCLUDE_FROM_ALL src/drain.c $<TARGET_OBJECTS:_drain>)
