@@ -27,7 +27,7 @@ int action_status(int fd, Message* in, Message* out) {
         b.pos += process_serialize(p, b.b + b.pos, b.size - b.pos);
     });
     if (b.pos > MAX_MESSAGE_CONTENT_SIZE) {
-        fprintf(stderr, "resulting message size too long: %lu\n", b.pos);
+        fprintf(stderr, "resulting message size too long: %zu\n", b.pos);
         return -1;
     }
     out->size = (uint16_t)b.pos;
@@ -85,7 +85,7 @@ int action_log(int fd, Message* in, Message* out) {
         out->nr = 0;
         const size_t size = process_serialize(p, out->content, sizeof(out->content));
         if (size > MAX_MESSAGE_CONTENT_SIZE) {
-            fprintf(stderr, "resulting message size too long: %lu\n", size);
+            fprintf(stderr, "resulting message size too long: %zu\n", size);
             return -1;
         }
         out->size = (uint16_t)size;

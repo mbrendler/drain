@@ -14,7 +14,7 @@ int cmd_attach(int argc, char** argv) {
     for (int i = 0; i < argc; ++i) {
         const size_t size = strlen(argv[i]) + 1;
         if (size > MAX_MESSAGE_CONTENT_SIZE) {
-            fprintf(stderr, "resulting message size too long: %lu\n", size);
+            fprintf(stderr, "resulting message size too long: %zu\n", size);
             return -1;
         }
         out.size = (uint16_t)size;

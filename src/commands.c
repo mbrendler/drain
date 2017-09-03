@@ -20,7 +20,7 @@ int cmd_ping(int argc, char** argv) {
     memcpy(msg.content, content, strlen(content) + 1);
     const size_t size = strlen(content) + 1;
     if (size > MAX_MESSAGE_CONTENT_SIZE) {
-        fprintf(stderr, "resulting message size too long: %lu\n", size);
+        fprintf(stderr, "resulting message size too long: %zu\n", size);
         return -1;
     }
     msg.size = (uint16_t)size;
