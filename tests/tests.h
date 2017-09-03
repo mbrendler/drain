@@ -20,7 +20,7 @@
 #define ASSERT_BYTES(size, expect, value) if (memcmp(expect, value, size)) {                          \
     printf("failure: %s:%d  %s\n    expected: ",                                                      \
       __FILE__, __LINE__, __PRETTY_FUNCTION__);                                                       \
-    for (size_t i = 0; i < size ; ++i) { printf(isprint(expect[i]) ? " %c," : "0x%2.2x,", expect[i]); } \
+    for (size_t i = 0; i < size ; ++i) { printf(isprint((unsigned char)expect[i]) ? " %c," : "0x%2.2x,", expect[i]); } \
     printf("\n         got: ");                                                                       \
     for (size_t i = 0; i < size ; ++i) { printf(isprint(value[i]) ? " %c," : "0x%2.2x,", value[i]); }   \
     puts("");                                                                                         \
