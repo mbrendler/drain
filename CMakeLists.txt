@@ -18,7 +18,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
   -Wno-gnu-zero-variadic-macro-arguments \
 ")
 
-find_library(TERMCAP_LIB termcap)
+find_library(TERMCAP_LIB NAMES termcap ncurses)
 
 add_library(_drain EXCLUDE_FROM_ALL OBJECT
   src/config.c
