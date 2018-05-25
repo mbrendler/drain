@@ -35,7 +35,7 @@ int cmd_attach(int argc, char** argv) {
         }
         Process p;
         process_deserialize(in.content, &p);
-        ProcessList *new = process_list_new(argv[i], p.cmd, p.color, c.fd);
+        ProcessList *new = process_list_new(argv[i], p.cmd, p.color, c.fd, "");
         if (new) {
             l = process_list_append(l, &new);
         } else {

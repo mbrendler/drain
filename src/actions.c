@@ -99,7 +99,7 @@ int action_add(int fd, Message* in, Message* out) {
     const int count = deserialize_string_array(in->content, in->size, &args);
     if (count != 3) { return -1; }
     printf("%s : %s : %s\n", args[0], args[1], args[2]);
-    ProcessList* new = process_list_new(args[0], args[2], atoi(args[1]), -1);
+    ProcessList* new = process_list_new(args[0], args[2], atoi(args[1]), -1, "");
     process_list_append(process_list(), &new);
     if (!new) {
         out->nr = -1;

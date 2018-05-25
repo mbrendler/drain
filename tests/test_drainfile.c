@@ -23,7 +23,10 @@ void test_drainfile_read() {
     ASSERT_STRING("proc-5", l->n->p.name);
     ASSERT_STRING("echo proc-5", l->n->p.cmd);
     ASSERT_INT(5, l->n->p.color);
-    ASSERT_POINTER(NULL, l->n->n);
+    ASSERT_STRING("proc-6", l->n->n->p.name);
+    ASSERT_STRING("echo proc-6", l->n->n->p.cmd);
+    ASSERT_INT(6, l->n->n->p.color);
+    ASSERT_POINTER(NULL, l->n->n->n);
     process_list_free(l);
 }
 

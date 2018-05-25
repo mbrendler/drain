@@ -1,4 +1,5 @@
-proc-1:1:echo proc-1
+proc-1:1:default,g2:echo proc-1
 proc-2
 proc-3:3
-proc-5:5:echo proc-5
+proc-5:5:g1:echo proc-5
+proc-6:6::echo proc-6

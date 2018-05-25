@@ -3,7 +3,7 @@
 #include "process_mock.h"
 
 void test_new() {
-    ProcessList* l = process_list_new("name", "cmd", 23, 42);
+    ProcessList* l = process_list_new("name", "cmd", 23, 42, "");
     ASSERT(l);
     ASSERT_STRING("name", l->p.name);
     ASSERT_STRING("cmd", l->p.cmd);
@@ -55,9 +55,9 @@ int main() {
     init_process_calls();
     test_new();
 
-    ProcessList *pl2 = process_list_new("p2", "cmd2", 3, 23);
+    ProcessList *pl2 = process_list_new("p2", "cmd2", 3, 23, "");
     process_list_set(
-        process_list_append(process_list_new("p1", "cmd1", 1, 42), &pl2)
+        process_list_append(process_list_new("p1", "cmd1", 1, 42, ""), &pl2)
     );
 
     init_process_calls();

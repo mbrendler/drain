@@ -6,14 +6,22 @@
 typedef struct {
     char* name;
     int color;
+    char* groups;
     char* cmd;
 } DrainfileLine;
 
 static DrainfileLine drainfile_parse_line(char* str) {
-    DrainfileLine parsed = {.name=NULL, .color=0, .cmd=NULL};
+    DrainfileLine parsed = {
+      .name=NULL,
+      .color=0,
+      .groups=NULL,
+      .cmd=NULL
+    };
     parsed.name = strsep(&str, ":");
     if (!str) { return parsed; }
     parsed.color = atoi(strsep(&str, ":"));
+    if (!str) { return parsed; }
+    parsed.groups = strsep(&str, ":");
     if (!str) { return parsed; }
     parsed.cmd = strsep(&str, "\n");
     return parsed;
@@ -32,7 +40,11 @@ ProcessList* drainfile_read(const char* filename) {
         const DrainfileLine parsed = drainfile_parse_line(buffer);
         if (parsed.name && parsed.cmd) {
             ProcessList *new = process_list_new(
-                parsed.name, parsed.cmd, parsed.color, -1
+                parsed.name,
+                parsed.cmd,
+                parsed.color,
+                -1,
+                parsed.groups
             );
             if (!new) { fprintf(stderr, "Ignore %s\n", parsed.name); }
             l = process_list_append(l, &new);

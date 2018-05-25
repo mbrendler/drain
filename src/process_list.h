@@ -6,11 +6,12 @@
 typedef struct ProcessList ProcessList;
 
 struct ProcessList {
-    ProcessList *n;
+    ProcessList* n;
+    char* groups;
     Process p;
 };
 
-ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd);
+ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd, char* groups);
 
 void process_list_process_start(ProcessList* l, int namesc, char **names);
 
