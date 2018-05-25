@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.7.0)
 project("drain")
 
 include("${CMAKE_SOURCE_DIR}/cmake/cotire.cmake")
