@@ -109,7 +109,7 @@ void process_remove_output_fd_at(Process *p, size_t index) {
 }
 
 void print_line(const char *name, const char *content, char sep, int color, size_t width) {
-    fprintf(stdout, "\033[3%dm%s%c \033[39;49m", color, name, sep);
+    fprintf(stdout, "\033[38;5;%dm%s%c \033[39;49m", color, name, sep);
     fwrite(content, sizeof(*content), width, stdout);
     fwrite("\n", sizeof(char), 1, stdout);
 }
@@ -155,7 +155,7 @@ int process_forward(Process *p) {
 }
 
 int process_print_status(const Process* p) {
-    printf("\033[3%dm%8s\033[39;49m | %4s | %5d | %2d | %s\n",
+    printf("\033[38;5;%dm%8s\033[39;49m | %4s | %5d | %2d | %s\n",
         p->color,
         p->name,
         p->pid > -1 ? "up" : "down",
