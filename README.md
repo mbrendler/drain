@@ -1,6 +1,6 @@
 # Drain
 
-Drain is a process manager like (foreman)[https://github.com/ddollar/foreman].
+Drain is a process manager like [foreman](https://github.com/ddollar/foreman).
 
 ## Build and Test:
 
@@ -12,12 +12,12 @@ Drain is a process manager like (foreman)[https://github.com/ddollar/foreman].
 
 * Create $HOME/.drainfile with the following schema:
 
-```
-process-name-1:color-number:group-name-1,group-name-2:command
-process-name-2:color-number:group-name-1:command
-# a comment
-...
-```
+  ```
+  process-name-1:color-number:group-name-1,group-name-2:command
+  process-name-2:color-number:group-name-1:command
+  # a comment
+  ...
+  ```
 
   * process-name: the user defined name of the process
   * color-number: terminal color number
@@ -58,4 +58,4 @@ commands
 ## ZSH completion
 
 You can use the sample completion like the
-[i](https://github.com/mbrendler/i/blob/master/zsh-completion/_i) project.
+[i project](https://github.com/mbrendler/i/blob/master/zsh-completion/_i).
