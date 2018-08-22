@@ -182,6 +182,7 @@ static const Command COMMANDS[] = {
 
 int cmd_help(int argc, char** argv) {
     const bool all = argv && argc > 0 && 0 == strcmp("-a", argv[0]);
+    if ((all && argc > 1) || (!all && argc > 0)) { return 0; }
     puts("drain [options] [CMD]\n");
     puts("options");
     puts("  -f FILE    -- configure drainfile path");
