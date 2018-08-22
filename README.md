@@ -1,5 +1,7 @@
 # Drain
 
+Drain is a process manager like (foreman)[https://github.com/ddollar/foreman].
+
 ## Build and Test:
 
 ```sh
@@ -8,17 +10,26 @@
 
 ## Usage
 
-Create $HOME/.drainfile with the following schema:
+* Create $HOME/.drainfile with the following schema:
 
 ```
-process1:color:group-1,group-2:command
-process2:color:group-1,group-2:command
+process-name-1:color-number:group-name-1,group-name-2:command
+process-name-2:color-number:group-name-1:command
+# a comment
 ...
 ```
 
-Start all processes with `drain server`.
+  * process-name: the user defined name of the process
+  * color-number: terminal color number
+    (0-255 if your terminal support 256 colors)
+  * group-name: simplifies starting a group of processes
+    (only the *server* and *up* command supports groups)
+  * command: a bourne shell command
 
-Commandline options:
+* Start all processes with `drain server`.
+
+## Command line
+
 ```
 drain [options] [CMD]
 
