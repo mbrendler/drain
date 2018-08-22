@@ -54,3 +54,8 @@ commands
   status                            -- status of drain server
   up [NAME...]                      -- start one, more or all processes
 ```
+
+## ZSH completion
+
+You can use the sample completion like the
+[i](https://github.com/mbrendler/i/blob/master/zsh-completion/_i) project.
