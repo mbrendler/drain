@@ -57,5 +57,5 @@ commands
 
 ## ZSH completion
 
-You can use the sample completion like the
+You can use the same completion as the
 [i project](https://github.com/mbrendler/i/blob/master/zsh-completion/_i).
