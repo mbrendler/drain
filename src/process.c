@@ -59,9 +59,9 @@ static void process_kill(Process *p) {
 void process_stop(Process *p) {
     if (!p->f) { return; }
     process_kill(p);
-    fclose(p->f);
     // TODO: interpret status:
     if (p->pid > 0) { waitpid(p->pid, NULL, 0); }
+    fclose(p->f);
     printf("process stopped: %s\n", p->name);
     p->f = NULL;
     p->fd = -1;
