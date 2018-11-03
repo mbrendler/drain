@@ -12,8 +12,11 @@
 #  include <sys/wait.h>
 #endif
 
+#define MAX_OUT_FDS_SIZE 0xff
+
 static void close_all_fds_from(int fd);
 static int process_open(const char *cmd, int *fd);
+static void process_forward_(Process* p);
 
 static char BUFFER[4096];
 
@@ -50,8 +53,6 @@ void process_start(Process *p) {
     }
 }
 
-static void process_forward_(Process* p);
-
 void process_stop(Process *p) {
     if (!p->f) { return; }
     if (p->pid > 0) {
@@ -83,8 +84,6 @@ void process_clear(Process *p) {
     p->cmd = NULL;
 }
 
-#define MAX_OUT_FDS_SIZE 0xff
-
 bool process_add_output_fd(Process *p, int fd) {
     if (p->out_fd_count >= MAX_OUT_FDS_SIZE) {
       return false;
@@ -113,36 +112,6 @@ void print_line(const char *name, const char *content, char sep, int color, size
     fprintf(stdout, "\033[38;5;%dm%s%c \033[39;49m", color, name, sep);
     fwrite(content, sizeof(*content), width, stdout);
     fwrite("\n", sizeof(char), 1, stdout);
-}
-
-static void process_forward_(Process* p) {
-    const bool line_wrap = CONFIG->line_wrap;
-    const size_t width = (size_t)CONFIG->term_width - strlen(p->name) - 2;
-    while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
-        size_t len = strlen(BUFFER);
-        for (uint8_t i = 0; i < p->out_fd_count; ++i) {
-            if (-1 == write(p->out_fds[i], BUFFER, len)) {
-                perror("write out_fd");
-                process_remove_output_fd_at(p, i);
-            }
-        }
-        if ('\n' == BUFFER[len - 1]) { len--; }
-        if (!line_wrap || len <= width) {
-            print_line(p->name, BUFFER, ':', p->color, len);
-        } else {
-            print_line(p->name, BUFFER, ':', p->color, width);
-            len -= width;
-            const char *a = BUFFER + width;
-            while (len > width) {
-                print_line(p->name, a, '^', p->color, width);
-                len -= width;
-                a += width;
-            }
-            if (len > 0) {
-                print_line(p->name, a, '^', p->color, len);
-            }
-        }
-    }
 }
 
 int process_forward(Process *p) {
@@ -241,4 +210,34 @@ static int process_open(const char *cmd, int *fd) {
     fcntl(*fd, F_SETFL, fcntl(*fd, F_GETFL, 0) | O_NONBLOCK);
 
     return pid;
+}
+
+static void process_forward_(Process* p) {
+    const bool line_wrap = CONFIG->line_wrap;
+    const size_t width = (size_t)CONFIG->term_width - strlen(p->name) - 2;
+    while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
+        size_t len = strlen(BUFFER);
+        for (uint8_t i = 0; i < p->out_fd_count; ++i) {
+            if (-1 == write(p->out_fds[i], BUFFER, len)) {
+                perror("write out_fd");
+                process_remove_output_fd_at(p, i);
+            }
+        }
+        if ('\n' == BUFFER[len - 1]) { len--; }
+        if (!line_wrap || len <= width) {
+            print_line(p->name, BUFFER, ':', p->color, len);
+        } else {
+            print_line(p->name, BUFFER, ':', p->color, width);
+            len -= width;
+            const char *a = BUFFER + width;
+            while (len > width) {
+                print_line(p->name, a, '^', p->color, width);
+                len -= width;
+                a += width;
+            }
+            if (len > 0) {
+                print_line(p->name, a, '^', p->color, len);
+            }
+        }
+    }
 }
