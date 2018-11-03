@@ -50,19 +50,18 @@ void process_start(Process *p) {
     }
 }
 
-static void process_kill(Process *p) {
-    if (p->pid > 0) {
-        kill(p->pid, SIGTERM);
-    }
-}
 
 void process_stop(Process *p) {
     if (!p->f) { return; }
-    process_kill(p);
-    // TODO: interpret status:
-    if (p->pid > 0) { waitpid(p->pid, NULL, 0); }
+    if (p->pid > 0) {
+      printf("stopping process: %s", p->name);
+      fflush(stdout);
+      kill(p->pid, SIGTERM);
+      // TODO: interpret status:
+      waitpid(p->pid, NULL, 0);
+      puts(" done");
+    }
     fclose(p->f);
-    printf("process stopped: %s\n", p->name);
     p->f = NULL;
     p->fd = -1;
     p->pid = -1;
