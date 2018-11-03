@@ -33,7 +33,7 @@ void test_deserialize_string_array() {
     ASSERT_STRING("hallo", array[0]);
     ASSERT_STRING("welt", array[1]);
     ASSERT_STRING("wald", array[2]);
-    // the input is not modufied
+    // the input is not modified
     ASSERT_BYTES(sizeof(strs), "hallo\0welt\0wald\0", strs);
     free(array);
 }
