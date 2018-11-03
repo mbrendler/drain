@@ -160,4 +160,4 @@ wait-settled
 run-drain attach tic >> /tmp/_drain_test_attach_out &
 sleep 6
 stop-server
-assert-includes 'tic:' 'process stopped: tic' < /tmp/_drain_test_attach_out
+assert-includes 'tic:' < /tmp/_drain_test_attach_out
