@@ -50,6 +50,7 @@ void process_start(Process *p) {
     }
 }
 
+static void process_forward_(Process* p);
 
 void process_stop(Process *p) {
     if (!p->f) { return; }
@@ -60,6 +61,7 @@ void process_stop(Process *p) {
       // TODO: interpret status:
       waitpid(p->pid, NULL, 0);
       puts(" done");
+      process_forward_(p);
     }
     fclose(p->f);
     p->f = NULL;
@@ -113,8 +115,7 @@ void print_line(const char *name, const char *content, char sep, int color, size
     fwrite("\n", sizeof(char), 1, stdout);
 }
 
-int process_forward(Process *p) {
-    if (!p->f) { return -1; }
+static void process_forward_(Process* p) {
     const bool line_wrap = CONFIG->line_wrap;
     const size_t width = (size_t)CONFIG->term_width - strlen(p->name) - 2;
     while (fgets(BUFFER, sizeof(BUFFER), p->f)) {
@@ -142,6 +143,11 @@ int process_forward(Process *p) {
             }
         }
     }
+}
+
+int process_forward(Process *p) {
+    if (!p->f) { return -1; }
+    process_forward_(p);
     if (feof(p->f)) {
         process_stop(p);
         return -1;
