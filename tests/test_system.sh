@@ -160,4 +160,7 @@ wait-settled
 run-drain attach tic >> /tmp/_drain_test_attach_out &
 sleep 6
 stop-server
+echo ================================
+cat /tmp/_drain_test_attach_out
+echo ================================
 assert-includes 'tic:' < /tmp/_drain_test_attach_out
