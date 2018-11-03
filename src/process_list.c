@@ -1,4 +1,5 @@
 #include "process_list.h"
+#include "helpers.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -86,9 +87,9 @@ void process_list_free(ProcessList* l) {
 
 int process_list_max_fd(ProcessList *l, int fd) {
     process_list_each(p, l, {
-        fd = fd > p->fd ? fd : p->fd;
+        fd = MAX(fd, p->fd);
         for (uint8_t i = 0; i < p->out_fd_count; ++i) {
-            fd = fd > p->out_fds[i] ? fd : p->out_fds[i];
+            fd = MAX(fd, p->out_fds[i]);
         }
     });
     return fd;

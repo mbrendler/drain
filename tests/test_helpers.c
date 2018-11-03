@@ -38,8 +38,14 @@ void test_deserialize_string_array() {
     free(array);
 }
 
+void test_max() {
+  ASSERT_INT(3, MAX(1, 3));
+  ASSERT_INT(23, MAX(23, 3));
+}
+
 int main() {
     test_replace_char();
     test_serialize_string_array();
     test_deserialize_string_array();
+    test_max();
 }
