@@ -4,7 +4,13 @@
 #include <errno.h>
 #include <string.h>
 
-ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd, char* groups) {
+ProcessList* process_list_new(
+    const char *name,
+    const char *cmd,
+    int color,
+    int fd,
+    char* groups
+) {
     ProcessList *e = malloc(sizeof(ProcessList));
     if (!e) {
         perror("malloc e");
@@ -79,45 +85,46 @@ void process_list_free(ProcessList* l) {
 }
 
 int process_list_max_fd(ProcessList *l, int fd) {
-    fd = fd > l->p.fd ? fd : l->p.fd;
-    for (uint8_t i = 0; i < l->p.out_fd_count; ++i) {
-        fd = fd > l->p.out_fds[i] ? fd : l->p.out_fds[i];
-    }
-    return l->n ? process_list_max_fd(l->n, fd) : fd;
+    process_list_each(p, l, {
+        fd = fd > p->fd ? fd : p->fd;
+        for (uint8_t i = 0; i < p->out_fd_count; ++i) {
+            fd = fd > p->out_fds[i] ? fd : p->out_fds[i];
+        }
+    });
+    return fd;
 }
 
 int process_list_init_fd_set(ProcessList *l, fd_set* set) {
     FD_ZERO(set);
     int result = 0;
-    while (l) {
-        if (l->p.fd >= 0) {
+    process_list_each(p, l, {
+        if (p->fd >= 0) {
             result++;
-            FD_SET(l->p.fd, set);
+            FD_SET(p->fd, set);
         }
-        for (uint8_t i = 0; i < l->p.out_fd_count; ++i) {
-            FD_SET(l->p.out_fds[i], set);
+        for (uint8_t i = 0; i < p->out_fd_count; ++i) {
+            FD_SET(p->out_fds[i], set);
         }
-        l = l->n;
-    }
+    });
     return result;
 }
 
 void process_list_forward(ProcessList *l, fd_set* set) {
-    if (!l) { return; }
-    if (l->p.fd >= 0) {
-        if (FD_ISSET(l->p.fd, set)) {
-            process_forward(&(l->p));
-        } else {
-            for (uint8_t i = 0; i < l->p.out_fd_count; ++i) {
-                if (FD_ISSET(l->p.out_fds[i], set)) {
-                    if (-1 == write(l->p.out_fds[i], NULL, 0)) {
-                        process_remove_output_fd_at(&l->p, i);
+    process_list_each(p, l, {
+        if (p->fd >= 0) {
+            if (FD_ISSET(p->fd, set)) {
+                process_forward(p);
+            } else {
+                for (uint8_t i = 0; i < p->out_fd_count; ++i) {
+                    if (FD_ISSET(p->out_fds[i], set)) {
+                        if (-1 == write(p->out_fds[i], NULL, 0)) {
+                            process_remove_output_fd_at(p, i);
+                        }
                     }
                 }
             }
         }
-    }
-    process_list_forward(l->n, set);
+    });
 }
 
 ProcessList *process_list_append(ProcessList *l, ProcessList **n) {
