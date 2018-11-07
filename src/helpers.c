@@ -10,7 +10,12 @@ void replace_char(char *str, char *end, char from, char to) {
     }
 }
 
-int serialize_string_array(char** array, int size, char* buffer, size_t buffer_size) {
+int serialize_string_array(
+    char** array,
+    int size,
+    char* buffer,
+    size_t buffer_size
+) {
     int out_size = 0;
     for (char **end = array + size; array < end; ++array) {
         size_t len = strlen(*array) + 1;

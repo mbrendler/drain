@@ -22,7 +22,13 @@ void init_process_calls() {
     process_calls = (struct ProcessCalls){0, 0, 0, 0, 0, 0, 0, 0};
 }
 
-void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
+void process_init(
+    Process *p,
+    const char *name,
+    const char *cmd,
+    int color,
+    int fd
+) {
     process_calls.init++;
     p->name = strdup(name);
     p->cmd = strdup(cmd);

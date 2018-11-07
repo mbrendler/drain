@@ -11,7 +11,13 @@ struct ProcessList {
     Process p;
 };
 
-ProcessList* process_list_new(const char *name, const char *cmd, int color, int fd, char* groups);
+ProcessList* process_list_new(
+    const char *name,
+    const char *cmd,
+    int color,
+    int fd,
+    char* groups
+);
 
 void process_list_process_start(ProcessList* l, int namesc, char **names);
 

@@ -83,7 +83,11 @@ int action_log(int fd, Message* in, Message* out) {
         return 0;
     } else {
         out->nr = 0;
-        const size_t size = process_serialize(p, out->content, sizeof(out->content));
+        const size_t size = process_serialize(
+            p,
+            out->content,
+            sizeof(out->content)
+        );
         if (size > MAX_MESSAGE_CONTENT_SIZE) {
             fprintf(stderr, "resulting message size too long: %zu\n", size);
             return -1;

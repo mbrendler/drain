@@ -38,7 +38,10 @@ void cmd_server_register_signal_handlers() {
 int cmd_server_monitor_processes(ProcessList* l, Server* s) {
     fd_set set;
     list = l;
-    while (!shutdown_drain && (process_list_init_fd_set(l, &set) || CONFIG->keep_running)) {
+    while (
+        !shutdown_drain && (
+          process_list_init_fd_set(l, &set) || CONFIG->keep_running)
+    ) {
         if (s) { FD_SET(s->fd, &set); }
         const int max = process_list_max_fd(l, s ? s->fd : -1);
         if (-1 == select(max + 1, &set, NULL, NULL, NULL)) {

@@ -36,7 +36,11 @@ int string_list_contains(const char* str, int strsc, char **strs) {
     return -1;
 }
 
-bool comma_separated_string_includes_word(const char* list, int wordsc, char** words) {
+bool comma_separated_string_includes_word(
+    const char* list,
+    int wordsc,
+    char** words
+) {
   for (--wordsc; wordsc >= 0; --wordsc) {
     const char* found = strstr(list, words[wordsc]);
     if (found) {

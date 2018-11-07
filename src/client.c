@@ -31,7 +31,11 @@ int client_start(Client *c) {
 
     /* struct in_addr ipv4addr; */
     /* inet_pton(AF_INET, "127.0.0.1", &ipv4addr); */
-    /* struct hostent *server = gethostbyaddr(&ipv4addr, sizeof(ipv4addr), AF_INET); */
+    /* struct hostent *server = gethostbyaddr( */
+    /*     &ipv4addr, */
+    /*     sizeof(ipv4addr), */
+    /*     AF_INET */
+    /* ); */
     /* if (server == NULL) { */
     /*     client_stop(c); */
     /*     perror("hostent"); */

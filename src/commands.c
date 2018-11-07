@@ -63,7 +63,12 @@ int cmd_status(int argc, char** argv) {
 static int simple_command(enum MessageNumber nr, int argc, char** argv) {
     Message msg;
     msg.nr = nr;
-    const int size = serialize_string_array(argv, argc, msg.content, sizeof(msg.content));
+    const int size = serialize_string_array(
+        argv,
+        argc,
+        msg.content,
+        sizeof(msg.content)
+    );
     if (0 > size || size > MAX_MESSAGE_CONTENT_SIZE) {
         fprintf(stderr, "resulting message size too long: %d\n", size);
         return -1;

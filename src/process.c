@@ -20,7 +20,13 @@ static void process_forward_(Process* p);
 
 static char BUFFER[4096];
 
-void process_init(Process *p, const char *name, const char *cmd, int color, int fd) {
+void process_init(
+    Process *p,
+    const char *name,
+    const char *cmd,
+    int color,
+    int fd
+) {
     p->color = color;
     if (!(p->name = strdup(name))) {
         perror("strdup p->name");
@@ -103,12 +109,21 @@ void process_remove_output_fd_at(Process *p, size_t index) {
         p->out_fd_count = 0;
     } else {
         p->out_fds[index] = p->out_fds[p->out_fd_count - 1];
-        p->out_fds = realloc(p->out_fds, (size_t)(p->out_fd_count - 1) * sizeof(int));
+        p->out_fds = realloc(
+            p->out_fds,
+            (size_t)(p->out_fd_count - 1) * sizeof(int)
+        );
         p->out_fd_count--;
     }
 }
 
-void print_line(const char *name, const char *content, char sep, int color, size_t width) {
+void print_line(
+    const char *name,
+    const char *content,
+    char sep,
+    int color,
+    size_t width
+) {
     fprintf(stdout, "\033[38;5;%dm%s%c \033[39;49m", color, name, sep);
     fwrite(content, sizeof(*content), width, stdout);
     fwrite("\n", sizeof(char), 1, stdout);
