@@ -37,6 +37,7 @@ ProcessList* drainfile_read(const char* filename) {
     ProcessList *l = NULL;
     while (fgets(buffer, sizeof(buffer), f)) {
         if ('#' == *buffer) { continue; } // line is comment
+        if ('\n' == *buffer) { continue; } // line is empty
         const DrainfileLine parsed = drainfile_parse_line(buffer);
         if (parsed.name && parsed.cmd) {
             ProcessList *new = process_list_new(
