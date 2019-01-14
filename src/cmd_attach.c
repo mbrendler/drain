@@ -18,7 +18,7 @@ int cmd_attach(int argc, char** argv) {
             return -1;
         }
         out.size = (uint16_t)size;
-        strncpy(out.content, argv[i], sizeof(out.content));
+        strncpy(out.content, argv[i], size);
         Client c;
         client_init(&c);
         if (-1 == client_start(&c)) { return -1; }
