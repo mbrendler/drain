@@ -4,16 +4,16 @@ project("drain")
 include("${CMAKE_SOURCE_DIR}/cmake/cotire.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake")
 
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
     -Wpedantic \
     -Weverything \
     -Wno-padded \
     -Wno-missing-prototypes \
   ")
-elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
-endif ()
+endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
   -Wall \
   -Wno-gnu-zero-variadic-macro-arguments \
@@ -104,4 +104,7 @@ add_test(test_actions test_actions)
 add_test(test_process_list test_process_list)
 add_test(test_process test_process)
 
-add_test(test_system "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_system.sh" "${CMAKE_BINARY_DIR}")
+add_test(test_system
+  "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_system.sh"
+  "${CMAKE_BINARY_DIR}"
+)
