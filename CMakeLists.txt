@@ -6,6 +6,8 @@ include("${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake")
 
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
+    -Wall \
+    -Wextra \
     -Wpedantic \
     -Weverything \
     -Wno-padded \
