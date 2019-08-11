@@ -145,7 +145,7 @@ run-drain add blubber 4 echo hallo
 run-drain status | assert-includes 'blubber.*down.*echo hallo'
 stop-server
 
-echo Test add -s command ---------------------------------------------------------
+echo Test add -s command ------------------------------------------------------
 (
   start-server
   wait-settled
@@ -158,7 +158,7 @@ echo Test attach command ------------------------------------------------------
 start-server
 wait-settled
 run-drain attach tic >> /tmp/_drain_test_attach_out &
-sleep 6
+sleep 2
 stop-server
 echo ================================
 cat /tmp/_drain_test_attach_out
