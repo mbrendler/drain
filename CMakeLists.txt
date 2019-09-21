@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7.0)
+cmake_minimum_required(VERSION 3.9.0)
 project("drain")
 
 include("${CMAKE_SOURCE_DIR}/cmake/cotire.cmake")
@@ -21,6 +21,12 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
   -Wno-gnu-zero-variadic-macro-arguments \
 ")
 
+set(IPO_SUPPORT FALSE)
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT IPO_SUPPORT OUTPUT output)
+endif()
+
 find_library(TERMCAP_LIB NAMES termcap ncurses)
 
 add_library(_drain EXCLUDE_FROM_ALL OBJECT
@@ -40,6 +46,7 @@ add_library(_drain EXCLUDE_FROM_ALL OBJECT
 cotire(_drain)
 
 add_executable(drain EXCLUDE_FROM_ALL src/drain.c $<TARGET_OBJECTS:_drain>)
+set_property(TARGET drain PROPERTY INTERPROCEDURAL_OPTIMIZATION ${IPO_SUPPORT})
 target_link_libraries(drain "${TERMCAP_LIB}")
 cotire(drain)
 
