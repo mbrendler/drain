@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9.0)
-project("drain")
+project("drain" C)
 
 include("${CMAKE_SOURCE_DIR}/cmake/cotire.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake")
