@@ -3,21 +3,21 @@
 typedef struct ProcessList ProcessList;
 
 extern struct ProcessCalls {
-    int init;
-    int free;
-    int start;
-    int forward;
-    int stop;
-    int add_output_fd;
-    int remove_output_fd;
-    int serialize;
+  int init;
+  int free;
+  int start;
+  int forward;
+  int stop;
+  int add_output_fd;
+  int remove_output_fd;
+  int serialize;
 } process_calls;
 
 enum CallFds {
-    cfNoneCalled,
-    cfStartCalled,
-    cfForwardCalled,
-    cfStopCalled,
+  cfNoneCalled,
+  cfStartCalled,
+  cfForwardCalled,
+  cfStopCalled,
 };
 
 ProcessList* process_list();
