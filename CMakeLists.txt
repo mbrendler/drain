@@ -4,10 +4,14 @@ project("drain" C)
 include("${CMAKE_SOURCE_DIR}/cmake/cotire.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake")
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
+  -Wall \
+  -Wextra \
+  -Wno-gnu-zero-variadic-macro-arguments \
+")
+
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
-    -Wall \
-    -Wextra \
     -Wpedantic \
     -Weverything \
     -Wno-padded \
@@ -16,10 +20,6 @@ if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
 endif()
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
-  -Wall \
-  -Wno-gnu-zero-variadic-macro-arguments \
-")
 
 set(IPO_SUPPORT FALSE)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
