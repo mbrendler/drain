@@ -4,7 +4,10 @@
 
 void test_config_init() {
     config_init();
-    ASSERT_STRING(getenv("TERM"), CONFIG->termtype);
+    const char* term = getenv("TERM");
+    if (term) {
+      ASSERT_STRING(term, CONFIG->termtype);
+    }
 
     char *expected_drainfile = NULL;
     asprintf(&expected_drainfile, "%s/.drainfile", getenv("HOME"));
