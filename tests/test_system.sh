@@ -151,6 +151,7 @@ echo Test add -s command ------------------------------------------------------
   wait-settled
   run-drain add -s blubber 4 echo hallo welt wald
   run-drain status | assert-includes 'blubber.*echo hallo welt wald'
+  sleep 2
   stop-server
 ) | assert-includes "blubber:.*hallo welt wald"
 
