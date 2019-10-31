@@ -5,10 +5,10 @@
 void replace_char(char *str, char *end, char from, char to);
 
 int serialize_string_array(
-    char** array,
-    int size,
-    char* buffer,
-    size_t buffer_size
+  char** array,
+  int size,
+  char* buffer,
+  size_t buffer_size
 );
 
 // free string array

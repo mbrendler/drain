@@ -2,45 +2,45 @@
 #include <string.h>
 
 void replace_char(char *str, char *end, char from, char to) {
-    while (str < end) {
-        if (*str == from) {
-            *str = to;
-        }
-        str++;
+  while (str < end) {
+    if (*str == from) {
+      *str = to;
     }
+    str++;
+  }
 }
 
 int serialize_string_array(
-    char** array,
-    int size,
-    char* buffer,
-    size_t buffer_size
+  char** array,
+  int size,
+  char* buffer,
+  size_t buffer_size
 ) {
-    int out_size = 0;
-    for (char **end = array + size; array < end; ++array) {
-        size_t len = strlen(*array) + 1;
-        if (len > buffer_size) { return -1; }
-        memcpy(buffer, *array, len);
-        buffer += len;
-        out_size += len;
-        buffer_size -= len;
-    }
-    return out_size;
+  int out_size = 0;
+  for (char **end = array + size; array < end; ++array) {
+    size_t len = strlen(*array) + 1;
+    if (len > buffer_size) { return -1; }
+    memcpy(buffer, *array, len);
+    buffer += len;
+    out_size += len;
+    buffer_size -= len;
+  }
+  return out_size;
 }
 
 int deserialize_string_array(char* strs, int strs_size, char*** array) {
-    // !!! FREE MEMORY 'array' !!!
-    char *str = strs;
-    size_t count = 0;
-    while (str < strs + strs_size) {
-        str += strlen(str) + 1;
-        count++;
-    }
-    *array = calloc(count, sizeof(char*));
-    str = strs;
-    for (size_t i = 0; i < count; ++i) {
-        (*array)[i] = str;
-        str += strlen(str) + 1;
-    }
-    return (int)count;
+  // !!! FREE MEMORY 'array' !!!
+  char *str = strs;
+  size_t count = 0;
+  while (str < strs + strs_size) {
+    str += strlen(str) + 1;
+    count++;
+  }
+  *array = calloc(count, sizeof(char*));
+  str = strs;
+  for (size_t i = 0; i < count; ++i) {
+    (*array)[i] = str;
+    str += strlen(str) + 1;
+  }
+  return (int)count;
 }

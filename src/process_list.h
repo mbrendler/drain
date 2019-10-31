@@ -6,17 +6,17 @@
 typedef struct ProcessList ProcessList;
 
 struct ProcessList {
-    ProcessList* n;
-    char* groups;
-    Process p;
+  ProcessList* n;
+  char* groups;
+  Process p;
 };
 
 ProcessList* process_list_new(
-    const char *name,
-    const char *cmd,
-    int color,
-    int fd,
-    char* groups
+  const char *name,
+  const char *cmd,
+  int color,
+  int fd,
+  char* groups
 );
 
 void process_list_process_start(ProcessList* l, int namesc, char **names);
@@ -36,10 +36,10 @@ ProcessList *process_list_append(ProcessList *l, ProcessList **n);
 Process* process_list_find_by_name(ProcessList *l, char *name);
 
 #define process_list_each(VAR_, LIST_, block) { \
-    ProcessList *lIsT = LIST_;                  \
-    while (NULL != lIsT) {                      \
-        Process *VAR_ = &(lIsT->p);             \
-        block;                                  \
-        lIsT = lIsT->n;                         \
-    }                                           \
+  ProcessList *lIsT = LIST_;                    \
+  while (NULL != lIsT) {                        \
+    Process *VAR_ = &(lIsT->p);                 \
+    block;                                      \
+    lIsT = lIsT->n;                             \
+  }                                             \
 }

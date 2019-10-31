@@ -6,22 +6,22 @@
 #include <stdbool.h>
 
 typedef struct {
-    int color;
-    pid_t pid;
-    int fd;
-    FILE* f;
-    uint8_t out_fd_count;
-    int *out_fds;
-    char *name;
-    char *cmd;
+  int color;
+  pid_t pid;
+  int fd;
+  FILE* f;
+  uint8_t out_fd_count;
+  int *out_fds;
+  char *name;
+  char *cmd;
 } Process;
 
 void process_init(
-    Process *p,
-    const char *name,
-    const char *cmd,
-    int color,
-    int fd
+  Process *p,
+  const char *name,
+  const char *cmd,
+  int color,
+  int fd
 );
 
 void process_clear(Process *p);

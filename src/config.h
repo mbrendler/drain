@@ -3,13 +3,13 @@
 #include <stdbool.h>
 
 typedef struct {
-    const char* termtype;
-    int term_width;
-    bool line_wrap;
-    bool verbose;
-    bool keep_running;
-    char* drainfile;
-    char* socket_path;
+  const char* termtype;
+  int term_width;
+  bool line_wrap;
+  bool verbose;
+  bool keep_running;
+  char* drainfile;
+  char* socket_path;
 } Config;
 
 extern const Config *CONFIG;

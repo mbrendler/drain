@@ -6,10 +6,10 @@
 typedef struct Server Server;
 
 struct Server {
-    int fd;
-    struct sockaddr_un addr;
-    /* struct sockaddr_in addr; */
-    /* int port; */
+  int fd;
+  struct sockaddr_un addr;
+  /* struct sockaddr_in addr; */
+  /* int port; */
 };
 
 void server_init(Server *s);
