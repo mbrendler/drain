@@ -12,13 +12,13 @@
     exit(EXIT_FAILURE);                                                      \
   }
 
-#define ASSERT_STRING(expect, value) if (strcmp(expect, value)) {          \
+#define ASSERT_STRING(expect, value) if (0 != strcmp(expect, value)) {     \
     printf("failure: %s:%d  %s\n    expected: '%s'\n         got: '%s'\n", \
       __FILE__, __LINE__, __PRETTY_FUNCTION__, expect, value);             \
     exit(EXIT_FAILURE);                                                    \
   }
 
-#define ASSERT_BYTES(size, expect, value) if (memcmp(expect, value, size)) { \
+#define ASSERT_BYTES(size, expect, value) if (0 != memcmp(expect, value, size)) { \
     printf("failure: %s:%d  %s\n    expected: ",                             \
       __FILE__, __LINE__, __PRETTY_FUNCTION__);                              \
     for (size_t i = 0; i < size ; ++i) {                                     \

@@ -1,6 +1,6 @@
-#include "tests.h"
 #include "../src/process_list.h"
 #include "process_mock.h"
+#include "tests.h"
 
 void test_new() {
   ProcessList* l = process_list_new("name", "cmd", 23, 42, "");

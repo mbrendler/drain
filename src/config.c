@@ -2,6 +2,7 @@
 #include "commands.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <termcap.h>
 
@@ -60,13 +61,13 @@ int config_parse_args(int argc, char **argv) {
         if (NULL != CFG.drainfile) {
           free(CFG.drainfile);
         }
-        CFG.drainfile = optarg;
+        CFG.drainfile = strdup(optarg);
         break;
       case 'S':
         if (NULL != CFG.socket_path) {
           free(CFG.socket_path);
         }
-        CFG.socket_path = optarg;
+        CFG.socket_path = strdup(optarg);
         break;
       default: return -1;
     }

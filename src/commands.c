@@ -232,7 +232,8 @@ CommandFunction command_get(const char* name) {
   if (NULL == found) {
     printf("unknown command '%s'\n", name);
     return NULL;
-  } else if (false != ambiguous) {
+  }
+  if (false != ambiguous) {
     puts("");
     return NULL;
   }

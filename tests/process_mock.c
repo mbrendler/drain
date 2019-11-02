@@ -1,7 +1,7 @@
 #include "process_mock.h"
 #include "../src/process_list.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 static ProcessList *list = NULL;
 
