@@ -3,6 +3,7 @@ project("drain" C)
 
 include("${CMAKE_SOURCE_DIR}/cmake/cotire.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake")
+include("${CMAKE_SOURCE_DIR}/cmake/clang-tidy.cmake")
 
 set_property(GLOBAL PROPERTY COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 
