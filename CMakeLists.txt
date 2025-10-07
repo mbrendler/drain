@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16.0)
 project("drain" C)
 
+set(CMAKE_C_STANDARD 11)
+
 include("${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/clang-tidy.cmake")
 
@@ -9,15 +11,17 @@ set_property(GLOBAL PROPERTY COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
   -Wall \
   -Wextra \
-  -Wno-gnu-zero-variadic-macro-arguments \
+  -Wpedantic \
+  -Werror \
 ")
 
-if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
+   "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
-    -Wpedantic \
     -Weverything \
-    -Wno-padded \
     -Wno-missing-prototypes \
+    -Wno-declaration-after-statement \
+    -Wno-poison-system-directories \
   ")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")

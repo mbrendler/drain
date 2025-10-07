@@ -1,14 +1,14 @@
 #include "tests.h"
 #include "../src/helpers.h"
 
-void test_replace_char() {
+void test_replace_char(void) {
   char str[] = "hallo\0welt\0wald";
   char *end = str + sizeof(str) - 1; // -1 .. stop before last '\0'
   replace_char(str, end, '\0', ' ');
   ASSERT_STRING("hallo welt wald", str);
 }
 
-void test_serialize_string_array() {
+void test_serialize_string_array(void) {
   char *array[] = {"hallo", "welt", "wald"};
   char buffer[16];
 
@@ -25,7 +25,7 @@ void test_serialize_string_array() {
   ASSERT_INT(-1, size);
 }
 
-void test_deserialize_string_array() {
+void test_deserialize_string_array(void) {
   char strs[] = "hallo\0welt\0wald";
   char **array = NULL;
   int count = deserialize_string_array(strs, sizeof(strs), &array);
@@ -38,12 +38,12 @@ void test_deserialize_string_array() {
   free(array);
 }
 
-void test_max() {
+void test_max(void) {
   ASSERT_INT(3, MAX(1, 3));
   ASSERT_INT(23, MAX(23, 3));
 }
 
-int main() {
+int main(void) {
   test_replace_char();
   test_serialize_string_array();
   test_deserialize_string_array();

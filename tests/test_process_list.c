@@ -2,7 +2,7 @@
 #include "process_mock.h"
 #include "tests.h"
 
-void test_new() {
+void test_new(void) {
   ProcessList* l = process_list_new("name", "cmd", 23, 42, "");
   ASSERT(l);
   ASSERT_STRING("name", l->p.name);
@@ -17,12 +17,12 @@ void test_new() {
 /* void process_list_process_start(ProcessList* l, int namesc, char **names); */
 /* void process_list_process_stop(ProcessList* l, int namesc, char **names); */
 
-void test_max_fd() {
+void test_max_fd(void) {
   ASSERT_INT(42, process_list_max_fd(process_list(), -1));
   ASSERT_INT(70, process_list_max_fd(process_list(), 70));
 }
 
-void test_forward() {
+void test_forward(void) {
   fd_set set;
   FD_ZERO(&set);
   process_list_forward(process_list(), &set);
@@ -33,14 +33,14 @@ void test_forward() {
   ASSERT_INT(2, process_calls.forward);
 }
 
-void test_append() {
+void test_append(void) {
   ASSERT(process_list());
   ASSERT_STRING("p1", process_list()->p.name)
   ASSERT(process_list()->n);
   ASSERT_STRING("p2", process_list()->n->p.name)
 }
 
-void test_find() {
+void test_find(void) {
   Process* p = process_list_find_by_name(process_list(), "p2");
   ASSERT(p);
   ASSERT_STRING("p2", p->name);
@@ -51,7 +51,7 @@ void test_find() {
   ASSERT(!p);
 }
 
-int main() {
+int main(void) {
   init_process_calls();
   test_new();
 

@@ -20,7 +20,7 @@ enum CallFds {
   cfStopCalled,
 };
 
-ProcessList* process_list();
+ProcessList* process_list(void);
 void process_list_set(ProcessList* l);
 
-void init_process_calls();
+void init_process_calls(void);

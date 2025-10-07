@@ -25,20 +25,20 @@ int perform_action(int fd, Message* in, Message* out) {
 
 // End Mocks
 
-static Server s;
+static Server srv;
 
-void cleanup() {
-  server_stop(&s);
+void cleanup(void) {
+  server_stop(&srv);
 }
 
-void test_client_server() {
+void test_client_server(void) {
   fd_set set;
   memset(&set, 0xff, sizeof(set));
 
-  server_init(&s);
-  ASSERT_INT(-1, s.fd);
+  server_init(&srv);
+  ASSERT_INT(-1, srv.fd);
 
-  ASSERT_INT(0, server_start(&s));
+  ASSERT_INT(0, server_start(&srv));
   Message out = {.nr=23, .size=12, .content="hello world"};
 
   perform_action_mock.out = (Message){.nr=394, .size=10, .content="a content"};
@@ -48,7 +48,7 @@ void test_client_server() {
   ASSERT_INT(-1, c.fd);
   ASSERT_INT(0, client_start(&c))
   ASSERT_INT(0, client_send(&c, &out));
-  ASSERT_INT(0, server_incomming(&s, &set));
+  ASSERT_INT(0, server_incomming(&srv, &set));
   ASSERT_INT(23, perform_action_mock.in.nr);
   ASSERT_INT(12, perform_action_mock.in.size);
   ASSERT_STRING("hello world", perform_action_mock.in.content);
@@ -61,12 +61,12 @@ void test_client_server() {
 
   client_stop(&c);
   ASSERT_INT(-1, c.fd);
-  server_stop(&s);
-  ASSERT_INT(-1, s.fd);
+  server_stop(&srv);
+  ASSERT_INT(-1, srv.fd);
 }
 
-int main() {
-  server_init(&s);
+int main(void) {
+  server_init(&srv);
   atexit(cleanup);
 
   config_parse_args(3, (char*[]){"program-name", "-S", "/tmp/_test_socket"});

@@ -10,6 +10,7 @@ struct Server {
   struct sockaddr_un addr;
   /* struct sockaddr_in addr; */
   /* int port; */
+  char _reserved[2];
 };
 
 void server_init(Server *s);

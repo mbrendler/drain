@@ -3,22 +3,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-static ProcessList *list = NULL;
+static ProcessList *plist = NULL;
 
-ProcessList* process_list() {
-  return list;
+ProcessList* process_list(void) {
+  return plist;
 }
 
 void process_list_set(ProcessList* l) {
-  if (list) {
-    process_list_free(list);
+  if (plist) {
+    process_list_free(plist);
   }
-  list = l;
+  plist = l;
 }
 
 struct ProcessCalls process_calls;
 
-void init_process_calls() {
+void init_process_calls(void) {
   process_calls = (struct ProcessCalls){0, 0, 0, 0, 0, 0, 0, 0};
 }
 
@@ -76,6 +76,6 @@ void process_remove_output_fd_at(Process *p, size_t index) {
 }
 
 size_t process_serialize(Process *p, char* buffer, size_t buf_size) {
-  strncpy(buffer, p->name, buf_size);
+  strncpy(buffer, p->name, buf_size - 1);
   return strlen(buffer) + 1;
 }

@@ -2,7 +2,7 @@
 #include "../src/config.h"
 #include <unistd.h>
 
-void test_config_init() {
+void test_config_init(void) {
   config_init();
   const char* term = getenv("TERM");
   if (term) {
@@ -16,13 +16,13 @@ void test_config_init() {
   expected_drainfile = NULL;
 
   char *expected_socket_path = NULL;
-  asprintf(&expected_socket_path, "/tmp/drain-%d", getuid());
+  asprintf(&expected_socket_path, "/tmp/drain-%u", getuid());
   ASSERT_STRING(expected_socket_path, CONFIG->socket_path);
   free(expected_socket_path);
   expected_socket_path = NULL;
 }
 
-void test_config_parse_args() {
+void test_config_parse_args(void) {
   const int new_argc = config_parse_args(11, (char*[]){
     "program-name",
     "-v", "-W", "-k",
@@ -38,7 +38,7 @@ void test_config_parse_args() {
   ASSERT_STRING("another-socket-path", CONFIG->socket_path);
 }
 
-int main() {
+int main(void) {
   test_config_init();
   test_config_parse_args();
 }

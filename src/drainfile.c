@@ -5,9 +5,10 @@
 
 typedef struct {
   char* name;
-  int color;
   char* groups;
   char* cmd;
+  int color;
+  char _reserved[4];
 } DrainfileLine;
 
 static DrainfileLine drainfile_parse_line(char* str) {

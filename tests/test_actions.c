@@ -14,7 +14,7 @@ int cmd_help(int argc, char** argv) {
 
 // End Mocks
 
-void test_action_ping() {
+void test_action_ping(void) {
   Message in = {.nr=mnPing, .size=12, .content="hello world"};
   Message out;
   ASSERT_INT(0, perform_action(23, &in, &out));
@@ -23,7 +23,7 @@ void test_action_ping() {
   ASSERT_STRING("hello world", out.content);
 }
 
-void test_action_status() {
+void test_action_status(void) {
   Message in = {.nr=mnStatus, .size=0};
   Message out;
   ASSERT_INT(0, perform_action(42, &in, &out));
@@ -32,7 +32,7 @@ void test_action_status() {
   ASSERT_BYTES(6, "p1\0p2\0", out.content);
 }
 
-void test_action_up() {
+void test_action_up(void) {
   // start all:
   Message in = {.nr=mnUp, .size=0};
   Message out;
@@ -53,7 +53,7 @@ void test_action_up() {
   ASSERT_INT(cfStartCalled, process_list()->n->p.fd);
 }
 
-void test_action_stop() {
+void test_action_stop(void) {
   // start all:
   Message in = {.nr=mnDown, .size=0};
   Message out;
@@ -74,7 +74,7 @@ void test_action_stop() {
   ASSERT_INT(cfStopCalled, process_list()->n->p.fd);
 }
 
-void test_action_restart() {
+void test_action_restart(void) {
   // start all:
   Message in = {.nr=mnRestart, .size=0};
   Message out;
@@ -98,7 +98,7 @@ void test_action_restart() {
 }
 
 
-void test_action_log() {
+void test_action_log(void) {
   Message in = {.nr=mnLog, .size=3, .content="p2"};
   Message out;
 
@@ -116,7 +116,7 @@ void test_action_log() {
   ASSERT_INT(0, out.size);
 }
 
-void test_action_add() {
+void test_action_add(void) {
   Message in = {.nr=mnAdd};
   in.size = (uint16_t)serialize_string_array(
     (char*[]){"p3", "10", "cmd3"}, 3,
@@ -140,13 +140,13 @@ void test_action_add() {
   ASSERT_INT((int)strlen(out.content) + 1, out.size);
 }
 
-void test_action_unknown() {
+void test_action_unknown(void) {
   Message in = {.nr=394};
   Message out;
   ASSERT_INT(-1, perform_action(42, &in, &out));
 }
 
-int main() {
+int main(void) {
   ProcessList *pl2 = process_list_new("p2", "cmd2", 3, cfNoneCalled, "");
   process_list_set(
     process_list_append(

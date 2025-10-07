@@ -51,7 +51,7 @@ int cmd_status(int argc, char** argv) {
     handle_error(&msg);
     return -1;
   }
-  int pos = 0;
+  size_t pos = 0;
   while (pos < msg.size) {
     Process p;
     pos += process_deserialize(msg.content + pos, &p);
@@ -62,7 +62,7 @@ int cmd_status(int argc, char** argv) {
 
 static int simple_command(enum MessageNumber nr, int argc, char** argv) {
   Message msg;
-  msg.nr = nr;
+  msg.nr = (int16_t)nr;
   const int size = serialize_string_array(
     argv,
     argc,
@@ -140,7 +140,7 @@ int cmd_drainfile(int argc, char** argv) {
   return 0;
 }
 
-static void print_names() {
+static void print_names(void) {
   ProcessList* l = drainfile_read(CONFIG->drainfile);
   process_list_each(p, l, { puts(p->name); });
   process_list_free(l);
@@ -158,7 +158,7 @@ int cmd__list_names(int argc, char** argv) {
     handle_error(&msg);
     return -1;
   }
-  int pos = 0;
+  size_t pos = 0;
   while (pos < msg.size) {
     Process p;
     pos += process_deserialize(msg.content + pos, &p);

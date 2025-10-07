@@ -17,21 +17,22 @@ static Config CFG = {
 };
 const Config *CONFIG = &CFG;
 
-void config_init() {
+void config_init(void) {
   CFG.termtype = getenv("TERM");
   // Will only be freed, if the command-line argument -f is given:
   if (-1 == asprintf(&CFG.drainfile, "%s/.drainfile", getenv("HOME"))) {
     perror("config: asprintf drainfile");
     exit(1);
   }
-  if (-1 == asprintf(&CFG.socket_path, "/tmp/drain-%d", getuid())) {
+  if (-1 == asprintf(&CFG.socket_path, "/tmp/drain-%u", getuid())) {
     perror("config: asprintf socket_path");
     exit(1);
   }
-  config_init_term_width();
+  config_init_term_width(0);
 }
 
-void config_init_term_width() {
+void config_init_term_width(int signum) {
+  (void)signum;
   if (CFG.termtype) {
     char buffer[4096];
     if (1 != tgetent(buffer, CFG.termtype)) {

@@ -5,7 +5,7 @@
 // int process_forward(Process *p);
 // int process_print_status(const Process* p);
 
-void test_init() {
+void test_init(void) {
   Process p;
   process_init(&p, "a-process-name", "a-process-command", 23, 42);
 
@@ -19,7 +19,7 @@ void test_init() {
   ASSERT_STRING("a-process-command", p.cmd);
 }
 
-void test_clear() {
+void test_clear(void) {
   Process p;
   process_init(&p, "a-process-name", "a-process-command", 23, 42);
   process_clear(&p);
@@ -34,7 +34,7 @@ void test_clear() {
   ASSERT(NULL == p.cmd);
 }
 
-void test_process_start_stop() {
+void test_process_start_stop(void) {
   Process p;
   process_init(&p, "process", "sleep 10", 2, -1);
   process_start(&p);
@@ -47,7 +47,7 @@ void test_process_start_stop() {
   ASSERT(NULL == p.f)
 }
 
-void test_add_output_fd() {
+void test_add_output_fd(void) {
   Process p;
   process_init(&p, "a-process-name", "a-process-command", 23, 42);
 
@@ -70,7 +70,7 @@ void test_add_output_fd() {
   process_clear(&p);
 }
 
-void test_remove_output_fd() {
+void test_remove_output_fd(void) {
   Process p;
   process_init(&p, "a-process-name", "a-process-command", 23, 42);
   process_add_output_fd(&p, 394);
@@ -101,7 +101,7 @@ void test_remove_output_fd() {
   ASSERT(NULL == p.out_fds);
 }
 
-void test_process_serialize_deserialize() {
+void test_process_serialize_deserialize(void) {
   char buffer[1024];
   Process p;
   process_init(&p, "a-process-name", "a-process-command", 23, 42);
@@ -129,7 +129,7 @@ void test_process_serialize_deserialize() {
   ASSERT_STRING("a-process-command", p.cmd);
 }
 
-int main() {
+int main(void) {
   test_init();
   test_clear();
   test_add_output_fd();

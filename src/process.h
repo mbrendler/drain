@@ -6,14 +6,15 @@
 #include <stdbool.h>
 
 typedef struct {
-  int color;
-  pid_t pid;
-  int fd;
   FILE* f;
-  uint8_t out_fd_count;
   int *out_fds;
   char *name;
   char *cmd;
+  int color;
+  pid_t pid;
+  int fd;
+  uint8_t out_fd_count;
+  uint8_t _reserved[3];
 } Process;
 
 void process_init(

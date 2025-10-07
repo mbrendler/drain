@@ -9,23 +9,26 @@
 static int shutdown_drain = 0;
 static ProcessList *list = NULL;
 
-ProcessList* process_list() {
+ProcessList* process_list(void) {
   return list;
 }
 
-void cmd_server_stop() {
+void cmd_server_stop(int signum) {
+  (void)signum;
   shutdown_drain = 1;
 }
 
-void cmd_server_sigpipe() {
+void cmd_server_sigpipe(int signum) {
+  (void)signum;
   // ignore sigpipe
 }
 
-void cmd_server_siginfo() {
+void cmd_server_siginfo(int signum) {
+  (void)signum;
   process_list_each(p, list, { process_print_status(p); });
 }
 
-void cmd_server_register_signal_handlers() {
+void cmd_server_register_signal_handlers(void) {
   signal(SIGINT, cmd_server_stop);
   signal(SIGPIPE, cmd_server_sigpipe);
 #   ifdef linux
