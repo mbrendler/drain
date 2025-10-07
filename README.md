@@ -10,7 +10,7 @@ Drain is a process manager like [foreman](https://github.com/ddollar/foreman).
 
 ## Usage
 
-* Create $HOME/.drainfile with the following schema ([example](https://github.com/mbrendler/drain/blob/master/drainfile)):
+* Create $HOME/.drainfile with the following schema ([example](drainfile)):
 
   ```
   process-name-1:color-number:group-name-1,group-name-2:command
