@@ -33,6 +33,9 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
   check_ipo_supported(RESULT IPO_SUPPORT OUTPUT output)
 endif()
 
+SET("CMAKE_C_FLAGS_RELEASE" "${CMAKE_C_FLAGS_RELEASE} -march=native -flto")
+SET("CMAKE_LINKER_FLAGS_RELEASE" "${CMAKE_LINKER_FLAGS_RELEASE} -march=native -flto")
+
 find_library(TERMCAP_LIB NAMES termcap ncurses)
 
 add_library(_drain OBJECT
