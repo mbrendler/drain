@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.16.0)
 project("drain" C)
 
-include("${CMAKE_SOURCE_DIR}/cmake/cotire.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/clang-tidy.cmake")
 
@@ -32,7 +31,7 @@ endif()
 
 find_library(TERMCAP_LIB NAMES termcap ncurses)
 
-add_library(_drain EXCLUDE_FROM_ALL OBJECT
+add_library(_drain OBJECT
   src/config.c
   src/drainfile.c
   src/process_list.c
@@ -46,40 +45,34 @@ add_library(_drain EXCLUDE_FROM_ALL OBJECT
   src/cmd_attach.c
   src/helpers.c
 )
-cotire(_drain)
 
-add_executable(drain EXCLUDE_FROM_ALL src/drain.c $<TARGET_OBJECTS:_drain>)
+add_executable(drain src/drain.c $<TARGET_OBJECTS:_drain>)
 set_property(TARGET drain PROPERTY INTERPROCEDURAL_OPTIMIZATION ${IPO_SUPPORT})
 target_link_libraries(drain "${TERMCAP_LIB}")
-cotire(drain)
 
-add_executable(test_helpers EXCLUDE_FROM_ALL tests/test_helpers.c src/helpers.c)
-cotire(test_helpers)
+add_executable(test_helpers tests/test_helpers.c src/helpers.c)
 
-add_executable(test_config EXCLUDE_FROM_ALL
+add_executable(test_config
   tests/test_config.c
   $<TARGET_OBJECTS:_drain>
 )
 target_link_libraries(test_config "${TERMCAP_LIB}")
-cotire(test_config)
 
-add_executable(test_drainfile EXCLUDE_FROM_ALL
+add_executable(test_drainfile
   tests/test_drainfile.c
   $<TARGET_OBJECTS:_drain>
 )
 target_link_libraries(test_drainfile "${TERMCAP_LIB}")
-cotire(test_drainfile)
 
-add_executable(test_server_client EXCLUDE_FROM_ALL
+add_executable(test_server_client
   tests/test_server_client.c
   src/server.c
   src/client.c
   src/config.c
 )
 target_link_libraries(test_server_client "${TERMCAP_LIB}")
-cotire(test_server_client)
 
-add_executable(test_actions EXCLUDE_FROM_ALL
+add_executable(test_actions
   tests/test_actions.c
   src/actions.c
   tests/process_mock.c
@@ -88,23 +81,18 @@ add_executable(test_actions EXCLUDE_FROM_ALL
   src/config.c
 )
 target_link_libraries(test_actions "${TERMCAP_LIB}")
-cotire(test_actions)
 
-add_executable(test_process_list EXCLUDE_FROM_ALL
+add_executable(test_process_list
   tests/test_process_list.c
   tests/process_mock.c
   src/process_list.c
 )
-cotire(test_process_list)
 
-add_executable(test_process EXCLUDE_FROM_ALL
+add_executable(test_process
   tests/test_process.c
   $<TARGET_OBJECTS:_drain>
 )
 target_link_libraries(test_process "${TERMCAP_LIB}")
-cotire(test_process)
-
-add_custom_target(build_all ALL DEPENDS all_unity)
 
 enable_testing()
 
